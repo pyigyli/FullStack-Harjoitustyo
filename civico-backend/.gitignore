@@ -1,0 +1,24 @@
+# Node and coverage
+node_modules/
+coverage
+.nyc_output
+xunit-test-results.xml
+package-lock.json
+
+# Project Development files
+*.log
+/dist/
+/build
+
+# Editor config
+/.project
+/.settings
+/.idea
+/.vscode
+
+# Random
+stats.json
+.DS_Store
+next_git_comment.txt
+mingw32
+*.sqlite
