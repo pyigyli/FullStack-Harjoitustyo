@@ -3,7 +3,7 @@ const express = require('express');
 
 const app = express();
 
-const distFolder = path.resolve(__dirname, '../dist');
+const distFolder = path.resolve(__dirname, '../build');
 
 app.use(express.static(path.resolve(distFolder, 'client')));
 
