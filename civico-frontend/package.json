@@ -9,7 +9,8 @@
     "dev": "webpack-dev-server --hot --env dev --mode development",
     "lint": "tslint --fix \"src/client/**/*.{ts,tsx}\" --exclude \"src/client/**/*.d.ts\"",
     "test": "jest",
-    "heroku": "cd ../ && git subtree push --prefix civico-frontend heroku-civico-frontend master"
+    "heroku": "cd ../ && git subtree push --prefix civico-frontend heroku-civico-frontend master",
+    "heroku-postbuild": "yarn build"
   },
   "dependencies": {
     "@babel/core": "^7.3.3",
