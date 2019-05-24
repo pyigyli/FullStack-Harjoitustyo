@@ -1,17 +1,21 @@
 import React from 'react'
 import {Route} from 'react-router-dom'
-import {Message} from './types/protocol'
+import {Message, LoginMessage} from './types/protocol'
 import LoginScene from './scenes/Login'
 import Header from './components/Header'
 
 interface State {
-  connection: WebSocket | null
+	connection: WebSocket | null
+}
+
+const NULL_STATE: State = {
+	connection: null
 }
 
 class App extends React.Component<{}, State> {
-  public state = {connection: null}
+	public state = {...NULL_STATE}
 
-  public componentDidMount() {
+	public componentDidMount() {
 		this.connect()
 	}
 
@@ -30,17 +34,32 @@ class App extends React.Component<{}, State> {
 		})
 
 		connection.addEventListener('close', () => {
-			this.setState({connection: null})
+			this.setState(NULL_STATE)
 			this.connect()
 		})
 
 		connection.addEventListener('message', evt => {
 			const msg: Message = JSON.parse(evt.data)
-			console.log(msg)
-    })
-  }
+			switch (msg.type) {
+				default:
+					break
+			}
+		})
+	}
 
-  public render() {
+	public handleSendTextMessage = (username: string, password: string) => {
+		const {connection} = this.state
+		if (connection) {
+			const protocolMessage: LoginMessage = {
+				type: 'LOGIN',
+				username,
+				password
+			}
+			connection.send(JSON.stringify(protocolMessage))
+		}
+	}
+
+	public render() {
     return (
       <div>
         <Header/>

@@ -4,7 +4,6 @@
   "jsRules": {},
   "rules": {
     "object-curly-spacing": [true, "never"],
-    "file-name-casing": [true, "kebab-case"],
     "indent": [true, "spaces"],
     "ordered-imports": false,
     "ban-types": false,
