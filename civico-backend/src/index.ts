@@ -4,19 +4,20 @@ import * as WebSocket from 'ws'
 import CivicoServer from './server'
 import Connection from './connection'
 
+const server = new CivicoServer()
 const app = express()
 const httpServer = http.createServer(app)
 const wss = new WebSocket.Server({server: httpServer})
-const server = new CivicoServer()
 
-wss.on('connection', function connection(ws: WebSocket) {
-	server.addConnection(new Connection(ws));
-});
-
-app.get('/', function (req, res) {
-  res.send('Hello World!')
+wss.on('connection', (ws: WebSocket) => {
+	server.addConnection(new Connection(ws))
 })
 
-app.listen(3000, function () {
-  console.log('listening on port 3000')
+app.get('/', (_req, res) => {
+  return res.json({message: 'Hello World!'})
+})
+
+const PORT = parseInt(process.env.PORT || '3000', 10)
+httpServer.listen(PORT, () => {
+  console.log('Server listening on port ' + PORT) // tslint:disable-line:no-console
 })

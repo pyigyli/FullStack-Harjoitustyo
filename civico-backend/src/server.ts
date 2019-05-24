@@ -1,6 +1,5 @@
 import Connection from './connection'
-
-type Message = 'TODO'
+import {Message} from './types/protocol'
 
 class CivicoServer {
 	private connections: Connection[] = []

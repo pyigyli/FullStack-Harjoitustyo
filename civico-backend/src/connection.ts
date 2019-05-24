@@ -1,7 +1,7 @@
 import * as WebSocket from 'ws'
 import uuid from 'uuid'
+import {Message} from './types/protocol'
 
-type Message = 'TODO'
 type MessageHandler = (conn: Connection, msg: Message) => void;
 type CloseHandler = () => void;
 
@@ -25,7 +25,7 @@ class Connection {
 					this.handleError(err)
 				}
 			}
-		});
+		})
 
 		socket.on('close', () => {
 			this.closed = true
@@ -40,7 +40,7 @@ class Connection {
 	}
 
 	public handleError(error: Message) {
-		// handle error
+		console.error(error); // tslint:disable-line:no-console
 	}
 
 	public sendMessage(message: Message): void {
