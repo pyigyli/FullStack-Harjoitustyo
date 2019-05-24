@@ -7,3 +7,5 @@
 
 #### 24.5.2019
 - Monorepo aiheutti ongelmia. Koska käytän TypeScriptiä, olisi toivottavaa luoda protokollalle oma repositio, joka voidaan asettaa front- ja backendille riippuvuudeksi. Tämä ei kuitenkaan näytä onnistuvan monorepo-systeemissäni, joten en luo erillistä protokollaa. Toisaalta tämä suoraviivaistaa tilanteita, joissa joudun päivittämään serverin ja clientin välisten viestien tyypityksiä. Sen sijaan, että joutuisin puskemaan protokollan githubiin ja suorittamaan `yarn upgrade`, voin vain copy-pastata tyypitykset molempiin projekteihin.
+
+- Haluaisin mieluiten käyttää MongoDB:tä tietojen tallentamiseen, mutta ilmeisesti ei-maksaville käyttäjille annetaan käyttöön vain yksi ilmainen klusteri, jota käytän Full Stack -kurssin harjoitustehtäviin. Koska haluan tälle projektille ihan ikioman datapankin, taidan päätyä käyttämään herokun omaa SQliteä. Saa nähdä...

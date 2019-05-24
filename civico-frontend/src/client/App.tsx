@@ -1,6 +1,8 @@
 import React from 'react'
 import {Route} from 'react-router-dom'
-import {Message, LoginMessage} from './types/protocol'
+import {Message, LoginMessage, CreateAccountMessage} from './types/protocol'
+import CreateAccountScene from './scenes/CreateAccount'
+import IndexScene from './scenes/Index'
 import LoginScene from './scenes/Login'
 import Header from './components/Header'
 
@@ -47,7 +49,7 @@ class App extends React.Component<{}, State> {
 		})
 	}
 
-	public handleSendTextMessage = (username: string, password: string) => {
+	public handleSendLoginMessage = (username: string, password: string) => {
 		const {connection} = this.state
 		if (connection) {
 			const protocolMessage: LoginMessage = {
@@ -59,11 +61,25 @@ class App extends React.Component<{}, State> {
 		}
 	}
 
+	public handleSendCreateAccountMessage = (username: string, password: string) => {
+		const {connection} = this.state
+		if (connection) {
+			const protocolMessage: CreateAccountMessage = {
+				type: 'CREATE_ACCOUNT',
+				username,
+				password
+			}
+			connection.send(JSON.stringify(protocolMessage))
+		}
+	}
+
 	public render() {
     return (
       <div>
         <Header/>
-        <Route path='/login' render={() => <LoginScene/>}/>
+        <Route exact path='/' render={() => <IndexScene/>}/>
+        <Route exact path='/login' render={() => <LoginScene/>}/>
+        <Route exact path='/create-account' render={() => <CreateAccountScene/>}/>
       </div>
     )
   }

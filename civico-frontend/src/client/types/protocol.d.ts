@@ -7,18 +7,18 @@ export interface MessageBase {
 }
 
 export interface Message {
-  type: String,
-  message: String
+  type: string,
+  message: string
 }
 
 export interface CreateAccountMessage {
   type: 'CREATE_ACCOUNT',
-  username: String,
-  password: String
+  username: string,
+  password: string
 }
 
 export interface LoginMessage {
   type: 'LOGIN',
-  username: String,
-  password: String
+  username: string,
+  password: string
 }
