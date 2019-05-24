@@ -1,14 +1,24 @@
 import React from 'react'
+import {withRouter, RouteComponentProps} from 'react-router-dom'
 import {Button} from '@material-ui/core'
 
-class Header extends React.Component {
+class Header extends React.Component<RouteComponentProps> {
+
+  public toLoginPage() {
+    this.props.history.push('/login')
+  }
+
+  public toCreateAccountPage() {
+    this.props.history.push('/create-account')
+  }
+
   public render() {
     return (
       <div>
-        <Button>
+        <Button onClick={() => this.toLoginPage()}>
           Login
         </Button>
-        <Button>
+        <Button onClick={() => this.toCreateAccountPage()}>
           Create account
         </Button>
       </div>
@@ -16,4 +26,4 @@ class Header extends React.Component {
   }
 }
 
-export default Header
+export default withRouter(Header)

@@ -5,7 +5,14 @@ class CivicoServer {
 	private connections: Connection[] = []
 
 	public handleMessage(conn: Connection, message: Message) {
-		// handle message
+		switch (message.type) {
+			case 'CREATE_ACCOUNT':
+				return this.createAccount(conn, message.username, message.password)
+			case 'LOGIN':
+				return this.login(conn, message.username, message.password)
+			default:
+				break
+		}
 	}
 
 	public addConnection(conn: Connection) {
@@ -17,6 +24,14 @@ class CivicoServer {
 	public removeConnection(conn: Connection) {
 		const index = this.connections.findIndex(c => c.id === conn.id)
 		this.connections.splice(index, 1)
+	}
+
+	public createAccount(conn: Connection, username: String, password: String) {
+		// TODO
+	}
+
+	public login(conn: Connection, username: String, password: String) {
+		// TODO
 	}
 }
 
