@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "author": "Pyry Vähäkangas",
   "private": true,
+  "license": "GPL-3.0-or-later",
   "scripts": {
     "build": "webpack --env prod --mode production && cp src/index.js build/index.js && cp src/app.js build/app.js",
     "start": "node ./build/index.js",

@@ -1,17 +1,19 @@
 import React from 'react'
 import {Route} from 'react-router-dom'
-import {Message, LoginMessage, CreateAccountMessage} from './types/protocol'
+import {Message, LoginMessage, CreateAccountMessage} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import IndexScene from './scenes/Index'
 import LoginScene from './scenes/Login'
 import Header from './components/Header'
 
 interface State {
-	connection: WebSocket | null
+	connection: WebSocket | null,
+	token: string
 }
 
 const NULL_STATE: State = {
-	connection: null
+	connection: null,
+	token: ''
 }
 
 class App extends React.Component<{}, State> {
@@ -19,6 +21,11 @@ class App extends React.Component<{}, State> {
 
 	public componentDidMount() {
 		this.connect()
+		const token = window.localStorage.getItem('civico-token')
+		if (token) {
+			this.setState({token})
+			// TODO this.handleSendLoginFromCookiesMessage(token)
+		}
 	}
 
 	public componentWillUnmount() {
@@ -41,8 +48,12 @@ class App extends React.Component<{}, State> {
 		})
 
 		connection.addEventListener('message', evt => {
-			const msg: Message = JSON.parse(evt.data)
-			switch (msg.type) {
+			const message: Message = JSON.parse(evt.data)
+			switch (message.type) {
+				case 'AUTH':
+					this.setState({token: message.token})
+					window.localStorage.setItem('civico-token', message.token)
+					break
 				default:
 					break
 			}
@@ -52,24 +63,24 @@ class App extends React.Component<{}, State> {
 	public handleSendLoginMessage = (username: string, password: string) => {
 		const {connection} = this.state
 		if (connection) {
-			const protocolMessage: LoginMessage = {
+			const message: LoginMessage = {
 				type: 'LOGIN',
 				username,
 				password
 			}
-			connection.send(JSON.stringify(protocolMessage))
+			connection.send(JSON.stringify(message))
 		}
 	}
 
 	public handleSendCreateAccountMessage = (username: string, password: string) => {
 		const {connection} = this.state
 		if (connection) {
-			const protocolMessage: CreateAccountMessage = {
+			const message: CreateAccountMessage = {
 				type: 'CREATE_ACCOUNT',
 				username,
 				password
 			}
-			connection.send(JSON.stringify(protocolMessage))
+			connection.send(JSON.stringify(message))
 		}
 	}
 
@@ -77,9 +88,15 @@ class App extends React.Component<{}, State> {
     return (
       <div>
         <Header/>
-        <Route exact path='/' render={() => <IndexScene/>}/>
-        <Route exact path='/login' render={() => <LoginScene/>}/>
-        <Route exact path='/create-account' render={() => <CreateAccountScene/>}/>
+        <Route exact path='/' render={() =>
+					<IndexScene/>
+				}/>
+        <Route exact path='/login' render={() =>
+					<LoginScene onSubmit={this.handleSendLoginMessage}/>
+				}/>
+        <Route exact path='/create-account' render={() =>
+					<CreateAccountScene onSubmit={this.handleSendCreateAccountMessage}/>
+				}/>
       </div>
     )
   }

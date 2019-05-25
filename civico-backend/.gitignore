@@ -22,3 +22,6 @@ stats.json
 next_git_comment.txt
 mingw32
 *.sqlite
+
+# Tokens and keys
+secret.ts

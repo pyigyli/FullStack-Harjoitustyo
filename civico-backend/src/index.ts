@@ -10,7 +10,7 @@ const httpServer = http.createServer(app)
 const wss = new WebSocket.Server({server: httpServer})
 
 wss.on('connection', (ws: WebSocket) => {
-	server.addConnection(new Connection(ws))
+  server.addConnection(new Connection(ws))
 })
 
 app.get('/', (_req, res) => {
