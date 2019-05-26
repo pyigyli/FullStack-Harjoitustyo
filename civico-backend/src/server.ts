@@ -1,6 +1,7 @@
+import jwt from 'jsonwebtoken'
 import Connection from './connection'
 import {Message} from './types/protocol'
-import {createNewAccount, login} from './firebase/users'
+import {createNewAccount, login, logout} from './firebase/users'
 
 class CivicoServer {
   private connections: Connection[] = []
@@ -10,7 +11,13 @@ class CivicoServer {
       case 'CREATE_ACCOUNT':
         return this.createAccount(conn, message.username, message.password)
       case 'LOGIN':
-				return this.loginAccount(conn, message.username, message.password)
+        return this.loginAccount(conn, message.username, message.password)
+      case 'LOGOUT':
+        const id = this.verifyToken(message.token)
+        if (id) {
+          return logout(conn, id)
+        }
+        break
       default:
         throw new Error('Client send a message of unknown type.')
     }
@@ -35,8 +42,18 @@ class CivicoServer {
   public async loginAccount(conn: Connection, username: string, password: string) {
     const token = await login(conn, username, password)
     if (token) {
-      conn.sendMessage({type: 'AUTH', token})
+      conn.sendMessage({type: 'AUTHORIZE', token})
     }
+  }
+
+  public verifyToken(token: string) {
+    if (token) {
+      const decodedToken = jwt.verify(token.substr(7), process.env.SECRET || 'DEVELOPMENT')
+      if (typeof decodedToken === 'string') {
+        return decodedToken
+      }
+    }
+    return null
   }
 }
 

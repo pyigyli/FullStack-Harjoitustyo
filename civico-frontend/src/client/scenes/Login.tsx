@@ -25,20 +25,20 @@ class LoginScene extends React.Component<Props, State> {
       <div>
         <div>
           <TextField
-            label="Username"
+            label='Username'
             value={username}
             onChange={({target}) => this.handleUsernameChange(target.value)}
-            margin="normal"
-            variant="outlined"
+            margin='normal'
+            variant='outlined'
           />
           <TextField
-            label="Password"
-            type="password"
+            label='Password'
+            type='password'
             value={password}
-            autoComplete="current-password"
+            autoComplete='current-password'
             onChange={({target}) => this.handlePasswordChange(target.value)}
-            margin="normal"
-            variant="outlined"
+            margin='normal'
+            variant='outlined'
           />
         </div>
         <Button onClick={() => onSubmit(username, password)}>Login</Button>

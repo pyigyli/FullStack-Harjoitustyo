@@ -1,105 +1,114 @@
 import React from 'react'
-import {Route} from 'react-router-dom'
-import {Message, LoginMessage, CreateAccountMessage} from '../types/protocol'
+import {Route, withRouter, RouteComponentProps} from 'react-router-dom'
+import {Message, LoginMessage, LogoutMessage, CreateAccountMessage} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import IndexScene from './scenes/Index'
 import LoginScene from './scenes/Login'
+import TownScene from './scenes/Town'
 import Header from './components/Header'
 
 interface State {
-	connection: WebSocket | null,
-	token: string
+  connection: WebSocket | null,
+  token: string
 }
 
 const NULL_STATE: State = {
-	connection: null,
-	token: ''
+  connection: null,
+  token: ''
 }
 
-class App extends React.Component<{}, State> {
-	public state = {...NULL_STATE}
+class App extends React.Component<RouteComponentProps, State> {
+  public state = {...NULL_STATE}
 
-	public componentDidMount() {
-		this.connect()
-		const token = window.localStorage.getItem('civico-token')
-		if (token) {
-			this.setState({token})
-			// TODO this.handleSendLoginFromCookiesMessage(token)
-		}
-	}
+  public componentDidMount() {
+    this.connect()
+    const token = window.localStorage.getItem('civico-token')
+    if (token) {
+      this.setState({token})
+    }
+  }
 
-	public componentWillUnmount() {
-		const connection = this.state.connection
-		if (connection) {
-			connection.close()
-		}
-	}
+  public componentWillUnmount() {
+    const connection = this.state.connection
+    if (connection) {
+      connection.close()
+    }
+  }
 
-	public connect() {
-		const connection = new WebSocket(window.env.WS_API_URL || 'ws://localhost:3000')
+  public connect() {
+    const connection = new WebSocket(window.env.WS_API_URL || 'ws://localhost:3000')
 
-		connection.addEventListener('open', () => {
-			this.setState({connection})
-		})
+    connection.addEventListener('open', () => {
+      this.setState({connection})
+    })
 
-		connection.addEventListener('close', () => {
-			this.setState(NULL_STATE)
-			this.connect()
-		})
+    connection.addEventListener('close', () => {
+      this.setState(NULL_STATE)
+      this.connect()
+    })
 
-		connection.addEventListener('message', evt => {
-			const message: Message = JSON.parse(evt.data)
-			switch (message.type) {
-				case 'AUTH':
-					this.setState({token: message.token})
-					window.localStorage.setItem('civico-token', message.token)
-					break
-				default:
-					break
-			}
-		})
-	}
+    connection.addEventListener('message', evt => {
+      const message: Message = JSON.parse(evt.data)
+      switch (message.type) {
+        case 'AUTHORIZE':
+          window.localStorage.setItem('civico-token', message.token)
+          this.setState({token: message.token})
+          this.props.history.push('/town')
+          break
+        default:
+          break
+      }
+    })
+  }
 
-	public handleSendLoginMessage = (username: string, password: string) => {
-		const {connection} = this.state
-		if (connection) {
-			const message: LoginMessage = {
-				type: 'LOGIN',
-				username,
-				password
-			}
-			connection.send(JSON.stringify(message))
-		}
-	}
+  public handleLogin = (username: string, password: string) => {
+    const {connection} = this.state
+    if (connection) {
+      const message: LoginMessage = {type: 'LOGIN', username, password}
+      connection.send(JSON.stringify(message))
+    }
+  }
 
-	public handleSendCreateAccountMessage = (username: string, password: string) => {
-		const {connection} = this.state
-		if (connection) {
-			const message: CreateAccountMessage = {
-				type: 'CREATE_ACCOUNT',
-				username,
-				password
-			}
-			connection.send(JSON.stringify(message))
-		}
-	}
+  public handleLogout = () => {
+    window.localStorage.removeItem('civico-token')
+    this.setState({token: ''})
+    const {connection, token} = this.state
+    if (connection) {
+      const message: LogoutMessage = {type: 'LOGOUT', token}
+      connection.send(JSON.stringify(message))
+    }
+    this.props.history.push('/')
+  }
 
-	public render() {
+  public handleCreateAccount = (username: string, password: string) => {
+    const {connection} = this.state
+    if (connection) {
+      const message: CreateAccountMessage = {type: 'CREATE_ACCOUNT', username, password}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
+  public render() {
+    const {token} = this.state
+    
     return (
       <div>
-        <Header/>
+        <Header token={token} onLogout={this.handleLogout}/>
         <Route exact path='/' render={() =>
-					<IndexScene/>
-				}/>
+          <IndexScene/>
+        }/>
         <Route exact path='/login' render={() =>
-					<LoginScene onSubmit={this.handleSendLoginMessage}/>
-				}/>
+          <LoginScene onSubmit={this.handleLogin}/>
+        }/>
         <Route exact path='/create-account' render={() =>
-					<CreateAccountScene onSubmit={this.handleSendCreateAccountMessage}/>
-				}/>
+          <CreateAccountScene onSubmit={this.handleCreateAccount}/>
+        }/>
+        <Route exact path='/town' render={() =>
+          token ? <TownScene/> : <LoginScene onSubmit={this.handleLogin}/>
+        }/>
       </div>
     )
   }
 }
 
-export default App
+export default withRouter(App)

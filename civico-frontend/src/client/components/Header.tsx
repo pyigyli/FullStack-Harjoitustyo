@@ -2,25 +2,29 @@ import React from 'react'
 import {withRouter, RouteComponentProps} from 'react-router-dom'
 import {Button} from '@material-ui/core'
 
-class Header extends React.Component<RouteComponentProps> {
+interface Props {
+  token: string
+  onLogout: () => void
+}
 
-  public toLoginPage() {
-    this.props.history.push('/login')
-  }
-
-  public toCreateAccountPage() {
-    this.props.history.push('/create-account')
-  }
+class Header extends React.Component<Props & RouteComponentProps> {
 
   public render() {
+    const {history, token, onLogout} = this.props
+
+    if (token) {
+      return (
+        <div>
+          <Button onClick={() => history.push('/town')}>Town</Button>
+          <Button onClick={() => onLogout()}>Logout</Button>
+        </div>
+      )
+    }
+
     return (
       <div>
-        <Button onClick={() => this.toLoginPage()}>
-          Login
-        </Button>
-        <Button onClick={() => this.toCreateAccountPage()}>
-          Create account
-        </Button>
+        <Button onClick={() => history.push('/login')}>Login</Button>
+        <Button onClick={() => history.push('/create-account')}>Create account</Button>
       </div>
     )
   }

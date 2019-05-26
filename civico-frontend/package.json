@@ -8,7 +8,7 @@
     "build": "webpack --env prod --mode production && cp src/index.js build/index.js && cp src/app.js build/app.js",
     "start": "node ./build/index.js",
     "dev": "webpack-dev-server --hot --env dev --mode development",
-    "lint": "tslint --fix \"src/client/**/*.{ts,tsx}\" --exclude \"src/client/**/*.d.ts\"",
+    "lint": "tslint --fix \"src/client/**/*.{ts,tsx}\"",
     "test": "jest",
     "heroku": "cd ../ && git subtree push --prefix civico-frontend heroku-civico-frontend master",
     "heroku-postbuild": "yarn build"
@@ -44,6 +44,7 @@
     "sass-loader": "^7.1.0",
     "ts-loader": "^5.3.3",
     "tslint": "^5.12.1",
+    "tslint-eslint-rules": "^5.4.0",
     "tslint-react": "^3.6.0",
     "typescript": "3.1",
     "webpack": "^4.32.2",

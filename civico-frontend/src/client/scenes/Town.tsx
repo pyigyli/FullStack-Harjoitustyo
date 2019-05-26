@@ -1,13 +1,13 @@
 import React from 'react'
 
-class IndexScene extends React.Component {
+class TownScene extends React.Component {
   public render() {
     return (
       <div>
-        Index
+        Town
       </div>
     )
   }
 }
 
-export default IndexScene
+export default TownScene

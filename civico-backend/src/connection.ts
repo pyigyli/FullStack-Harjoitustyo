@@ -5,8 +5,9 @@ type MessageHandler = (conn: Connection, msg: Message) => void
 type CloseHandler = () => void
 
 class Connection {
-  public id: string | null = null
-  public username: string | null = null
+  public id: string = ''
+  public token: string = ''
+  public username: string = ''
   private socket: WebSocket
   private messageHandlers: MessageHandler[] = []
   private closeHandlers: CloseHandler[] = []
