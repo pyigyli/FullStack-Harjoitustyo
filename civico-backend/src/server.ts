@@ -17,9 +17,12 @@ class CivicoServer {
         if (id) {
           return logout(conn, id)
         }
+        conn.sendMessage({type: 'TOKEN', token: ''})
+        conn.sendMessage({type: 'ERROR', message: 'Account verification failed. Please log in again.'})
         break
       default:
-        throw new Error('Client send a message of unknown type.')
+        console.error('Client sent a message of unknown type.') // tslint:disable-line:no-console
+        break
     }
   }
 
@@ -35,14 +38,17 @@ class CivicoServer {
   }
 
   public async createAccount(conn: Connection, username: string, password: string) {
-    await createNewAccount(conn, username, password)
-    this.loginAccount(conn, username, password)
+    if (await createNewAccount(conn, username, password)) {
+      this.loginAccount(conn, username, password)
+    }
   }
 
   public async loginAccount(conn: Connection, username: string, password: string) {
     const token = await login(conn, username, password)
     if (token) {
-      conn.sendMessage({type: 'AUTHORIZE', token})
+      conn.sendMessage({type: 'TOKEN', token})
+    } else {
+      conn.sendMessage({type: 'ERROR', message: 'Wrong username or password'})
     }
   }
 

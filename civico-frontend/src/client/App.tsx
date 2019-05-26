@@ -6,15 +6,18 @@ import IndexScene from './scenes/Index'
 import LoginScene from './scenes/Login'
 import TownScene from './scenes/Town'
 import Header from './components/Header'
+import Notification from './components/Notification'
 
 interface State {
   connection: WebSocket | null,
-  token: string
+  token: string,
+  errorMessage: string
 }
 
 const NULL_STATE: State = {
   connection: null,
-  token: ''
+  token: '',
+  errorMessage: ''
 }
 
 class App extends React.Component<RouteComponentProps, State> {
@@ -50,12 +53,22 @@ class App extends React.Component<RouteComponentProps, State> {
     connection.addEventListener('message', evt => {
       const message: Message = JSON.parse(evt.data)
       switch (message.type) {
-        case 'AUTHORIZE':
-          window.localStorage.setItem('civico-token', message.token)
+        case 'TOKEN':
           this.setState({token: message.token})
-          this.props.history.push('/town')
+          if (message.token) {
+            window.localStorage.setItem('civico-token', message.token)
+            this.props.history.push('/town')
+          } else {
+            window.localStorage.removeItem('civico-token')
+            this.props.history.push('/login')
+          }
+          break
+        case 'ERROR':
+          this.setState({errorMessage: message.message})
+          setTimeout(() => this.setState({errorMessage: ''}), 5000)
           break
         default:
+          console.error('Server sent a message of unknown type.') // tslint:disable-line:no-console
           break
       }
     })
@@ -89,11 +102,12 @@ class App extends React.Component<RouteComponentProps, State> {
   }
 
   public render() {
-    const {token} = this.state
+    const {token, errorMessage} = this.state
     
     return (
       <div>
         <Header token={token} onLogout={this.handleLogout}/>
+        {errorMessage && <Notification message={errorMessage}/>}
         <Route exact path='/' render={() =>
           <IndexScene/>
         }/>

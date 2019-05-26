@@ -1,6 +1,6 @@
-type MessageType = 'CREATE_ACCOUNT' | 'LOGIN' | 'LOGOUT' | 'AUTHORIZE'
+type MessageType = 'CREATE_ACCOUNT' | 'LOGIN' | 'LOGOUT' | 'TOKEN' | 'ERROR'
 
-export type Message = CreateAccountMessage | LoginMessage | LogoutMessage | AuthorizeLoginMessage
+export type Message = CreateAccountMessage | LoginMessage | LogoutMessage | TokenMessage | ErrorMessage
 
 export interface MessageBase {
   type: MessageType
@@ -24,7 +24,12 @@ export interface LogoutMessage extends MessageBase {
   token: string
 }
 
-export interface AuthorizeLoginMessage extends MessageBase {
-  type: 'AUTHORIZE',
+export interface TokenMessage extends MessageBase {
+  type: 'TOKEN',
   token: string
+}
+
+export interface ErrorMessage extends MessageBase {
+  type: 'ERROR',
+  message: string
 }
