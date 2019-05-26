@@ -14,27 +14,33 @@ import Notification from './components/Notification'
 
 const styles = () => createStyles({
   root: {
-    minWidth: '100%',
-    minHeight: '100%',
+    width: '100%',
+    height: '100%',
     backgroundColor: '#78377817',
     color: '#321432'
+  },
+  pageContainer: {
+    width: '50%'
   }
 })
 
 interface State {
   connection: WebSocket | null,
   token: string,
+  townGrid: string[][],
   errorMessage: string
 }
 
 const NULL_STATE: State = {
   connection: null,
   token: '',
+  townGrid: [],
   errorMessage: ''
 }
 
 class App extends React.Component<RouteComponentProps & WithStyles<typeof styles>, State> {
   public state = {...NULL_STATE}
+  public errorTimer: NodeJS.Timeout
 
   public componentDidMount() {
     this.connect()
@@ -77,14 +83,22 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           }
           break
         case 'ERROR':
-          this.setState({errorMessage: message.message})
-          setTimeout(() => this.setState({errorMessage: ''}), 5000)
+          this.handleErrorNotification(message.message)
           break
         default:
           console.error('Server sent a message of unknown type.') // tslint:disable-line:no-console
           break
       }
     })
+  }
+
+  public handleErrorNotification = (message: string) => {
+    clearInterval(this.errorTimer)
+    this.setState({errorMessage: message})
+    this.errorTimer = setInterval(() => {
+      this.setState({errorMessage: ''})
+      clearInterval(this.errorTimer)
+    }, 5000)
   }
 
   public handleLogin = (username: string, password: string) => {
@@ -113,21 +127,18 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         const message: CreateAccountMessage = {type: 'CREATE_ACCOUNT', username, password}
         connection.send(JSON.stringify(message))
       } else if (username.length < 3 && password.length < 5) {
-        this.setState({errorMessage: 'Username and password too short. Please provide lengths of at least 3 and 5'})
-        setTimeout(() => this.setState({errorMessage: ''}), 5000)
+        this.handleErrorNotification('Username and password too short. Please provide lengths of at least 3 and 5')
       } else if (username.length < 3) {
-        this.setState({errorMessage: 'Username must be at least 3 characters long.'})
-        setTimeout(() => this.setState({errorMessage: ''}), 5000)
+        this.handleErrorNotification('Username must be at least 3 characters long.')
       } else {
-        this.setState({errorMessage: 'Password must be at least 5 characters long.'})
-        setTimeout(() => this.setState({errorMessage: ''}), 5000)
+        this.handleErrorNotification('Password must be at least 5 characters long.')
       }
     }
   }
 
   public render() {
     const {classes} = this.props
-    const {token, errorMessage} = this.state
+    const {token, townGrid, errorMessage} = this.state
     
     return (
       <div className={classes.root}>
@@ -146,7 +157,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           token ? <FieldsScene/> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/town' render={() =>
-          token ? <TownScene/> : <LoginScene onSubmit={this.handleLogin}/>
+          token ? <TownScene townGrid={townGrid}/> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/map' render={() =>
           token ? <MapScene/> : <LoginScene onSubmit={this.handleLogin}/>

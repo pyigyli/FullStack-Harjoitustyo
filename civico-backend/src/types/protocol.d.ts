@@ -1,6 +1,6 @@
-type MessageType = 'CREATE_ACCOUNT' | 'LOGIN' | 'LOGOUT' | 'TOKEN' | 'ERROR'
+type MessageType = 'CREATE_ACCOUNT' | 'LOGIN' | 'LOGOUT' | 'TOKEN' | 'TOWN' | 'ERROR'
 
-export type Message = CreateAccountMessage | LoginMessage | LogoutMessage | TokenMessage | ErrorMessage
+export type Message = CreateAccountMessage | LoginMessage | LogoutMessage | TokenMessage | TownDataMessage | ErrorMessage
 
 export interface MessageBase {
   type: MessageType
@@ -27,6 +27,11 @@ export interface LogoutMessage extends MessageBase {
 export interface TokenMessage extends MessageBase {
   type: 'TOKEN',
   token: string
+}
+
+export interface TownDataMessage extends MessageBase {
+  type: 'TOWN',
+  townGrid: string[][]
 }
 
 export interface ErrorMessage extends MessageBase {

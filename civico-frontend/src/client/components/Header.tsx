@@ -39,8 +39,8 @@ interface State {
 class Header extends React.Component<Props & RouteComponentProps & WithStyles<typeof styles>, State> {
   public state = {tab: false}
 
-  public handleTabChange = (event, newValue) => {
-    this.setState({tab: newValue})
+  public handleTabChange = (event: object, newValue: number) => {
+    this.setState({tab: newValue === 4 ? 0 : newValue})
   }
 
   public render() {
@@ -50,7 +50,11 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
     if (token) {
       return (
         <Paper square className={classes.tabsContainer}>
-          <Tabs classes={{indicator: classes.tabIndicator}} value={tab} onChange={this.handleTabChange} variant='fullWidth'>
+          <Tabs
+            classes={{indicator: classes.tabIndicator}}
+            value={tab} onChange={this.handleTabChange}
+            variant='fullWidth'
+          >
             <Tab icon={<FieldsIcon/>} label='FIELDS'  onClick={() => history.push('/fields')}/>
             <Tab icon={<TownIcon/>}   label='TOWN'    onClick={() => history.push('/town')}/>
             <Tab icon={<MapIcon/>}    label='MAP'     onClick={() => history.push('/map')}/>
@@ -63,7 +67,11 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
 
     return (
       <Paper square className={classes.tabsContainer}>
-        <Tabs value={tab} onChange={this.handleTabChange} variant='fullWidth'>
+        <Tabs
+          classes={{indicator: classes.tabIndicator}}
+          value={tab} onChange={this.handleTabChange}
+          variant='fullWidth'
+        >
           <Tab icon={<FieldsIcon/>} label='LOGIN'           onClick={() => history.push('/login')}/>
           <Tab icon={<TownIcon/>}   label='CREATE ACCOUNT'  onClick={() => history.push('/create-account')}/>
         </Tabs>

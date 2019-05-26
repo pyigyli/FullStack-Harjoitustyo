@@ -10,13 +10,17 @@ const styles = () => createStyles({
   }
 })
 
-class TownScene extends React.Component<WithStyles<typeof styles>> {
+interface Props {
+  townGrid: string[][]
+}
+
+class TownScene extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-  const {classes} = this.props
+  const {classes, townGrid} = this.props
 
   return (
       <div className={classes.sceneWrapper}>
-        Town
+        {townGrid}
       </div>
     )
   }

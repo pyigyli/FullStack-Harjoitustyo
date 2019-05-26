@@ -8,7 +8,19 @@ const styles = () => createStyles({
     position: 'fixed',
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)'
+    transform: 'translate(-50%, -50%)',
+    textAlign: 'center'
+  },
+  textfield: {
+    borderColor: '#321432 !important',
+    color: '#321432 !important'
+  },
+  loginButton: {
+    backgroundColor: '#32143244',
+    color: '#321432',
+    paddingLeft: '30px',
+    paddingRight: '30px',
+    margin: '30px'
   }
 })
 
@@ -33,7 +45,7 @@ class LoginScene extends React.Component<Props & WithStyles<typeof styles>, Stat
 
     return (
       <div className={classes.sceneWrapper}>
-      <div>Login</div>
+      <h1>Welcome back!</h1>
         <div>
           <TextField
             label='Username'
@@ -41,6 +53,8 @@ class LoginScene extends React.Component<Props & WithStyles<typeof styles>, Stat
             onChange={({target}) => this.handleUsernameChange(target.value)}
             margin='normal'
             variant='outlined'
+            InputLabelProps={{classes: {root: classes.textfield}}}
+            InputProps={{classes: {notchedOutline: classes.textfield}}}
           />
           <TextField
             label='Password'
@@ -50,9 +64,13 @@ class LoginScene extends React.Component<Props & WithStyles<typeof styles>, Stat
             onChange={({target}) => this.handlePasswordChange(target.value)}
             margin='normal'
             variant='outlined'
+            InputLabelProps={{classes: {root: classes.textfield}}}
+            InputProps={{classes: {notchedOutline: classes.textfield}}}
           />
         </div>
-        <Button onClick={() => onSubmit(username, password)}>Login</Button>
+        <Button className={classes.loginButton} onClick={() => onSubmit(username, password)}>
+          Login
+        </Button>
       </div>
     )
   }

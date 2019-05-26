@@ -10,7 +10,9 @@ const styles = () => createStyles({
     left: '50%',
     transform: 'translateX(-50%)',
     padding: '10px',
-    backgroundColor: 'red'
+    backgroundColor: '#b14d6f',
+    color: 'white',
+    fontWeight: 'bold'
   }
 })
 
@@ -26,7 +28,7 @@ class Notification extends React.Component<Props & WithStyles<typeof styles>> {
       <div>
         <Fade in={Boolean(message)}>
           <Paper className={classes.root}>
-            {message} asdf
+            {message}
           </Paper>
         </Fade>
       </div>

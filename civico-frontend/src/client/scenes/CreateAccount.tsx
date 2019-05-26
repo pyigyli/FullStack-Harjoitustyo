@@ -8,7 +8,19 @@ const styles = () => createStyles({
     position: 'fixed',
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)'
+    transform: 'translate(-50%, -50%)',
+    textAlign: 'center'
+  },
+  textfield: {
+    borderColor: '#321432 !important',
+    color: '#321432 !important'
+  },
+  createAccountButton: {
+    backgroundColor: '#32143244',
+    color: '#321432',
+    paddingLeft: '30px',
+    paddingRight: '30px',
+    margin: '30px'
   }
 })
 
@@ -33,7 +45,8 @@ class CreateAccountScene extends React.Component<Props & WithStyles<typeof style
 
     return (
       <div className={classes.sceneWrapper}>
-        <div>Create account</div>
+        <h1>Greetings!</h1>
+        <h2>Your empire is waiting to be build!</h2>
         <div>
           <TextField
             label='Username'
@@ -41,6 +54,8 @@ class CreateAccountScene extends React.Component<Props & WithStyles<typeof style
             onChange={({target}) => this.handleUsernameChange(target.value)}
             margin='normal'
             variant='outlined'
+            InputLabelProps={{classes: {root: classes.textfield}}}
+            InputProps={{classes: {notchedOutline: classes.textfield}}}
           />
           <TextField
             label='Password'
@@ -50,9 +65,16 @@ class CreateAccountScene extends React.Component<Props & WithStyles<typeof style
             onChange={({target}) => this.handlePasswordChange(target.value)}
             margin='normal'
             variant='outlined'
+            InputLabelProps={{classes: {root: classes.textfield}}}
+            InputProps={{classes: {notchedOutline: classes.textfield}}}
           />
         </div>
-        <Button onClick={() => onSubmit(username, password)}>Create Account</Button>
+        <Button
+          className={classes.createAccountButton}
+          onClick={() => onSubmit(username, password)}
+        >
+          Create Account
+        </Button>
       </div>
     )
   }
