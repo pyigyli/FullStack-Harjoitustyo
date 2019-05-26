@@ -1,6 +1,16 @@
 import React from 'react'
+import {createStyles, withStyles, WithStyles} from '@material-ui/core'
 import TextField from '@material-ui/core/TextField'
 import {Button} from '@material-ui/core'
+
+const styles = () => createStyles({
+  sceneWrapper: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+  }
+})
 
 interface Props {
   onSubmit: (username: string, password: string) => void
@@ -11,18 +21,19 @@ interface State {
   password: string
 }
 
-class CreateAccountScene extends React.Component<Props, State> {
+class CreateAccountScene extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {username: '', password: ''}
 
   public handleUsernameChange = (value: string) => this.setState({username: value})
   public handlePasswordChange = (value: string) => this.setState({password: value})
 
   public render() {
-    const {onSubmit} = this.props
+    const {classes, onSubmit} = this.props
     const {username, password} = this.state
 
     return (
-      <div>
+      <div className={classes.sceneWrapper}>
+        <div>Create account</div>
         <div>
           <TextField
             label='Username'
@@ -47,4 +58,4 @@ class CreateAccountScene extends React.Component<Props, State> {
   }
 }
 
-export default CreateAccountScene
+export default withStyles(styles)(CreateAccountScene)

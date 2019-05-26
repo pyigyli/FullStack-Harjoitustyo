@@ -1,5 +1,6 @@
 import React from 'react'
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom'
+import {createStyles, withStyles, WithStyles} from '@material-ui/core'
 import {Message, LoginMessage, LogoutMessage, CreateAccountMessage} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import IndexScene from './scenes/Index'
@@ -7,6 +8,12 @@ import LoginScene from './scenes/Login'
 import TownScene from './scenes/Town'
 import Header from './components/Header'
 import Notification from './components/Notification'
+
+const styles = () => createStyles({
+  appCointainer: {
+    backgroundColor: '#cccccc'
+  }
+})
 
 interface State {
   connection: WebSocket | null,
@@ -20,7 +27,7 @@ const NULL_STATE: State = {
   errorMessage: ''
 }
 
-class App extends React.Component<RouteComponentProps, State> {
+class App extends React.Component<RouteComponentProps & WithStyles<typeof styles>, State> {
   public state = {...NULL_STATE}
 
   public componentDidMount() {
@@ -102,10 +109,11 @@ class App extends React.Component<RouteComponentProps, State> {
   }
 
   public render() {
+    const {classes} = this.props
     const {token, errorMessage} = this.state
     
     return (
-      <div>
+      <div className={classes.appCointainer}>
         <Header token={token} onLogout={this.handleLogout}/>
         {errorMessage && <Notification message={errorMessage}/>}
         <Route exact path='/' render={() =>
@@ -125,4 +133,4 @@ class App extends React.Component<RouteComponentProps, State> {
   }
 }
 
-export default withRouter(App)
+export default withRouter(withStyles(styles)(App))
