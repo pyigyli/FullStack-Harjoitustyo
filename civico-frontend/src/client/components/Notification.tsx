@@ -1,19 +1,37 @@
 import React from 'react'
+import {createStyles, withStyles, WithStyles} from '@material-ui/core'
+import Fade from '@material-ui/core/Fade'
+import Paper from '@material-ui/core/Paper'
+
+const styles = () => createStyles({
+  root: {
+    position: 'fixed',
+    top: '100px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    padding: '10px',
+    backgroundColor: 'red'
+  }
+})
 
 interface Props {
   message: string
 }
 
-class Notification extends React.Component<Props> {
+class Notification extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {message} = this.props
+    const {classes, message} = this.props
 
     return (
       <div>
-        {message}
+        <Fade in={Boolean(message)}>
+          <Paper className={classes.root}>
+            {message} asdf
+          </Paper>
+        </Fade>
       </div>
     )
   }
 }
 
-export default Notification
+export default withStyles(styles)(Notification)

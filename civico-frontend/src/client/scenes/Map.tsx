@@ -10,16 +10,16 @@ const styles = () => createStyles({
   }
 })
 
-class TownScene extends React.Component<WithStyles<typeof styles>> {
+class MapScene extends React.Component<WithStyles<typeof styles>> {
   public render() {
   const {classes} = this.props
 
   return (
       <div className={classes.sceneWrapper}>
-        Town
+        Map
       </div>
     )
   }
 }
 
-export default withStyles(styles)(TownScene)
+export default withStyles(styles)(MapScene)
