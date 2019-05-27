@@ -2,24 +2,36 @@ import jwt from 'jsonwebtoken'
 import Connection from './connection'
 import {Message} from './types/protocol'
 import {createNewAccount, login, logout} from './firebase/users'
+import {getTownById} from './firebase/town'
 
 class CivicoServer {
   private connections: Connection[] = []
 
   public handleMessage(conn: Connection, message: Message) {
+    let id: string | null = null
     switch (message.type) {
       case 'CREATE_ACCOUNT':
         return this.createAccount(conn, message.username, message.password)
       case 'LOGIN':
         return this.loginAccount(conn, message.username, message.password)
       case 'LOGOUT':
-        const id = this.verifyToken(message.token)
-        if (id) {
-          return logout(conn, id)
+        id = this.verifyToken(message.token)
+        if (id && id === conn.id) {
+          return logout(conn)
         }
-        conn.sendMessage({type: 'TOKEN', token: ''})
-        conn.sendMessage({type: 'ERROR', message: 'Account verification failed. Please log in again.'})
-        break
+        return conn.sendMessage({type: 'TOKEN', token: ''})
+      case 'GET_FIELD':
+        // TODO
+      case 'GET_TOWN':
+        id = this.verifyToken(message.token)
+        if (id && id === conn.id) {
+          return getTownById(conn)
+        }
+        return conn.sendMessage({type: 'TOKEN', token: ''})
+      case 'GET_MAP':
+          // TODO
+      case 'GET_INBOX':
+        // TODO
       default:
         console.error('Client sent a message of unknown type.') // tslint:disable-line:no-console
         break

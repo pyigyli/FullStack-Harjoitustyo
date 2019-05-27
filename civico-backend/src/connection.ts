@@ -5,14 +5,15 @@ type MessageHandler = (conn: Connection, msg: Message) => void
 type CloseHandler = () => void
 
 class Connection {
-  public id: string = ''
-  public token: string = ''
-  public username: string = ''
+  public id: string
+  public token: string
   private socket: WebSocket
   private messageHandlers: MessageHandler[] = []
   private closeHandlers: CloseHandler[] = []
 
   constructor(socket: WebSocket) {
+    this.id = ''
+    this.token = ''
     this.socket = socket
 
     socket.on('message', data => {

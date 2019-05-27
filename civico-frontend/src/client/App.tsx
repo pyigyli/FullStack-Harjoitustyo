@@ -1,7 +1,7 @@
 import React from 'react'
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
-import {Message, LoginMessage, LogoutMessage, CreateAccountMessage} from '../types/protocol'
+import {Message, LoginMessage, LogoutMessage, CreateAccountMessage, RequestDataMessageType} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
 import InboxScene from './scenes/Inbox'
@@ -82,6 +82,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             this.props.history.push('/login')
           }
           break
+        case 'SEND_TOWN':
+          this.setState({townGrid: message.townGrid})
+          break
         case 'ERROR':
           this.handleErrorNotification(message.message)
           break
@@ -136,13 +139,21 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleDataRequest = (requestType: RequestDataMessageType) => {
+    const {connection, token} = this.state
+    if (connection) {
+      const message = {type: requestType, token}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public render() {
     const {classes} = this.props
     const {token, townGrid, errorMessage} = this.state
     
     return (
       <div className={classes.root}>
-        <Header token={token} onLogout={this.handleLogout}/>
+        <Header token={token} getUserData={this.handleDataRequest} onLogout={this.handleLogout}/>
         <Notification message={errorMessage}/>
         <Route exact path='/' render={() =>
           <IndexScene/>

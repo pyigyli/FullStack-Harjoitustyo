@@ -19,7 +19,8 @@ const styles = () => createStyles({
     flexDirection: 'row',
     justifyContent: 'center',
     width: '100%',
-    color: '#321432'
+    color: '#321432',
+    zIndex: 100
   },
   tabIndicator: {
     color: '#321432',
@@ -29,6 +30,7 @@ const styles = () => createStyles({
 
 interface Props {
   token: string
+  getUserData: (tabName: string) => void
   onLogout: () => void
 }
 
@@ -41,6 +43,11 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
 
   public handleTabChange = (event: object, newValue: number) => {
     this.setState({tab: newValue === 4 ? 0 : newValue})
+  }
+
+  public handleClickTown = () => {
+    this.props.getUserData('GET_TOWN')
+    this.props.history.push('/town')
   }
 
   public render() {
@@ -56,7 +63,7 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
             variant='fullWidth'
           >
             <Tab icon={<FieldsIcon/>} label='FIELDS'  onClick={() => history.push('/fields')}/>
-            <Tab icon={<TownIcon/>}   label='TOWN'    onClick={() => history.push('/town')}/>
+            <Tab icon={<TownIcon/>}   label='TOWN'    onClick={this.handleClickTown}/>
             <Tab icon={<MapIcon/>}    label='MAP'     onClick={() => history.push('/map')}/>
             <Tab icon={<InboxIcon/>}  label='INBOX'   onClick={() => history.push('/inbox')}/>
             <Tab icon={<LogoutIcon/>} label='LOGOUT'  onClick={() => onLogout()}/>

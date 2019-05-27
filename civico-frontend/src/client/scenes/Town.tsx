@@ -1,5 +1,6 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
+import TownGrid from '../components/TownGrid';
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -20,7 +21,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>> {
 
   return (
       <div className={classes.sceneWrapper}>
-        {townGrid}
+        <TownGrid grid={townGrid}/>
       </div>
     )
   }
