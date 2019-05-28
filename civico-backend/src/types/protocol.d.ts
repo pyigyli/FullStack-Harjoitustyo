@@ -65,7 +65,8 @@ export interface FieldRequestMessage extends MessageBase {
 
 export interface FieldResponseMessage extends MessageBase {
   type: 'SEND_FIELD',
-  token?: string
+  token?: string,
+  fieldGrid: string[][]
 }
 
 export interface TownRequestMessage extends MessageBase {
@@ -86,7 +87,8 @@ export interface MapRequestMessage extends MessageBase {
 
 export interface MapResponseMessage extends MessageBase {
   type: 'SEND_MAP',
-  token?: string
+  token?: string,
+  mapGrid: string[][]
 }
 
 export interface InboxRequestMessage extends MessageBase {

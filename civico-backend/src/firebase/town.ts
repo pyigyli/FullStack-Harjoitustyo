@@ -24,6 +24,6 @@ export const getTownById = async (conn: Connection) => {
     }
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
-    console.error(err)
+    console.error(err) // tslint:disable-line:no-console
   }
 }

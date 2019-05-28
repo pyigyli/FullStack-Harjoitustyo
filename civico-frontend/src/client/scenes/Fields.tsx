@@ -1,5 +1,6 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
+import FieldGrid from '../components/FieldGrid';
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -10,13 +11,17 @@ const styles = () => createStyles({
   }
 })
 
-class FieldsScene extends React.Component<WithStyles<typeof styles>> {
+interface Props {
+  fieldGrid: string[][]
+}
+
+class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {classes} = this.props
+    const {classes, fieldGrid} = this.props
 
     return (
       <div className={classes.sceneWrapper}>
-        Fields
+        <FieldGrid grid={fieldGrid}/>
       </div>
     )
   }

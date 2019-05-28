@@ -30,7 +30,7 @@ const styles = () => createStyles({
 
 interface Props {
   token: string
-  getUserData: (tabName: string) => void
+  handleDataRequest: (tabName: string) => void
   onLogout: () => void
 }
 
@@ -45,9 +45,24 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
     this.setState({tab: newValue === 4 ? 0 : newValue})
   }
 
+  public handleClickField = () => {
+    this.props.handleDataRequest('GET_FIELD')
+    this.props.history.push('/fields')
+  }
+
   public handleClickTown = () => {
-    this.props.getUserData('GET_TOWN')
+    this.props.handleDataRequest('GET_TOWN')
     this.props.history.push('/town')
+  }
+
+  public handleClickMap = () => {
+    this.props.handleDataRequest('GET_MAP')
+    this.props.history.push('/map')
+  }
+
+  public handleClickInbox = () => {
+    this.props.handleDataRequest('GET_INBOX')
+    this.props.history.push('/inbox')
   }
 
   public render() {
@@ -62,10 +77,10 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
             value={tab} onChange={this.handleTabChange}
             variant='fullWidth'
           >
-            <Tab icon={<FieldsIcon/>} label='FIELDS'  onClick={() => history.push('/fields')}/>
+            <Tab icon={<FieldsIcon/>} label='FIELDS'  onClick={this.handleClickField}/>
             <Tab icon={<TownIcon/>}   label='TOWN'    onClick={this.handleClickTown}/>
-            <Tab icon={<MapIcon/>}    label='MAP'     onClick={() => history.push('/map')}/>
-            <Tab icon={<InboxIcon/>}  label='INBOX'   onClick={() => history.push('/inbox')}/>
+            <Tab icon={<MapIcon/>}    label='MAP'     onClick={this.handleClickMap}/>
+            <Tab icon={<InboxIcon/>}  label='INBOX'   onClick={this.handleClickInbox}/>
             <Tab icon={<LogoutIcon/>} label='LOGOUT'  onClick={() => onLogout()}/>
           </Tabs>
         </Paper>

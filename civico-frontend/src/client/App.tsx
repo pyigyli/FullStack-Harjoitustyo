@@ -27,6 +27,7 @@ const styles = () => createStyles({
 interface State {
   connection: WebSocket | null,
   token: string,
+  fieldGrid: string[][],
   townGrid: string[][],
   errorMessage: string
 }
@@ -34,6 +35,7 @@ interface State {
 const NULL_STATE: State = {
   connection: null,
   token: '',
+  fieldGrid: [],
   townGrid: [],
   errorMessage: ''
 }
@@ -81,6 +83,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             window.localStorage.removeItem('civico-token')
             this.props.history.push('/login')
           }
+          break
+        case 'SEND_FIELD':
+          this.setState({fieldGrid: message.fieldGrid})
           break
         case 'SEND_TOWN':
           this.setState({townGrid: message.townGrid})
@@ -149,11 +154,11 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
 
   public render() {
     const {classes} = this.props
-    const {token, townGrid, errorMessage} = this.state
+    const {token, fieldGrid, townGrid, errorMessage} = this.state
     
     return (
       <div className={classes.root}>
-        <Header token={token} getUserData={this.handleDataRequest} onLogout={this.handleLogout}/>
+        <Header token={token} handleDataRequest={this.handleDataRequest} onLogout={this.handleLogout}/>
         <Notification message={errorMessage}/>
         <Route exact path='/' render={() =>
           <IndexScene/>
@@ -165,7 +170,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           <CreateAccountScene onSubmit={this.handleCreateAccount}/>
         }/>
         <Route exact path='/fields' render={() =>
-          token ? <FieldsScene/> : <LoginScene onSubmit={this.handleLogin}/>
+          token ? <FieldsScene fieldGrid={fieldGrid}/> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/town' render={() =>
           token ? <TownScene townGrid={townGrid}/> : <LoginScene onSubmit={this.handleLogin}/>

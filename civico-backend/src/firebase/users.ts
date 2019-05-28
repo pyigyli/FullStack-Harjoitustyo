@@ -17,7 +17,7 @@ export const createNewAccount = async (conn: Connection, username: string, passw
     return true
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
-    console.error(err)
+    console.error(err) // tslint:disable-line:no-console
   }
 }
 
@@ -30,13 +30,12 @@ export const login = async (conn: Connection, username: string, password: string
       const token = `Bearer ${jwt.sign(id, process.env.SECRET || 'DEVELOPMENT')}`
       await db.ref(`users/${id}/token`).set(token)
       conn.id = id
-      conn.token = token
       return token
     }
     return null
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
-    console.error(err)
+    console.error(err) // tslint:disable-line:no-console
   }
 }
 

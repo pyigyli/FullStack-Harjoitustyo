@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import Connection from './connection'
 import {Message} from './types/protocol'
 import {createNewAccount, login, logout} from './firebase/users'
+import {getFieldById} from './firebase/field'
 import {getTownById} from './firebase/town'
 
 class CivicoServer {
@@ -16,22 +17,28 @@ class CivicoServer {
         return this.loginAccount(conn, message.username, message.password)
       case 'LOGOUT':
         id = this.verifyToken(message.token)
-        if (id && id === conn.id) {
+        if (id) {
           return logout(conn)
         }
         return conn.sendMessage({type: 'TOKEN', token: ''})
       case 'GET_FIELD':
-        // TODO
+        id = this.verifyToken(message.token)
+        if (id) {
+          return getFieldById(conn)
+        }
+        return conn.sendMessage({type: 'TOKEN', token: ''})
       case 'GET_TOWN':
         id = this.verifyToken(message.token)
-        if (id && id === conn.id) {
+        if (id) {
           return getTownById(conn)
         }
         return conn.sendMessage({type: 'TOKEN', token: ''})
       case 'GET_MAP':
-          // TODO
+        // TODO
+        break
       case 'GET_INBOX':
         // TODO
+        break
       default:
         console.error('Client sent a message of unknown type.') // tslint:disable-line:no-console
         break
