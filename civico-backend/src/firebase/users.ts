@@ -45,6 +45,27 @@ export const logout = (conn: Connection) => {
     conn.id = ''
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
-    console.error(err)
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+export const getBasicUserInfo = async (conn: Connection) => {
+  try {
+    const user = await db.ref(`users/${conn.id}`).once('value')
+    const userJSON = user.toJSON()
+    if (userJSON) {
+      conn.sendMessage({
+        type: 'BASIC',
+        population: Object.values(userJSON)[0].population ? Object.values(userJSON)[0].population : 1,
+        lumberRate: Object.values(userJSON)[0].lumberRate ? Object.values(userJSON)[0].lumberRate : 2,
+        ironRate: Object.values(userJSON)[0].ironRate   ? Object.values(userJSON)[0].ironRate   : 2,
+        clayRate: Object.values(userJSON)[0].clayRate   ? Object.values(userJSON)[0].clayRate   : 2,
+        wheatRate: Object.values(userJSON)[0].wheatRate  ? Object.values(userJSON)[0].wheatRate  : 2,
+        buildings: Object.values(userJSON)[0].buildings  ? Object.values(userJSON)[0].buildings  : {}
+      })
+    }
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
   }
 }

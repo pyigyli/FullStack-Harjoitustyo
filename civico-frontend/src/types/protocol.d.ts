@@ -3,6 +3,7 @@ type MessageType =
   'LOGIN' |
   'LOGOUT' |
   'TOKEN' |
+  'BASIC' |
   'TOWN' |
   'GET_FIELD' |
   'SEND_FIELD' |
@@ -19,6 +20,7 @@ export type Message =
   LoginMessage |
   LogoutMessage |
   TokenMessage |
+  BasicUserDataMessage |
   FieldRequestMessage |
   FieldResponseMessage |
   TownRequestMessage |
@@ -37,71 +39,82 @@ export interface MessageBase {
 }
 
 export interface CreateAccountMessage extends MessageBase {
-  type: 'CREATE_ACCOUNT',
-  username: string,
+  type: 'CREATE_ACCOUNT'
+  username: string
   password: string
 }
 
 export interface LoginMessage extends MessageBase {
-  type: 'LOGIN',
-  username: string,
+  type: 'LOGIN'
+  username: string
   password: string
 }
 
 export interface LogoutMessage extends MessageBase {
-  type: 'LOGOUT',
+  type: 'LOGOUT'
   token: string
 }
 
 export interface TokenMessage extends MessageBase {
-  type: 'TOKEN',
+  type: 'TOKEN'
   token: string
+  username: string
+}
+
+export interface BasicUserDataMessage extends MessageBase {
+  type: 'BASIC'
+  population: number
+  lumberRate: number
+  ironRate: number
+  clayRate: number
+  wheatRate: number
+  buildings: Object
 }
 
 export interface FieldRequestMessage extends MessageBase {
-  type: 'GET_FIELD',
+  type: 'GET_FIELD'
   token: string
 }
 
 export interface FieldResponseMessage extends MessageBase {
-  type: 'SEND_FIELD',
-  token?: string,
+  type: 'SEND_FIELD'
+  token?: string
   fieldGrid: string[][]
 }
 
 export interface TownRequestMessage extends MessageBase {
-  type: 'GET_TOWN',
+  type: 'GET_TOWN'
   token: string
 }
 
 export interface TownResponseMessage extends MessageBase {
-  type: 'SEND_TOWN',
-  token?: string,
+  type: 'SEND_TOWN'
+  token?: string
   townGrid: string[][]
 }
 
 export interface MapRequestMessage extends MessageBase {
-  type: 'GET_MAP',
+  type: 'GET_MAP'
   token: string
 }
 
 export interface MapResponseMessage extends MessageBase {
-  type: 'SEND_MAP',
-  token?: string,
+  type: 'SEND_MAP'
+  token?: string
   mapGrid: string[][]
 }
 
 export interface InboxRequestMessage extends MessageBase {
-  type: 'GET_INBOX',
+  type: 'GET_INBOX'
   token: string
 }
 
 export interface InboxResponseMessage extends MessageBase {
-  type: 'SEND_INBOX',
+  type: 'SEND_INBOX'
   token?: string
 }
 
 export interface ErrorMessage extends MessageBase {
-  type: 'ERROR',
+  type: 'ERROR'
   message: string
 }

@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import Connection from './connection'
 import {Message} from './types/protocol'
-import {createNewAccount, login, logout} from './firebase/users'
+import {createNewAccount, login, logout, getBasicUserInfo} from './firebase/users'
 import {getFieldById} from './firebase/field'
 import {getTownById} from './firebase/town'
 
@@ -20,19 +20,19 @@ class CivicoServer {
         if (id) {
           return logout(conn)
         }
-        return conn.sendMessage({type: 'TOKEN', token: ''})
+        return conn.sendMessage({type: 'TOKEN', token: '', username: ''})
       case 'GET_FIELD':
         id = this.verifyToken(message.token)
         if (id) {
           return getFieldById(conn)
         }
-        return conn.sendMessage({type: 'TOKEN', token: ''})
+        return conn.sendMessage({type: 'TOKEN', token: '', username: ''})
       case 'GET_TOWN':
         id = this.verifyToken(message.token)
         if (id) {
           return getTownById(conn)
         }
-        return conn.sendMessage({type: 'TOKEN', token: ''})
+        return conn.sendMessage({type: 'TOKEN', token: '', username: ''})
       case 'GET_MAP':
         // TODO
         break
@@ -59,13 +59,14 @@ class CivicoServer {
   public async createAccount(conn: Connection, username: string, password: string) {
     if (await createNewAccount(conn, username, password)) {
       this.loginAccount(conn, username, password)
+      getBasicUserInfo(conn)
     }
   }
 
   public async loginAccount(conn: Connection, username: string, password: string) {
     const token = await login(conn, username, password)
     if (token) {
-      conn.sendMessage({type: 'TOKEN', token})
+      conn.sendMessage({type: 'TOKEN', token, username})
     } else {
       conn.sendMessage({type: 'ERROR', message: 'Wrong username or password'})
     }

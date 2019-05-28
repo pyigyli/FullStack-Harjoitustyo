@@ -28,13 +28,14 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
           return row.map((slot: string, j: number) => {
             return (
               <Paper
+                key={`${i}${j}`}
                 className={classes.slot}
                 style={{
                   width,
                   height,
                   margin,
-                  top: i*(height+margin)-grid.length*height/2,
-                  left: j*(width+margin)-grid[0].length*width/2,
+                  top: i * (height + margin) - grid.length * height / 2,
+                  left: j * (width + margin) - grid[0].length * width / 2,
                   backgroundColor: slot.substr(0, 1) === '?' ? '#555555' : '#ebefec'
                 }}
               >

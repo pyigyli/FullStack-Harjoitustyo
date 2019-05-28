@@ -1,6 +1,6 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
-import TownGrid from '../components/TownGrid';
+import TownGrid from '../components/TownGrid'
 
 const styles = () => createStyles({
   sceneWrapper: {

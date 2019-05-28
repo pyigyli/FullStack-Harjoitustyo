@@ -27,16 +27,28 @@ const styles = () => createStyles({
 interface State {
   connection: WebSocket | null,
   token: string,
+  username: string,
   fieldGrid: string[][],
   townGrid: string[][],
+  population: number,
+  lumberRate: number,
+  ironRate: number,
+  clayRate: number,
+  wheatRate: number,
   errorMessage: string
 }
 
 const NULL_STATE: State = {
   connection: null,
   token: '',
+  username: '',
   fieldGrid: [],
   townGrid: [],
+  population: 0,
+  lumberRate: 0,
+  ironRate: 0,
+  clayRate: 0,
+  wheatRate: 0,
   errorMessage: ''
 }
 
@@ -47,8 +59,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public componentDidMount() {
     this.connect()
     const token = window.localStorage.getItem('civico-token')
-    if (token) {
-      this.setState({token})
+    const username = window.localStorage.getItem('civico-username')
+    if (token && username) {
+      this.setState({token, username})
     }
   }
 
@@ -75,14 +88,25 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       const message: Message = JSON.parse(evt.data)
       switch (message.type) {
         case 'TOKEN':
-          this.setState({token: message.token})
+          this.setState({token: message.token, username: message.username})
           if (message.token) {
             window.localStorage.setItem('civico-token', message.token)
+            window.localStorage.setItem('civico-username', message.username)
             this.props.history.push('/fields')
           } else {
             window.localStorage.removeItem('civico-token')
+            window.localStorage.removeItem('civico-username')
             this.props.history.push('/login')
           }
+          break
+        case 'BASIC':
+          this.setState({
+            population: message.population,
+            lumberRate: message.lumberRate,
+            ironRate: message.ironRate,
+            clayRate: message.clayRate,
+            wheatRate: message.wheatRate
+          })
           break
         case 'SEND_FIELD':
           this.setState({fieldGrid: message.fieldGrid})
@@ -119,6 +143,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
 
   public handleLogout = () => {
     window.localStorage.removeItem('civico-token')
+    window.localStorage.removeItem('civico-username')
     this.setState({token: ''})
     const {connection, token} = this.state
     if (connection) {
@@ -155,7 +180,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public render() {
     const {classes} = this.props
     const {token, fieldGrid, townGrid, errorMessage} = this.state
-    
+
     return (
       <div className={classes.root}>
         <Header token={token} handleDataRequest={this.handleDataRequest} onLogout={this.handleLogout}/>

@@ -1,6 +1,6 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
-import FieldGrid from '../components/FieldGrid';
+import FieldGrid from '../components/FieldGrid'
 
 const styles = () => createStyles({
   sceneWrapper: {

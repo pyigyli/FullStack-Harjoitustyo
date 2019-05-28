@@ -32,25 +32,25 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
               if (!grid[i][j]) {
                 return null
               }
-              let heightIndex: number = i+1
+              let heightIndex: number = i + 1
               let elementUnderDeleted: Boolean = false
               while (heightIndex < grid.length && grid[heightIndex][j] && grid[i][j] === grid[heightIndex][j]) {
                 grid[heightIndex][j] = ''
                 heightIndex += 1
-                bigHeight = (height+margin)*(heightIndex-i)-margin
+                bigHeight = (height + margin) * (heightIndex - i) - margin
                 elementUnderDeleted = true
               }
-              let widthIndex: number = j+1
+              let widthIndex: number = j + 1
               let elementRightDeleted: Boolean = false
               while (widthIndex < grid[0].length && grid[i][widthIndex] && grid[i][j] === grid[i][widthIndex]) {
                 grid[i][widthIndex] = ''
                 widthIndex += 1
-                bigWidth = (width+margin)*(widthIndex-j)-margin
+                bigWidth = (width + margin) * (widthIndex - j) - margin
                 elementRightDeleted = true
               }
               if (elementUnderDeleted && elementRightDeleted) {
-                for (let a: number = i+1; a < heightIndex; a++) {
-                  for (let b: number = j+1; b < widthIndex; b++) {
+                for (let a: number = i + 1; a < heightIndex; a++) {
+                  for (let b: number = j + 1; b < widthIndex; b++) {
                     grid[a][b] = ''
                   }
                 }
@@ -58,13 +58,14 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
             }
             return (
               <Paper
+                key={`${i}${j}`}
                 className={classes.slot}
                 style={{
                   width: bigWidth ? bigWidth : width,
                   height: bigHeight ? bigHeight : height,
                   margin,
-                  top: i*(height+margin)-grid.length*height/2,
-                  left: j*(width+margin)-grid[0].length*width/2,
+                  top: i * (height + margin) - grid.length * height / 2,
+                  left: j * (width + margin) - grid[0].length * width / 2,
                   backgroundColor: slot === 'EMPTY' ? 'white' : '#ebefec'
                 }}
               >
