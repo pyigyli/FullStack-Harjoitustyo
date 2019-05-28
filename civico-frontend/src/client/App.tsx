@@ -11,6 +11,7 @@ import MapScene from './scenes/Map'
 import TownScene from './scenes/Town'
 import Header from './components/Header'
 import Notification from './components/Notification'
+import ProfileBar from './components/ProfileBar'
 
 const styles = () => createStyles({
   root: {
@@ -31,6 +32,10 @@ interface State {
   fieldGrid: string[][],
   townGrid: string[][],
   population: number,
+  lumber: number,
+  iron: number,
+  clay: number,
+  wheat: number,
   lumberRate: number,
   ironRate: number,
   clayRate: number,
@@ -45,6 +50,10 @@ const NULL_STATE: State = {
   fieldGrid: [],
   townGrid: [],
   population: 0,
+  lumber: 0,
+  iron: 0,
+  clay: 0,
+  wheat: 0,
   lumberRate: 0,
   ironRate: 0,
   clayRate: 0,
@@ -193,6 +202,20 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         }/>
         <Route exact path='/create-account' render={() =>
           <CreateAccountScene onSubmit={this.handleCreateAccount}/>
+        }/>
+        <Route exact path={['/fields', '/town']} render={() => 
+          <ProfileBar
+            username={this.state.username}
+            population={this.state.population}
+            lumber={this.state.lumber}
+            iron={this.state.iron}
+            clay={this.state.clay}
+            wheat={this.state.wheat}
+            lumberRate={this.state.lumberRate}
+            ironRate={this.state.ironRate}
+            clayRate={this.state.clayRate}
+            wheatRate={this.state.wheatRate}
+          />
         }/>
         <Route exact path='/fields' render={() =>
           token ? <FieldsScene fieldGrid={fieldGrid}/> : <LoginScene onSubmit={this.handleLogin}/>

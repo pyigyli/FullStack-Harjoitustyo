@@ -45,8 +45,7 @@ class CreateAccountScene extends React.Component<Props & WithStyles<typeof style
 
     return (
       <div className={classes.sceneWrapper}>
-        <h1>Greetings!</h1>
-        <h2>Your empire is waiting to be build!</h2>
+        <h1>Join now and build your own blooming empire!</h1>
         <div>
           <TextField
             label='Username'
