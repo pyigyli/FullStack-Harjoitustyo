@@ -9,4 +9,4 @@
 | 27.5.  | 6    | - Kylänäkymän toteutus aloitettu.<br> - Kyläverkon hakeminen tietokannasta toteutettu. |
 | 28.5.  | 5    | - Kylänäkymän kyläverkon ulkoasun toimintoja toteutettu.<br> - Kenttänäkymän kenttäverkon haku tietokannasta ja esitys frontendissä toteutettu.<br> - Käyttäjän ja hänen kyläänsä liittyvien tietojen haku toteutettu.<br> - Profiilipalkki aloitettu. |
 | 29.5.  | 1    | - Pientä koodin tyylin refaktorointia ja edistystä komponenttien kanssa. |
-| Yhteensä | 39    |
+| Yhteensä | 40    |
