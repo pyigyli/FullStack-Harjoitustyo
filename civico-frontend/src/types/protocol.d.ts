@@ -64,10 +64,19 @@ export interface TokenMessage extends MessageBase {
 export interface BasicUserDataMessage extends MessageBase {
   type: 'BASIC'
   population: number
+  lumber: number
+  iron: number
+  clay: number
+  wheat: number
+  maxLumber: number
+  maxIron: number
+  maxClay: number
+  maxWheat: number
   lumberRate: number
   ironRate: number
   clayRate: number
   wheatRate: number
+  fields: Object
   buildings: Object
 }
 

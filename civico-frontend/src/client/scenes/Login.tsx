@@ -29,7 +29,7 @@ interface Props {
 }
 
 interface State {
-  username: string,
+  username: string
   password: string
 }
 

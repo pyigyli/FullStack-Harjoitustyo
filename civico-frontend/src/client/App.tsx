@@ -26,20 +26,24 @@ const styles = () => createStyles({
 })
 
 interface State {
-  connection: WebSocket | null,
-  token: string,
-  username: string,
-  fieldGrid: string[][],
-  townGrid: string[][],
-  population: number,
-  lumber: number,
-  iron: number,
-  clay: number,
-  wheat: number,
-  lumberRate: number,
-  ironRate: number,
-  clayRate: number,
-  wheatRate: number,
+  connection: WebSocket | null
+  token: string
+  username: string
+  fieldGrid: string[][]
+  townGrid: string[][]
+  population: number
+  lumber: number
+  iron: number
+  clay: number
+  wheat: number
+  maxLumber: number
+  maxIron: number
+  maxClay: number
+  maxWheat: number
+  lumberRate: number
+  ironRate: number
+  clayRate: number
+  wheatRate: number
   errorMessage: string
 }
 
@@ -54,6 +58,10 @@ const NULL_STATE: State = {
   iron: 0,
   clay: 0,
   wheat: 0,
+  maxLumber: 0,
+  maxIron: 0,
+  maxClay: 0,
+  maxWheat: 0,
   lumberRate: 0,
   ironRate: 0,
   clayRate: 0,
@@ -188,7 +196,26 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
 
   public render() {
     const {classes} = this.props
-    const {token, fieldGrid, townGrid, errorMessage} = this.state
+    const {
+      token,
+      fieldGrid,
+      townGrid,
+      username,
+      population,
+      lumber,
+      iron,
+      clay,
+      wheat,
+      maxLumber,
+      maxIron,
+      maxClay,
+      maxWheat,
+      lumberRate,
+      ironRate,
+      clayRate,
+      wheatRate,
+      errorMessage
+    } = this.state
 
     return (
       <div className={classes.root}>
@@ -204,17 +231,21 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           <CreateAccountScene onSubmit={this.handleCreateAccount}/>
         }/>
         <Route exact path={['/fields', '/town']} render={() => 
-          <ProfileBar
-            username={this.state.username}
-            population={this.state.population}
-            lumber={this.state.lumber}
-            iron={this.state.iron}
-            clay={this.state.clay}
-            wheat={this.state.wheat}
-            lumberRate={this.state.lumberRate}
-            ironRate={this.state.ironRate}
-            clayRate={this.state.clayRate}
-            wheatRate={this.state.wheatRate}
+          token && <ProfileBar
+            username={username}
+            population={population}
+            lumber={lumber}
+            iron={iron}
+            clay={clay}
+            wheat={wheat}
+            maxLumber={maxLumber}
+            maxIron={maxIron}
+            maxClay={maxClay}
+            maxWheat={maxWheat}
+            lumberRate={lumberRate}
+            ironRate={ironRate}
+            clayRate={clayRate}
+            wheatRate={wheatRate}
           />
         }/>
         <Route exact path='/fields' render={() =>

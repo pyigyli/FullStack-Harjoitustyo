@@ -57,10 +57,19 @@ export const getBasicUserInfo = async (conn: Connection) => {
       conn.sendMessage({
         type: 'BASIC',
         population: Object.values(userJSON)[0].population ? Object.values(userJSON)[0].population : 1,
+        lumber: Object.values(userJSON)[0].lumber ? Object.values(userJSON)[0].lumber : 100,
+        iron: Object.values(userJSON)[0].iron ? Object.values(userJSON)[0].iron : 100,
+        clay: Object.values(userJSON)[0].clay ? Object.values(userJSON)[0].clay : 100,
+        wheat: Object.values(userJSON)[0].wheat ? Object.values(userJSON)[0].wheat : 100,
+        maxLumber: Object.values(userJSON)[0].maxLumber ? Object.values(userJSON)[0].maxLumber : 500,
+        maxIron: Object.values(userJSON)[0].maxIron ? Object.values(userJSON)[0].maxIron : 500,
+        maxClay: Object.values(userJSON)[0].maxClay ? Object.values(userJSON)[0].maxClay : 500,
+        maxWheat: Object.values(userJSON)[0].maxWheat ? Object.values(userJSON)[0].maxWheat : 500,
         lumberRate: Object.values(userJSON)[0].lumberRate ? Object.values(userJSON)[0].lumberRate : 2,
         ironRate: Object.values(userJSON)[0].ironRate   ? Object.values(userJSON)[0].ironRate   : 2,
         clayRate: Object.values(userJSON)[0].clayRate   ? Object.values(userJSON)[0].clayRate   : 2,
         wheatRate: Object.values(userJSON)[0].wheatRate  ? Object.values(userJSON)[0].wheatRate  : 2,
+        fields: Object.values(userJSON)[0].fields  ? Object.values(userJSON)[0].fields  : {},
         buildings: Object.values(userJSON)[0].buildings  ? Object.values(userJSON)[0].buildings  : {}
       })
     }
