@@ -35,7 +35,6 @@ const styles = () => createStyles({
 interface Props {
   token: string
   username: string
-  handleDataRequest: (tabName: string) => void
   onLogout: () => void
 }
 
@@ -47,27 +46,7 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
   public state = {tab: false}
 
   public handleTabChange = (event: object, newValue: number) => {
-    this.setState({tab: newValue === 4 ? 0 : newValue})
-  }
-
-  public handleClickField = () => {
-    this.props.handleDataRequest('GET_FIELD')
-    this.props.history.push('/fields')
-  }
-
-  public handleClickTown = () => {
-    this.props.handleDataRequest('GET_TOWN')
-    this.props.history.push('/town')
-  }
-
-  public handleClickMap = () => {
-    this.props.handleDataRequest('GET_MAP')
-    this.props.history.push('/map')
-  }
-
-  public handleClickInbox = () => {
-    this.props.handleDataRequest('GET_INBOX')
-    this.props.history.push('/inbox')
+    this.setState({tab: newValue === 4 ? false : newValue})
   }
 
   public render() {
@@ -82,10 +61,10 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
             value={tab} onChange={this.handleTabChange}
             variant='fullWidth'
           >
-            <Tab icon={<FieldsIcon/>} label='FIELDS' onClick={this.handleClickField}/>
-            <Tab icon={<TownIcon/>}   label='TOWN'   onClick={this.handleClickTown}/>
-            <Tab icon={<MapIcon/>}    label='MAP'    onClick={this.handleClickMap}/>
-            <Tab icon={<InboxIcon/>}  label='INBOX'  onClick={this.handleClickInbox}/>
+            <Tab icon={<FieldsIcon/>} label='FIELDS' onClick={() => this.props.history.push('/fields')}/>
+            <Tab icon={<TownIcon/>}   label='TOWN'   onClick={() => this.props.history.push('/town')}/>
+            <Tab icon={<MapIcon/>}    label='MAP'    onClick={() => this.props.history.push('/map')}/>
+            <Tab icon={<InboxIcon/>}  label='INBOX'  onClick={() => this.props.history.push('/inbox')}/>
             <Tab
               icon={<div className={classes.logoutIcon}>{username}</div>}
               label='LOGOUT'

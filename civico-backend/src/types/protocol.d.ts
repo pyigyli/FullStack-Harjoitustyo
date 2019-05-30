@@ -31,8 +31,6 @@ export type Message =
   InboxResponseMessage |
   ErrorMessage
 
-export type RequestDataMessageType = 'GET_FIELD' | 'GET_TOWN' | 'GET_MAP' | 'GET_INBOX'
-
 export interface MessageBase {
   type: MessageType
   token?: string

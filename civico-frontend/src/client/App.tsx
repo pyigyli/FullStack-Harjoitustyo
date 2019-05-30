@@ -1,7 +1,7 @@
 import React from 'react'
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
-import {Message, LoginMessage, LogoutMessage, CreateAccountMessage, RequestDataMessageType} from '../types/protocol'
+import {Message, LoginMessage, LogoutMessage, CreateAccountMessage} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
 import InboxScene from './scenes/Inbox'
@@ -86,6 +86,26 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     const connection = this.state.connection
     if (connection) {
       connection.close()
+    }
+  }
+
+  public componentDidUpdate() {
+    const {connection, token} = this.state
+    if (connection) {
+      switch (this.props.history.location.pathname) {
+        case '/fields':
+          connection.send(JSON.stringify({type: 'GET_FIELD', token}))
+          break
+        case '/town':
+          connection.send(JSON.stringify({type: 'GET_TOWN', token}))
+          break
+        case '/map':
+          connection.send(JSON.stringify({type: 'GET_MAP', token}))
+          break
+        case '/inbox':
+          connection.send(JSON.stringify({type: 'GET_INBOX', token}))
+          break
+      }
     }
   }
 
@@ -188,14 +208,6 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public handleDataRequest = (requestType: RequestDataMessageType) => {
-    const {connection, token} = this.state
-    if (connection) {
-      const message = {type: requestType, token}
-      connection.send(JSON.stringify(message))
-    }
-  }
-
   public render() {
     const {classes} = this.props
     const {
@@ -224,7 +236,6 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         <Header
           token={token}
           username={username}
-          handleDataRequest={this.handleDataRequest}
           onLogout={this.handleLogout}
         />
         <Notification message={errorMessage}/>
