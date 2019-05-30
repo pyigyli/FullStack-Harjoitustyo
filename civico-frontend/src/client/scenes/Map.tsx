@@ -9,7 +9,7 @@ const styles = () => createStyles({
     transform: 'translate(-50%, -50%)',
     width: '800px',
     height: '100%',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#fffafa',
     borderLeftStyle: 'solid',
     borderRightStyle: 'solid',
     borderLeftWidth: '10px',
