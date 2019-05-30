@@ -17,7 +17,7 @@ const styles = () => createStyles({
   root: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#78377817',
+    background: 'radial-gradient(80% 100%, #78377877, #321432dd)',
     color: '#321432'
   },
   pageContainer: {
@@ -173,13 +173,15 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public handleCreateAccount = (username: string, password: string) => {
     const {connection} = this.state
     if (connection) {
-      if (username.length > 2 && password.length > 4) {
+      if (username.length > 2 && username.length < 16 && password.length > 4) {
         const message: CreateAccountMessage = {type: 'CREATE_ACCOUNT', username, password}
         connection.send(JSON.stringify(message))
-      } else if (username.length < 3 && password.length < 5) {
+      } else if (username.length < 3 && username.length < 16 && password.length < 5) {
         this.handleErrorNotification('Username and password too short. Please provide lengths of at least 3 and 5')
       } else if (username.length < 3) {
         this.handleErrorNotification('Username must be at least 3 characters long.')
+      } else if (username.length > 15) {
+        this.handleErrorNotification('Username cannot be over 15 characters long.')
       } else {
         this.handleErrorNotification('Password must be at least 5 characters long.')
       }
@@ -219,7 +221,12 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
 
     return (
       <div className={classes.root}>
-        <Header token={token} handleDataRequest={this.handleDataRequest} onLogout={this.handleLogout}/>
+        <Header
+          token={token}
+          username={username}
+          handleDataRequest={this.handleDataRequest}
+          onLogout={this.handleLogout}
+        />
         <Notification message={errorMessage}/>
         <Route exact path='/' render={() =>
           <IndexScene/>
@@ -232,7 +239,6 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         }/>
         <Route exact path={['/fields', '/town']} render={() => 
           token && <ProfileBar
-            username={username}
             population={population}
             lumber={lumber}
             iron={iron}
@@ -242,14 +248,17 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             maxIron={maxIron}
             maxClay={maxClay}
             maxWheat={maxWheat}
+          />
+        }/>
+        <Route exact path='/fields' render={() =>
+          token ?
+          <FieldsScene
+            fieldGrid={fieldGrid}
             lumberRate={lumberRate}
             ironRate={ironRate}
             clayRate={clayRate}
             wheatRate={wheatRate}
-          />
-        }/>
-        <Route exact path='/fields' render={() =>
-          token ? <FieldsScene fieldGrid={fieldGrid}/> : <LoginScene onSubmit={this.handleLogin}/>
+          /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/town' render={() =>
           token ? <TownScene townGrid={townGrid}/> : <LoginScene onSubmit={this.handleLogin}/>

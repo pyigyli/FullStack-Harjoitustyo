@@ -2,6 +2,12 @@ import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
 
 const styles = () => createStyles({
+  root: {
+    position: 'fixed',
+    top: '200px',
+    left: '50%',
+    transform: 'translate(80px, 180px)'
+  },
   slot: {
     textAlign: 'center',
     display: 'flex',
@@ -23,7 +29,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
     const margin: number = 5
 
     return (
-      <div>
+      <div className={classes.root}>
         {grid.map((row: string[], i: number) => {
           return row.map((slot: string, j: number) => {
             return (

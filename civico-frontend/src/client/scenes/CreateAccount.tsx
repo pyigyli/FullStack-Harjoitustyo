@@ -4,6 +4,21 @@ import TextField from '@material-ui/core/TextField'
 import {Button} from '@material-ui/core'
 
 const styles = () => createStyles({
+  sceneContainer: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: '800px',
+    height: '100%',
+    backgroundColor: '#ffffff',
+    borderLeftStyle: 'solid',
+    borderRightStyle: 'solid',
+    borderLeftWidth: '10px',
+    borderRightWidth: '10px',
+    borderLeftColor: '#321432aa',
+    borderRightColor: '#321432aa'
+  },
   sceneWrapper: {
     position: 'fixed',
     top: '50%',
@@ -44,36 +59,38 @@ class CreateAccountScene extends React.Component<Props & WithStyles<typeof style
     const {username, password} = this.state
 
     return (
-      <div className={classes.sceneWrapper}>
-        <h1>Join now and build your own blooming empire!</h1>
-        <div>
-          <TextField
-            label='Username'
-            value={username}
-            onChange={({target}) => this.handleUsernameChange(target.value)}
-            margin='normal'
-            variant='outlined'
-            InputLabelProps={{classes: {root: classes.textfield}}}
-            InputProps={{classes: {notchedOutline: classes.textfield}}}
-          />
-          <TextField
-            label='Password'
-            type='password'
-            value={password}
-            autoComplete='current-password'
-            onChange={({target}) => this.handlePasswordChange(target.value)}
-            margin='normal'
-            variant='outlined'
-            InputLabelProps={{classes: {root: classes.textfield}}}
-            InputProps={{classes: {notchedOutline: classes.textfield}}}
-          />
+      <div className={classes.sceneContainer}>
+        <div className={classes.sceneWrapper}>
+          <h1>Join now and build your own blooming empire!</h1>
+          <div>
+            <TextField
+              label='Username'
+              value={username}
+              onChange={({target}) => this.handleUsernameChange(target.value)}
+              margin='normal'
+              variant='outlined'
+              InputLabelProps={{classes: {root: classes.textfield}}}
+              InputProps={{classes: {notchedOutline: classes.textfield}}}
+            />
+            <TextField
+              label='Password'
+              type='password'
+              value={password}
+              autoComplete='current-password'
+              onChange={({target}) => this.handlePasswordChange(target.value)}
+              margin='normal'
+              variant='outlined'
+              InputLabelProps={{classes: {root: classes.textfield}}}
+              InputProps={{classes: {notchedOutline: classes.textfield}}}
+            />
+          </div>
+          <Button
+            className={classes.createAccountButton}
+            onClick={() => onSubmit(username, password)}
+          >
+            Create Account
+          </Button>
         </div>
-        <Button
-          className={classes.createAccountButton}
-          onClick={() => onSubmit(username, password)}
-        >
-          Create Account
-        </Button>
       </div>
     )
   }

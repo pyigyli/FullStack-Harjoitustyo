@@ -8,7 +8,6 @@ import TownIcon from '@material-ui/icons/LocationCity'
 import FieldsIcon from '@material-ui/icons/Terrain'
 import MapIcon from '@material-ui/icons/Map'
 import InboxIcon from '@material-ui/icons/Inbox'
-import LogoutIcon from '@material-ui/icons/ExitToApp'
 
 const styles = () => createStyles({
   tabsContainer: {
@@ -24,12 +23,18 @@ const styles = () => createStyles({
   },
   tabIndicator: {
     color: '#321432',
-    backgroundColor: '#321432aa'
+    backgroundColor: '#321432cc'
+  },
+  logoutIcon: {
+    fontSize: '18px',
+    fontWeight: 'bolder',
+    height: '24px'
   }
 })
 
 interface Props {
   token: string
+  username: string
   handleDataRequest: (tabName: string) => void
   onLogout: () => void
 }
@@ -66,7 +71,7 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
   }
 
   public render() {
-    const {classes, history, token, onLogout} = this.props
+    const {classes, history, token, username, onLogout} = this.props
     const {tab} = this.state
 
     if (token) {
@@ -77,11 +82,14 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
             value={tab} onChange={this.handleTabChange}
             variant='fullWidth'
           >
-            <Tab icon={<FieldsIcon/>} label='FIELDS'  onClick={this.handleClickField}/>
-            <Tab icon={<TownIcon/>}   label='TOWN'    onClick={this.handleClickTown}/>
-            <Tab icon={<MapIcon/>}    label='MAP'     onClick={this.handleClickMap}/>
-            <Tab icon={<InboxIcon/>}  label='INBOX'   onClick={this.handleClickInbox}/>
-            <Tab icon={<LogoutIcon/>} label='LOGOUT'  onClick={() => onLogout()}/>
+            <Tab icon={<FieldsIcon/>} label='FIELDS' onClick={this.handleClickField}/>
+            <Tab icon={<TownIcon/>}   label='TOWN'   onClick={this.handleClickTown}/>
+            <Tab icon={<MapIcon/>}    label='MAP'    onClick={this.handleClickMap}/>
+            <Tab icon={<InboxIcon/>}  label='INBOX'  onClick={this.handleClickInbox}/>
+            <Tab
+              icon={<div className={classes.logoutIcon}>{username}</div>}
+              label='LOGOUT'
+              onClick={() => onLogout()}/>
           </Tabs>
         </Paper>
       )

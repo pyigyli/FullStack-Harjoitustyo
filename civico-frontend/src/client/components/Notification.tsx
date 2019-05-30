@@ -8,11 +8,12 @@ const styles = () => createStyles({
     position: 'fixed',
     top: '100px',
     left: '50%',
-    transform: 'translateX(-50%)',
-    padding: '10px',
+    transform: 'translate(-50%, 0%)',
+    padding: '15px',
     backgroundColor: '#b14d6f',
     color: 'white',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    zIndex: 101
   }
 })
 

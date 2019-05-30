@@ -1,39 +1,38 @@
 import React from 'react'
-import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
+import {createStyles, withStyles, WithStyles} from '@material-ui/core'
 
 const styles = () => createStyles({
   recoursesContainer: {
+    fontSize: '13px',
+    fontWeight: 'bold',
     width: '600px',
     textAlign: 'center',
+    backgroundColor: '#ffffff',
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     position: 'relative',
-    top: '45px',
+    top: '70px',
     left: '50%',
     transform: 'translate(-50%, 0%)',
-    paddingTop: '40px',
-    paddingBottom: '30px',
+    paddingTop: '10px',
+    paddingBottom: '10px',
     paddingLeft: '100px',
-    paddingRight: '100px'
+    paddingRight: '100px',
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '5px',
+    borderBottomColor: '#321432aa',
+    zIndex: 99
   },
-  recourseRatesContainer: {
-    width: '200px',
+  resourseWrapper: {
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between',
-    position: 'relative',
-    top: '50px',
-    left: '50%',
-    transform: 'translate(-200%, 0%)',
-    paddingTop: '40px',
-    paddingBottom: '30px'
+    justifyContent: 'center'
   }
 })
 
 interface Props {
-  username: string
   population: number
   lumber: number
   iron: number
@@ -43,17 +42,12 @@ interface Props {
   maxIron: number
   maxClay: number
   maxWheat: number
-  lumberRate: number
-  ironRate: number
-  clayRate: number
-  wheatRate: number
 }
 
 class ProfileBar extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
     const {
       classes,
-      username,
       population,
       lumber,
       iron,
@@ -62,29 +56,33 @@ class ProfileBar extends React.Component<Props & WithStyles<typeof styles>> {
       maxLumber,
       maxIron,
       maxClay,
-      maxWheat,
-      lumberRate,
-      ironRate,
-      clayRate,
-      wheatRate
+      maxWheat
     } = this.props
 
     return (
       <div>
-        <div>{username}</div>
-        <Paper className={classes.recoursesContainer}>
-          <div>{population}</div>
-          <div>{lumber}/{maxLumber}</div>
-          <div>{iron}/{maxIron}</div>
-          <div>{clay}/{maxClay}</div>
-          <div>{wheat}/{maxWheat}</div>
-        </Paper>
-        <Paper className={classes.recourseRatesContainer}>
-          <div>{lumberRate}</div>
-          <div>{ironRate}</div>
-          <div>{clayRate}</div>
-          <div>{wheatRate}</div>
-        </Paper>
+        <div className={classes.recoursesContainer}>
+          <div className={classes.resourseWrapper}>
+            <div>Population</div>
+            <div>{population}</div>
+          </div>
+          <div className={classes.resourseWrapper}>
+            <div>Lumber</div>
+            <div>{lumber} / {maxLumber}</div>
+          </div>
+          <div className={classes.resourseWrapper}>
+            <div>Iron</div>
+            <div>{iron} / {maxIron}</div>
+          </div>
+          <div className={classes.resourseWrapper}>
+            <div>Clay</div>
+            <div>{clay} / {maxClay}</div>
+          </div>
+          <div className={classes.resourseWrapper}>
+            <div>Wheat</div>
+            <div>{wheat} / {maxWheat}</div>
+          </div>
+        </div>
       </div>
     )
   }
