@@ -1,7 +1,7 @@
 import React from 'react'
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
-import {Message, LoginMessage, LogoutMessage, CreateAccountMessage} from '../types/protocol'
+import {Message, LoginMessage, LogoutMessage, CreateAccountMessage, FieldLevelUpMessage} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
 import InboxScene from './scenes/Inbox'
@@ -29,8 +29,6 @@ interface State {
   connection: WebSocket | null
   token: string
   username: string
-  fieldGrid: string[][]
-  townGrid: string[][]
   population: number
   lumber: number
   iron: number
@@ -44,6 +42,20 @@ interface State {
   ironRate: number
   clayRate: number
   wheatRate: number
+  fields: Array<Array<{
+    name: string
+    level: number
+  }>>
+  buildings: Array<Array<{
+    name: string
+    level: number
+  }>>
+  map: number[]
+  inbox: Array<{
+    sender: string
+    title: string
+    message: string
+  }>
   errorMessage: string
 }
 
@@ -51,8 +63,6 @@ const NULL_STATE: State = {
   connection: null,
   token: '',
   username: '',
-  fieldGrid: [],
-  townGrid: [],
   population: 0,
   lumber: 0,
   iron: 0,
@@ -66,6 +76,16 @@ const NULL_STATE: State = {
   ironRate: 0,
   clayRate: 0,
   wheatRate: 0,
+  fields: [[{
+    name: '',
+    level: 0
+  }]],
+  buildings: [[{
+    name: '',
+    level: 0
+  }]],
+  map: [0, 0],
+  inbox: [],
   errorMessage: ''
 }
 
@@ -77,8 +97,11 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     this.connect()
     const token = window.localStorage.getItem('civico-token')
     const username = window.localStorage.getItem('civico-username')
-    if (token && username) {
+    const connection = this.state.connection
+    if (connection && token && username) {
+      connection.send(JSON.stringify({type: 'GET_DATA', token}))
       this.setState({token, username})
+      this.props.history.push('/fields')
     }
   }
 
@@ -91,21 +114,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
 
   public componentDidUpdate() {
     const {connection, token} = this.state
-    if (connection) {
-      switch (this.props.history.location.pathname) {
-        case '/fields':
-          connection.send(JSON.stringify({type: 'GET_FIELD', token}))
-          break
-        case '/town':
-          connection.send(JSON.stringify({type: 'GET_TOWN', token}))
-          break
-        case '/map':
-          connection.send(JSON.stringify({type: 'GET_MAP', token}))
-          break
-        case '/inbox':
-          connection.send(JSON.stringify({type: 'GET_INBOX', token}))
-          break
-      }
+    if (connection && token) {
+      connection.send(JSON.stringify({type: 'GET_DATA', token}))
     }
   }
 
@@ -136,20 +146,26 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             this.props.history.push('/login')
           }
           break
-        case 'BASIC':
+        case 'SEND_DATA':
           this.setState({
             population: message.population,
+            lumber: message.lumber,
+            iron: message.iron,
+            clay: message.clay,
+            wheat: message.wheat,
+            maxLumber: message.maxLumber,
+            maxIron: message.maxIron,
+            maxClay: message.maxClay,
+            maxWheat: message.maxWheat,
             lumberRate: message.lumberRate,
             ironRate: message.ironRate,
             clayRate: message.clayRate,
-            wheatRate: message.wheatRate
+            wheatRate: message.wheatRate,
+            fields: message.fields,
+            buildings: message.buildings,
+            map: message.map,
+            inbox: message.inbox
           })
-          break
-        case 'SEND_FIELD':
-          this.setState({fieldGrid: message.fieldGrid})
-          break
-        case 'SEND_TOWN':
-          this.setState({townGrid: message.townGrid})
           break
         case 'ERROR':
           this.handleErrorNotification(message.message)
@@ -208,12 +224,20 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleFieldLevelUp = (row: number, column: number, newLevel: number) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: FieldLevelUpMessage = {type: 'FIELD_LEVELUP', token, row, column, newLevel}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public render() {
     const {classes} = this.props
     const {
       token,
-      fieldGrid,
-      townGrid,
+      fields,
+      buildings,
       username,
       population,
       lumber,
@@ -262,17 +286,17 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           />
         }/>
         <Route exact path='/fields' render={() =>
-          token ?
-          <FieldsScene
-            fieldGrid={fieldGrid}
+          token ? <FieldsScene
+            fields={fields}
             lumberRate={lumberRate}
             ironRate={ironRate}
             clayRate={clayRate}
             wheatRate={wheatRate}
+            handleFieldLevelUp={this.handleFieldLevelUp}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/town' render={() =>
-          token ? <TownScene townGrid={townGrid}/> : <LoginScene onSubmit={this.handleLogin}/>
+          token ? <TownScene buildings={buildings}/> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/map' render={() =>
           token ? <MapScene/> : <LoginScene onSubmit={this.handleLogin}/>

@@ -27,17 +27,20 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  townGrid: string[][]
+  buildings: Array<Array<{
+    name: string
+    level: number
+  }>>
 }
 
 class TownScene extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {classes, townGrid} = this.props
+    const {classes, buildings} = this.props
 
     return (
       <div className={classes.sceneContainer}>
         <div className={classes.sceneWrapper}>
-          <TownGrid grid={townGrid}/>
+          <TownGrid grid={buildings}/>
         </div>
       </div>
     )

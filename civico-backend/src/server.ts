@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken'
 import Connection from './connection'
 import {Message} from './types/protocol'
-import {createNewAccount, login, logout, getBasicUserInfo} from './firebase/users'
-import {getFieldById} from './firebase/field'
-import {getTownById} from './firebase/town'
+import {createNewAccount, login, logout, getUserData} from './firebase/users'
+import {levelUpField} from './firebase/fields'
 
 class CivicoServer {
   private connections: Connection[] = []
@@ -21,24 +20,18 @@ class CivicoServer {
           return logout(conn)
         }
         return conn.sendMessage({type: 'TOKEN', token: '', username: ''})
-      case 'GET_FIELD':
+      case 'GET_DATA':
         id = this.verifyToken(message.token)
         if (id) {
-          return getFieldById(conn)
+          return getUserData(conn)
         }
         return conn.sendMessage({type: 'TOKEN', token: '', username: ''})
-      case 'GET_TOWN':
+      case 'FIELD_LEVELUP':
         id = this.verifyToken(message.token)
         if (id) {
-          return getTownById(conn)
+          return levelUpField(conn, message.row, message.column, message.newLevel)
         }
         return conn.sendMessage({type: 'TOKEN', token: '', username: ''})
-      case 'GET_MAP':
-        // TODO
-        break
-      case 'GET_INBOX':
-        // TODO
-        break
       default:
         console.error('Client sent a message of unknown type.') // tslint:disable-line:no-console
         break
@@ -59,7 +52,7 @@ class CivicoServer {
   public async createAccount(conn: Connection, username: string, password: string) {
     if (await createNewAccount(conn, username, password)) {
       this.loginAccount(conn, username, password)
-      getBasicUserInfo(conn)
+      getUserData(conn)
     }
   }
 

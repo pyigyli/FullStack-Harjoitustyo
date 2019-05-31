@@ -3,6 +3,42 @@ import bcrypt from 'bcrypt'
 import db from './init'
 import Connection from '../connection'
 
+interface UserData {
+  population: number
+  lumber: number
+  iron: number
+  clay: number
+  wheat: number
+  maxLumber: number
+  maxIron: number
+  maxClay: number
+  maxWheat: number
+  lumberRate: number
+  ironRate: number
+  clayRate: number
+  wheatRate: number
+  fields: Array<Array<{
+    name: string
+    level: number
+  }>>
+  buildings: Array<Array<{
+    name: string
+    level: number
+  }>>
+  map: number[]
+  inbox: Array<{
+    sender: string
+    title: string
+    message: string
+  }>
+  timestamp: number
+}
+
+interface GridSlot {
+  name: string
+  level: number
+}
+
 export const createNewAccount = async (conn: Connection, username: string, password: string) => {
   try {
     const findDuplicateUser = await db.ref('users').orderByChild('username').equalTo(username).once('value')
@@ -11,7 +47,74 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       return false
     }
     const passwordHash = await bcrypt.hash(password, 10)
-    const ref = db.ref(`users`).push({username, passwordHash})
+    const ref = db.ref(`users`).push({
+      username,
+      passwordHash,
+      population: 1,
+      lumber: 100,
+      iron: 100,
+      clay: 100,
+      wheat: 100,
+      maxLumber: 500,
+      maxIron: 500,
+      maxClay: 500,
+      maxWheat: 500,
+      lumberRate: 720000, // milliseconds to gain 1 lumber
+      ironRate: 720000,   // milliseconds to gain 1 iron
+      clayRate: 720000,   // milliseconds to gain 1 clay
+      wheatRate: 720000,  // milliseconds to gain 1 wheat
+      fields: [
+        [
+          {name: '?CAVE', level: 0},
+          {name: '?ELECTRICITY', level: 0},
+          {name: '?CLAY', level: 0}, 
+          {name: '?CAVE', level: 0},
+          {name: '?WHEAT', level: 0}
+        ], [
+          {name: '?WHEAT', level: 0},
+          {name: '?WHEAT', level: 0},
+          {name: 'FOREST', level: 0},
+          {name: '?CAVE', level: 0},
+          {name: '?WHEAT', level: 0}
+        ], [
+          {name: '?FOREST', level: 0},
+          {name: 'CLAY', level: 0},
+          {name: 'TOWN', level: 0},
+          {name: 'CAVE', level: 0},
+          {name: '?CLAY', level: 0}
+        ], [
+          {name: '?LAIR', level: 0},
+          {name: '?WHEAT', level: 0},
+          {name: 'WHEAT', level: 0},
+          {name: '?LAKE', level: 0},
+          {name: '?AIRPORT', level: 0}
+        ], [
+          {name: '?FOREST', level: 0},
+          {name: '?CAVE', level: 0},
+          {name: '?FOREST', level: 0},
+          {name: '?CLAY', level: 0},
+          {name: '?FOREST', level: 0}
+        ]
+      ],
+      buildings: [
+        [
+          {name: 'EMPTY', level: 0},
+          {name: 'EMPTY', level: 0},
+          {name: 'EMPTY', level: 0}
+        ], [
+          {name: 'EMPTY', level: 0},
+          {name: 'EMPTY', level: 0},
+          {name: 'EMPTY', level: 0}
+        ], [
+          {name: 'EMPTY', level: 0},
+          {name: 'EMPTY', level: 0},
+          {name: 'EMPTY', level: 0}
+        ]
+      ],
+      map: [0, 0], // TODO
+      inbox: [], // TODO welcoming message
+      timestamp: new Date().getTime()
+    })
     const user = await ref.once('value')
     conn.id = user.key || ''
     return true
@@ -49,29 +152,29 @@ export const logout = (conn: Connection) => {
   }
 }
 
-export const getBasicUserInfo = async (conn: Connection) => {
+export const getUserData = async (conn: Connection) => {
   try {
-    const user = await db.ref(`users/${conn.id}`).once('value')
-    const userJSON = user.toJSON()
-    if (userJSON) {
-      conn.sendMessage({
-        type: 'BASIC',
-        population: Object.values(userJSON)[0].population ? Object.values(userJSON)[0].population : 1,
-        lumber: Object.values(userJSON)[0].lumber ? Object.values(userJSON)[0].lumber : 100,
-        iron: Object.values(userJSON)[0].iron ? Object.values(userJSON)[0].iron : 100,
-        clay: Object.values(userJSON)[0].clay ? Object.values(userJSON)[0].clay : 100,
-        wheat: Object.values(userJSON)[0].wheat ? Object.values(userJSON)[0].wheat : 100,
-        maxLumber: Object.values(userJSON)[0].maxLumber ? Object.values(userJSON)[0].maxLumber : 500,
-        maxIron: Object.values(userJSON)[0].maxIron ? Object.values(userJSON)[0].maxIron : 500,
-        maxClay: Object.values(userJSON)[0].maxClay ? Object.values(userJSON)[0].maxClay : 500,
-        maxWheat: Object.values(userJSON)[0].maxWheat ? Object.values(userJSON)[0].maxWheat : 500,
-        lumberRate: Object.values(userJSON)[0].lumberRate ? Object.values(userJSON)[0].lumberRate : 2,
-        ironRate: Object.values(userJSON)[0].ironRate   ? Object.values(userJSON)[0].ironRate   : 2,
-        clayRate: Object.values(userJSON)[0].clayRate   ? Object.values(userJSON)[0].clayRate   : 2,
-        wheatRate: Object.values(userJSON)[0].wheatRate  ? Object.values(userJSON)[0].wheatRate  : 2,
-        fields: Object.values(userJSON)[0].fields  ? Object.values(userJSON)[0].fields  : {},
-        buildings: Object.values(userJSON)[0].buildings  ? Object.values(userJSON)[0].buildings  : {}
+    const userReference = await db.ref(`users/${conn.id}`).once('value')
+    const user = userReference.toJSON() as UserData || {}
+    if (user) {
+      const fields: GridSlot[][] = []
+      Object.values(user.fields).forEach((row: Object[]) => {
+        const rowToPush: GridSlot[] = []
+        Object.values(row).forEach((slot: GridSlot) => {
+          rowToPush.push(slot)
+        })
+        fields.push(rowToPush)
       })
+      const buildings: GridSlot[][] = []
+      Object.values(user.buildings).forEach((row: Object[]) => {
+        const rowToPush: GridSlot[] = []
+        Object.values(row).forEach((slot: GridSlot) => {
+          rowToPush.push(slot)
+        })
+        buildings.push(rowToPush)
+      })
+      const map = [...Object.values(user.map)]
+      conn.sendMessage({type: 'SEND_DATA', ...user, fields, buildings, map})
     }
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})

@@ -12,7 +12,10 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  grid: string[][]
+  grid: Array<Array<{
+    name: string
+    level: number
+  }>>
 }
 
 class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
@@ -24,18 +27,18 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
 
     return (
       <div>
-        {grid.map((row: string[], i: number) => {
-          return row.map((slot: string, j: number) => {
+        {grid.map((row, i) => {
+          return row.map((slot, j) => {
             let bigHeight: number | null = null
             let bigWidth: number | null = null
-            if (grid[i][j] !== 'EMPTY') {
+            if (grid[i][j].name !== 'EMPTY') {
               if (!grid[i][j]) {
                 return null
               }
               let heightIndex: number = i + 1
               let elementUnderDeleted: Boolean = false
               while (heightIndex < grid.length && grid[heightIndex][j] && grid[i][j] === grid[heightIndex][j]) {
-                grid[heightIndex][j] = ''
+                grid[heightIndex][j].name = ''
                 heightIndex += 1
                 bigHeight = (height + margin) * (heightIndex - i) - margin
                 elementUnderDeleted = true
@@ -43,7 +46,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
               let widthIndex: number = j + 1
               let elementRightDeleted: Boolean = false
               while (widthIndex < grid[0].length && grid[i][widthIndex] && grid[i][j] === grid[i][widthIndex]) {
-                grid[i][widthIndex] = ''
+                grid[i][widthIndex].name = ''
                 widthIndex += 1
                 bigWidth = (width + margin) * (widthIndex - j) - margin
                 elementRightDeleted = true
@@ -51,7 +54,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
               if (elementUnderDeleted && elementRightDeleted) {
                 for (let a: number = i + 1; a < heightIndex; a++) {
                   for (let b: number = j + 1; b < widthIndex; b++) {
-                    grid[a][b] = ''
+                    grid[a][b].name = ''
                   }
                 }
               }
@@ -66,10 +69,11 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
                   margin,
                   top: i * (height + margin) - grid.length * height / 2,
                   left: j * (width + margin) - grid[0].length * width / 2,
-                  backgroundColor: slot === 'EMPTY' ? 'white' : '#ebefec'
+                  backgroundColor: slot.name === 'EMPTY' ? 'white' : '#ebefec'
                 }}
               >
-                {slot}
+                <div>{slot.level}</div>
+                <div>{slot.name}</div>
               </Paper>
             )
           })

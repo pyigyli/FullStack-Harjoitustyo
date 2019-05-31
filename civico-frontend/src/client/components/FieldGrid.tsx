@@ -24,39 +24,41 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  grid: string[][]
+  grid: Array<Array<{
+    name: string
+    level: number
+  }>>
+  handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
 class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {classes, grid} = this.props
+    const {classes, grid, handleFieldLevelUp} = this.props
     const width: number = 100
     const height: number = 100
     const margin: number = 5
 
     return (
-      <div
-        className={classes.root}
-      >
-        {grid.map((row: string[], i: number) => {
-          return row.map((slot: string, j: number) => {
-            let slotLabel: string = slot
+      <div className={classes.root}>
+        {grid.map((row, i) => {
+          return row.map((slot, j) => {
+            let slotLabel: string = slot.name
             let background: string = 'radial-gradient(100% 100%, #ffffff, #dddddddd)'
-            if (slot.includes('?')) {
+            if (slot.name.includes('?')) {
               slotLabel = (
-                i-1 > 0 && !grid[i-1][j].includes('?') ||
-                i+1 < grid.length && !grid[i+1][j].includes('?') ||
-                j-1 > 0 && !grid[i][j-1].includes('?') ||
-                j+1 < grid[0].length && !grid[i][j+1].includes('?')
+                i - 1 > 0 && !grid[i - 1][j].name.includes('?') ||
+                i + 1 < grid.length && !grid[i + 1][j].name.includes('?') ||
+                j - 1 > 0 && !grid[i][j - 1].name.includes('?') ||
+                j + 1 < grid[0].length && !grid[i][j + 1].name.includes('?')
               ) ? 'Discover' : ''
               background = (
-                i-1 > 0 && !grid[i-1][j].includes('?') ||
-                i+1 < grid.length && !grid[i+1][j].includes('?') ||
-                j-1 > 0 && !grid[i][j-1].includes('?') ||
-                j+1 < grid[0].length && !grid[i][j+1].includes('?')
+                i - 1 > 0 && !grid[i - 1][j].name.includes('?') ||
+                i + 1 < grid.length && !grid[i + 1][j].name.includes('?') ||
+                j - 1 > 0 && !grid[i][j - 1].name.includes('?') ||
+                j + 1 < grid[0].length && !grid[i][j + 1].name.includes('?')
               ) ? '#70cc7070' : 'radial-gradient(100% 100%, #88778855, #11111111)'
             }
-            switch (slot) {
+            switch (slot.name) {
               case 'FOREST':
                 background = 'radial-gradient(100% 100%, #508850, #448844bb)'
                 break
@@ -82,8 +84,10 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
                   left: j * (width + margin) + 226,
                   background
                 }}
+                onClick={() => handleFieldLevelUp(i, j, slot.level + 1)}
               >
-                {slotLabel}
+                <div>{slot.level}</div>
+                <div>{slotLabel}</div>
               </Paper>
             )
           })

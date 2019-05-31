@@ -3,16 +3,9 @@ type MessageType =
   'LOGIN' |
   'LOGOUT' |
   'TOKEN' |
-  'BASIC' |
-  'TOWN' |
-  'GET_FIELD' |
-  'SEND_FIELD' |
-  'GET_TOWN' |
-  'SEND_TOWN' |
-  'GET_MAP' |
-  'SEND_MAP' |
-  'GET_INBOX' |
-  'SEND_INBOX' |
+  'GET_DATA' |
+  'SEND_DATA' |
+  'FIELD_LEVELUP' |
   'ERROR'
 
 export type Message =
@@ -20,15 +13,9 @@ export type Message =
   LoginMessage |
   LogoutMessage |
   TokenMessage |
-  BasicUserDataMessage |
-  FieldRequestMessage |
-  FieldResponseMessage |
-  TownRequestMessage |
-  TownResponseMessage |
-  MapRequestMessage |
-  MapResponseMessage |
-  InboxRequestMessage |
-  InboxResponseMessage |
+  GetUserDataMessage |
+  SendUserDataMessage |
+  FieldLevelUpMessage |
   ErrorMessage
 
 export interface MessageBase {
@@ -59,8 +46,13 @@ export interface TokenMessage extends MessageBase {
   username: string
 }
 
-export interface BasicUserDataMessage extends MessageBase {
-  type: 'BASIC'
+export interface GetUserDataMessage extends MessageBase {
+  type: 'GET_DATA'
+  token: string
+}
+
+export interface SendUserDataMessage extends MessageBase {
+  type: 'SEND_DATA'
   population: number
   lumber: number
   iron: number
@@ -74,51 +66,29 @@ export interface BasicUserDataMessage extends MessageBase {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: Object
-  buildings: Object
+  fields: Array<Array<{
+    name: string
+    level: number
+  }>>
+  buildings: Array<Array<{
+    name: string
+    level: number
+  }>>
+  map: number[]
+  inbox: Array<{
+    sender: string
+    title: string
+    message: string
+  }>
+  timestamp: number
 }
 
-export interface FieldRequestMessage extends MessageBase {
-  type: 'GET_FIELD'
+export interface FieldLevelUpMessage extends MessageBase {
+  type: 'FIELD_LEVELUP'
   token: string
-}
-
-export interface FieldResponseMessage extends MessageBase {
-  type: 'SEND_FIELD'
-  token?: string
-  fieldGrid: string[][]
-}
-
-export interface TownRequestMessage extends MessageBase {
-  type: 'GET_TOWN'
-  token: string
-}
-
-export interface TownResponseMessage extends MessageBase {
-  type: 'SEND_TOWN'
-  token?: string
-  townGrid: string[][]
-}
-
-export interface MapRequestMessage extends MessageBase {
-  type: 'GET_MAP'
-  token: string
-}
-
-export interface MapResponseMessage extends MessageBase {
-  type: 'SEND_MAP'
-  token?: string
-  mapGrid: string[][]
-}
-
-export interface InboxRequestMessage extends MessageBase {
-  type: 'GET_INBOX'
-  token: string
-}
-
-export interface InboxResponseMessage extends MessageBase {
-  type: 'SEND_INBOX'
-  token?: string
+  row: number
+  column: number
+  newLevel: number
 }
 
 export interface ErrorMessage extends MessageBase {

@@ -52,13 +52,30 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
   public render() {
     const {classes, history, token, username, onLogout} = this.props
     const {tab} = this.state
+    let tabValue: number | boolean = false
+    switch (history.location.pathname) {
+      case '/login':
+      case '/field':
+        tabValue = 0
+        break
+      case '/create-account':
+      case '/town':
+        tabValue = 1
+        break
+      case '/map':
+        tabValue = 2
+        break
+      case '/inbox':
+        tabValue = 3
+        break
+    }
 
     if (token) {
       return (
         <Paper square className={classes.tabsContainer}>
           <Tabs
             classes={{indicator: classes.tabIndicator}}
-            value={tab} onChange={this.handleTabChange}
+            value={tabValue}
             variant='fullWidth'
           >
             <Tab icon={<FieldsIcon/>} label='FIELDS' onClick={() => this.props.history.push('/fields')}/>
@@ -80,6 +97,7 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
           classes={{indicator: classes.tabIndicator}}
           value={tab} onChange={this.handleTabChange}
           variant='fullWidth'
+          
         >
           <Tab icon={<FieldsIcon/>} label='LOGIN'           onClick={() => history.push('/login')}/>
           <Tab icon={<TownIcon/>}   label='CREATE ACCOUNT'  onClick={() => history.push('/create-account')}/>
