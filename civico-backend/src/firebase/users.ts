@@ -155,10 +155,10 @@ export const logout = (conn: Connection) => {
 export const getUserData = async (conn: Connection) => {
   try {
     const userReference = await db.ref(`users/${conn.id}`).once('value')
-    const user = userReference.toJSON() as UserData || {}
+    const user = userReference.toJSON() as UserData
     if (user) {
       const fields: GridSlot[][] = []
-      Object.values(user.fields).forEach((row: Object[]) => {
+      Object.values(user.fields).forEach((row: any[]) => {
         const rowToPush: GridSlot[] = []
         Object.values(row).forEach((slot: GridSlot) => {
           rowToPush.push(slot)
@@ -166,7 +166,7 @@ export const getUserData = async (conn: Connection) => {
         fields.push(rowToPush)
       })
       const buildings: GridSlot[][] = []
-      Object.values(user.buildings).forEach((row: Object[]) => {
+      Object.values(user.buildings).forEach((row: any[]) => {
         const rowToPush: GridSlot[] = []
         Object.values(row).forEach((slot: GridSlot) => {
           rowToPush.push(slot)

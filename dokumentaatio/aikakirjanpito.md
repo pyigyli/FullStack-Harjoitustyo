@@ -11,4 +11,5 @@
 | 29.5.  | 1    | - Pientä koodin tyylin refaktorointia ja edistystä komponenttien kanssa. |
 | 30.5.  | 7    | - Käyttöliittymän ulkoasua edistetty.<br> - Näkymien vaihtumisen yhteydessä haettavan datan hakutapaa parannettu. |
 | 31.5.  | 6    | - Tietokannan kanssa kommunikoivaa koodia refaktoroitu ja suoraviivaistettu.<br> - Kenttänäkymän kenttäverkon ruutujen tason nostamisen toiminto osittain toteutettu. |
-| Yhteensä | 53    |
+| 1.6.   | 1    | - Kenttäverkon ruudun tason nostaminen korjattu ja edistetty. |
+| Yhteensä | 54    |

@@ -50,11 +50,14 @@ export const levelUpField = async (conn: Connection, row: number, column: number
     const slotReference = await db.ref(`fields/${user.fields[row][column].name}`).once('value')
     const slot = slotReference.toJSON() as FieldSlot
     const timePassed = new Date().getTime() - user.timestamp
-    const lumber = Math.min(user.lumber + timePassed / user.lumberRate, user.maxLumber) - slot.cost[newLevel].lumber
-    const iron = Math.min(user.iron + timePassed / user.ironRate, user.maxIron) - slot.cost[newLevel].iron
-    const clay = Math.min(user.clay + timePassed / user.clayRate, user.maxClay) - slot.cost[newLevel].clay
-    const wheat = Math.min(user.wheat + timePassed / user.wheatRate, user.maxWheat) - slot.cost[newLevel].wheat
-    await db.ref(`users/${conn.id}`).set({lumber, iron, clay, wheat, timestamp: new Date().getTime()})
+    await db.ref(`users/${conn.id}`).update({
+      population: user.population + slot.cost[newLevel].population,
+      lumber: Math.min(user.lumber + timePassed / user.lumberRate, user.maxLumber) - slot.cost[newLevel].lumber,
+      iron: Math.min(user.iron + timePassed / user.ironRate, user.maxIron) - slot.cost[newLevel].iron,
+      clay: Math.min(user.clay + timePassed / user.clayRate, user.maxClay) - slot.cost[newLevel].clay,
+      wheat: Math.min(user.wheat + timePassed / user.wheatRate, user.maxWheat) - slot.cost[newLevel].wheat,
+      timestamp: new Date().getTime()
+    })
     await db.ref(`users/${conn.id}/fields/${row}/${column}/level`).set(newLevel)
     getUserData(conn)
   } catch (err) {

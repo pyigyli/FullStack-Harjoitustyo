@@ -68,19 +68,19 @@ class ProfileBar extends React.Component<Props & WithStyles<typeof styles>> {
           </div>
           <div className={classes.resourseWrapper}>
             <div>Lumber</div>
-            <div>{lumber} / {maxLumber}</div>
+            <div>{Math.floor(lumber)} / {maxLumber}</div>
           </div>
           <div className={classes.resourseWrapper}>
             <div>Iron</div>
-            <div>{iron} / {maxIron}</div>
+            <div>{Math.floor(iron)} / {maxIron}</div>
           </div>
           <div className={classes.resourseWrapper}>
             <div>Clay</div>
-            <div>{clay} / {maxClay}</div>
+            <div>{Math.floor(clay)} / {maxClay}</div>
           </div>
           <div className={classes.resourseWrapper}>
             <div>Wheat</div>
-            <div>{wheat} / {maxWheat}</div>
+            <div>{Math.floor(wheat)} / {maxWheat}</div>
           </div>
         </div>
       </div>
