@@ -61,12 +61,13 @@ interface Props {
   ironRate: number
   clayRate: number
   wheatRate: number
+  getFieldSlotData: (row: number, column: number) => void
   handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
 class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {classes, fields, lumberRate, ironRate, clayRate, wheatRate, handleFieldLevelUp} = this.props
+    const {classes, fields, lumberRate, ironRate, clayRate, wheatRate, getFieldSlotData, handleFieldLevelUp} = this.props
 
     return (
       <div className={classes.sceneWrapper}>
@@ -98,6 +99,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
         </Paper>
         <FieldGrid
           grid={fields}
+          getFieldSlotData={getFieldSlotData}
           handleFieldLevelUp={handleFieldLevelUp}
         />
       </div>

@@ -1,5 +1,6 @@
 import React from 'react'
-import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
+import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
+import {FieldSlot} from '../../types/protocol'
 
 const styles = () => createStyles({
   root: {
@@ -20,20 +21,45 @@ const styles = () => createStyles({
     flexDirection: 'column',
     justifyContent: 'center',
     position: 'fixed'
+  },
+  button: {
+    backgroundColor: '#32143244',
+    color: '#321432',
+    paddingLeft: '30px',
+    paddingRight: '30px',
+    margin: '30px'
   }
 })
 
 interface Props {
-  grid: Array<Array<{
-    name: string
-    level: number
-  }>>
+  grid: Array<Array<{name: string, level: number}>>
+  getFieldSlotData: (row: number, column: number) => void
   handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
-class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
+interface State {
+  slotSelected: boolean
+  selectedSlot: FieldSlot | null
+}
+
+class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State> {
+  public state = {slotSelected: false, selectedSlot: null}
+
+  public handleOpen(row: number, column: number) {
+    this.props.getFieldSlotData(row, column)
+    this.setState({slotSelected: true})
+  }
+
+  public handleClose = () => this.setState({slotSelected: false})
+
+  public handleSubmit = (row: number, column: number, newLevel: number) => {
+    this.props.handleFieldLevelUp(row, column, newLevel)
+    this.setState({slotSelected: false})
+  }
+
   public render() {
-    const {classes, grid, handleFieldLevelUp} = this.props
+    const {classes, grid} = this.props
+    const {slotSelected} = this.state
     const width: number = 100
     const height: number = 100
     const margin: number = 5
@@ -46,16 +72,16 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
             let background: string = 'radial-gradient(100% 100%, #ffffff, #dddddddd)'
             if (slot.name.includes('?')) {
               slotLabel = (
-                i - 1 > 0 && !grid[i - 1][j].name.includes('?') ||
-                i + 1 < grid.length && !grid[i + 1][j].name.includes('?') ||
-                j - 1 > 0 && !grid[i][j - 1].name.includes('?') ||
-                j + 1 < grid[0].length && !grid[i][j + 1].name.includes('?')
+                i - 1 > 0               && !grid[i - 1][j].name.includes('?') ||
+                i + 1 < grid.length     && !grid[i + 1][j].name.includes('?') ||
+                j - 1 > 0               && !grid[i][j - 1].name.includes('?') ||
+                j + 1 < grid[0].length  && !grid[i][j + 1].name.includes('?')
               ) ? 'Discover' : ''
               background = (
-                i - 1 > 0 && !grid[i - 1][j].name.includes('?') ||
-                i + 1 < grid.length && !grid[i + 1][j].name.includes('?') ||
-                j - 1 > 0 && !grid[i][j - 1].name.includes('?') ||
-                j + 1 < grid[0].length && !grid[i][j + 1].name.includes('?')
+                i - 1 > 0               && !grid[i - 1][j].name.includes('?') ||
+                i + 1 < grid.length     && !grid[i + 1][j].name.includes('?') ||
+                j - 1 > 0               && !grid[i][j - 1].name.includes('?') ||
+                j + 1 < grid[0].length  && !grid[i][j + 1].name.includes('?')
               ) ? '#70cc7070' : 'radial-gradient(100% 100%, #88778855, #11111111)'
             }
             switch (slot.name) {
@@ -84,17 +110,38 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
                   left: j * (width + margin) + 226,
                   background
                 }}
-                onClick={() => handleFieldLevelUp(i, j, slot.level + 1)}
+                onClick={() => this.handleOpen(i, j)}
               >
-                <div>{slot.level}</div>
                 <div>{slotLabel}</div>
+                <div>{slot.level}</div>
               </Paper>
             )
           })
         })}
+        <Dialog open={slotSelected} onClose={this.handleClose}>
+          <DialogTitle>
+            Title
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Text
+            </DialogContentText>
+            <div>
+              Content
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button className={classes.button} onClick={this.handleClose}>
+              Cancel
+            </Button>
+            {/* <Button className={classes.button} onClick={() => this.handleSubmit(i, j, slot.level + 1)}>
+              Upgrade
+            </Button> */}
+          </DialogActions>
+        </Dialog>
       </div>
     )
   }
 }
 
-export default withStyles(styles)(TownGrid)
+export default withStyles(styles)(FieldGrid)

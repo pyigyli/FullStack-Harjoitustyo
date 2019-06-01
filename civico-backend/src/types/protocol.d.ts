@@ -66,20 +66,20 @@ export interface SendUserDataMessage extends MessageBase {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: Array<Array<{
+  fields: {
     name: string
     level: number
-  }>>
-  buildings: Array<Array<{
+  }[][]
+  buildings: {
     name: string
     level: number
-  }>>
+  }[][]
   map: number[]
-  inbox: Array<{
+  inbox: {
     sender: string
     title: string
     message: string
-  }>
+  }[]
   timestamp: number
 }
 
@@ -94,4 +94,48 @@ export interface FieldLevelUpMessage extends MessageBase {
 export interface ErrorMessage extends MessageBase {
   type: 'ERROR'
   message: string
+}
+
+export interface UserData {
+  population: number
+  lumber: number
+  iron: number
+  clay: number
+  wheat: number
+  maxLumber: number
+  maxIron: number
+  maxClay: number
+  maxWheat: number
+  lumberRate: number
+  ironRate: number
+  clayRate: number
+  wheatRate: number
+  fields: {
+    name: string
+    level: number
+  }[][]
+  buildings: {
+    name: string
+    level: number
+  }[][]
+  map: number[]
+  inbox: {
+    sender: string
+    title: string
+    message: string
+  }[]
+  timestamp: number
+}
+
+export interface FieldSlot {
+  populationGain: number
+  lumberRateGain: number
+  ironRateGain: number
+  clayRateGain: number
+  wheatRateGain: number
+  lumberCost: number
+  ironCost: number
+  clayCost: number
+  wheatCost: number
+  buildTime: number
 }
