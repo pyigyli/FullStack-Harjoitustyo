@@ -12,3 +12,6 @@ Työpäiväkirjan tarkoituksena on dokumentoida mietteitä ja huomioita, sekä s
 
 #### 25.5.2019
 - Päädyin käyttämään tietojen tallentamiseen firebasea, joka on vapaa-ajan projekteista joksikseen tuttu. En kuitenkaan aijo siirtää hostaamista sinne. Heroku on mielestäni tähän tarkoitukseen parempi.
+
+#### 2.6.2019
+- Tein tärkeän oivalluksen huomatessani, ettei muuttumatonta tietoa kannata tallentaa tietokantaan, mistä sen noutaminen on turhan monimutkaista, kun voin yhtä hyvin kovakoodata ne protokollaan asiakkaan ja palvelimen käytettäväksi. Kun tekee yhtä asiaa liian kauan, voi unohtaa helposti, että muitakin vaihtoehtoja on tarjolla.

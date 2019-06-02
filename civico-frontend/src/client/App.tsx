@@ -224,14 +224,6 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public handleFieldSlotDataRequest = (row: number, column: number) => {
-    const {connection, token} = this.state
-    if (connection && token) {
-      const message = {} // TODO
-      connection.send(JSON.stringify(message))
-    }
-  }
-
   public handleFieldLevelUp = (row: number, column: number, newLevel: number) => {
     const {connection, token} = this.state
     if (connection && token) {
@@ -300,7 +292,6 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             ironRate={ironRate}
             clayRate={clayRate}
             wheatRate={wheatRate}
-            getFieldSlotData={this.handleFieldSlotDataRequest}
             handleFieldLevelUp={this.handleFieldLevelUp}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>

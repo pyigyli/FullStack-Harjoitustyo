@@ -59,10 +59,10 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       maxIron: 500,
       maxClay: 500,
       maxWheat: 500,
-      lumberRate: 720000, // milliseconds to gain 1 lumber
-      ironRate: 720000,   // milliseconds to gain 1 iron
-      clayRate: 720000,   // milliseconds to gain 1 clay
-      wheatRate: 720000,  // milliseconds to gain 1 wheat
+      lumberRate: 18000000, // milliseconds to gain 1 lumber
+      ironRate: 18000000,   // milliseconds to gain 1 iron
+      clayRate: 18000000,   // milliseconds to gain 1 clay
+      wheatRate: 18000000,  // milliseconds to gain 1 wheat
       fields: [
         [
           {name: '?CAVE', level: 0},

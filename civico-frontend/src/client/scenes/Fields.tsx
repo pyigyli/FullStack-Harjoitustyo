@@ -53,53 +53,51 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  fields: Array<Array<{
+  fields: {
     name: string
     level: number
-  }>>
+  }[][]
   lumberRate: number
   ironRate: number
   clayRate: number
   wheatRate: number
-  getFieldSlotData: (row: number, column: number) => void
   handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
 class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {classes, fields, lumberRate, ironRate, clayRate, wheatRate, getFieldSlotData, handleFieldLevelUp} = this.props
+    const {classes, fields, lumberRate, ironRate, clayRate, wheatRate, handleFieldLevelUp} = this.props
 
     return (
       <div className={classes.sceneWrapper}>
         <Paper className={classes.resourceRatesContainer}>
           <div className={classes.resourceRateWrapper}>
             <div className={classes.resourceRateValueWrapper}>
-              {3600000 / lumberRate}
+              {lumberRate / 3600000}
             </div>
             <div className={classes.resourceRateTextWrapper}>lumber / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
             <div className={classes.resourceRateValueWrapper}>
-              {3600000 / ironRate}
+              {ironRate / 3600000}
             </div>
             <div className={classes.resourceRateTextWrapper}>iron / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
             <div className={classes.resourceRateValueWrapper}>
-              {3600000 / clayRate}
+              {clayRate / 3600000}
             </div>
             <div className={classes.resourceRateTextWrapper}>clay / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
             <div className={classes.resourceRateValueWrapper}>
-              {3600000 / wheatRate}
+              {wheatRate / 3600000}
             </div>
             <div className={classes.resourceRateTextWrapper}>wheat / hour</div>
           </div>
         </Paper>
         <FieldGrid
           grid={fields}
-          getFieldSlotData={getFieldSlotData}
           handleFieldLevelUp={handleFieldLevelUp}
         />
       </div>

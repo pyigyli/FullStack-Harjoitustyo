@@ -12,4 +12,5 @@
 | 30.5.  | 7    | - Käyttöliittymän ulkoasua edistetty.<br> - Näkymien vaihtumisen yhteydessä haettavan datan hakutapaa parannettu. |
 | 31.5.  | 6    | - Tietokannan kanssa kommunikoivaa koodia refaktoroitu ja suoraviivaistettu.<br> - Kenttänäkymän kenttäverkon ruutujen tason nostamisen toiminto osittain toteutettu. |
 | 1.6.   | 3    | - Kenttäverkon ruudun tason nostaminen korjattu ja edistetty. |
-| Yhteensä | 56    |
+| 2.6.   | 4    | - Rakennusten ja resurssikenttien data refaktoroitu sijaitsemaan protokollassa, eikä tietokannassa.<br> - Resurssipeltoja voi nyt nostaa tasolle 3 asti. |
+| Yhteensä | 60    |

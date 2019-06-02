@@ -1,6 +1,6 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
-import {FieldSlot} from '../../types/protocol'
+import {fieldSlotData} from '../../types/protocol'
 
 const styles = () => createStyles({
   root: {
@@ -22,6 +22,22 @@ const styles = () => createStyles({
     justifyContent: 'center',
     position: 'fixed'
   },
+  upgradeCostsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingLeft: '30px',
+    paddingRight: '40px'
+  },
+  upgradeCostWrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    textAlign: 'center'
+  },
+  costLabel: {
+    fontWeight: 'bold'
+  },
   button: {
     backgroundColor: '#32143244',
     color: '#321432',
@@ -32,22 +48,29 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  grid: Array<Array<{name: string, level: number}>>
-  getFieldSlotData: (row: number, column: number) => void
+  grid: {name: string, level: number}[][]
   handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
 interface State {
   slotSelected: boolean
-  selectedSlot: FieldSlot | null
+  row: number
+  column: number
 }
 
 class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State> {
-  public state = {slotSelected: false, selectedSlot: null}
+  public state = {
+    slotSelected: false,
+    row: 0,
+    column: 0
+  }
 
   public handleOpen(row: number, column: number) {
-    this.props.getFieldSlotData(row, column)
-    this.setState({slotSelected: true})
+    this.setState({
+      slotSelected: true,
+      row: row,
+      column: column
+    })
   }
 
   public handleClose = () => this.setState({slotSelected: false})
@@ -59,15 +82,28 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
 
   public render() {
     const {classes, grid} = this.props
-    const {slotSelected} = this.state
-    const width: number = 100
-    const height: number = 100
-    const margin: number = 5
+    const {slotSelected, row, column} = this.state
+    const width = 100
+    const height = 100
+    const margin = 5
+    const slotName = grid[row][column].name.includes('?') ? grid[row][column].name.substr(1) : grid[row][column].name
+    let resourceRateGainLabel: string = ''
+    if (slotName) {
+      if (fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain > 0) {
+        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain / 3600000} lumber / hour.`
+      } else if (fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain > 0) {
+        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain / 3600000} iron / hour.`
+      } else if (fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain > 0) {
+        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain / 3600000} clay / hour.`
+      } else if (fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain > 0) {
+        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain / 3600000} wheat / hour.`
+      }
+    }
 
     return (
       <div className={classes.root}>
-        {grid.map((row, i) => {
-          return row.map((slot, j) => {
+        {grid.map((gridRow, i) => {
+          return gridRow.map((slot, j) => {
             let slotLabel: string = slot.name
             let background: string = 'radial-gradient(100% 100%, #ffffff, #dddddddd)'
             if (slot.name.includes('?')) {
@@ -113,32 +149,53 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
                 onClick={() => this.handleOpen(i, j)}
               >
                 <div>{slotLabel}</div>
-                <div>{slot.level}</div>
+                <div>{slotLabel && slotLabel !== 'Discover' ? slot.level : ''}</div>
               </Paper>
             )
           })
         })}
-        <Dialog open={slotSelected} onClose={this.handleClose}>
+        {slotName && <Dialog open={slotSelected} onClose={this.handleClose}>
           <DialogTitle>
-            Title
+            {slotName}
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Text
+              {fieldSlotData[slotName].upgradeText} {resourceRateGainLabel}
             </DialogContentText>
-            <div>
-              Content
+            <div className={classes.upgradeCostsContainer}>
+            <div className={classes.upgradeCostWrapper}>
+                <div className={classes.costLabel}>Cost:</div>
+              </div>
+              <div className={classes.upgradeCostWrapper}>
+                <div>Lumber</div>
+                <div>{fieldSlotData[slotName][grid[row][column].level + 1].lumberCost}</div>
+              </div>
+              <div className={classes.upgradeCostWrapper}>
+                <div>Iron</div>
+                <div>{fieldSlotData[slotName][grid[row][column].level + 1].ironCost}</div>
+              </div>
+              <div className={classes.upgradeCostWrapper}>
+                <div>Clay</div>
+                <div>{fieldSlotData[slotName][grid[row][column].level + 1].clayCost}</div>
+              </div>
+              <div className={classes.upgradeCostWrapper}>
+                <div>Wheat</div>
+                <div>{fieldSlotData[slotName][grid[row][column].level + 1].wheatCost}</div>
+              </div>
             </div>
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleClose}>
               Cancel
             </Button>
-            {/* <Button className={classes.button} onClick={() => this.handleSubmit(i, j, slot.level + 1)}>
+            <Button
+              className={classes.button}
+              onClick={() => this.handleSubmit(row, column, grid[row][column].level + 1)}
+            >
               Upgrade
-            </Button> */}
+            </Button>
           </DialogActions>
-        </Dialog>
+        </Dialog>}
       </div>
     )
   }

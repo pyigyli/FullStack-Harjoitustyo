@@ -1,27 +1,13 @@
 import db from './init'
 import Connection from '../connection'
-import {UserData, FieldSlot} from '../types/protocol'
+import {UserData, FieldSlot, fieldSlotData} from '../types/protocol'
 import {getUserData} from './users'
-
-export const getFieldSlot = async (conn: Connection, row: number, column: number) => {
-  try {
-    // const userReference = await db.ref(`users/${conn.id}`).once('value')
-    // const user = userReference.toJSON() as UserData
-    // const slotReference = await db.ref(`fields/${user.fields[row][column].name}/${user.fields[row][column].level}`).once('value')
-    // const slot = slotReference.toJSON() as FieldSlot
-    // conn.sendMessage()
-  } catch (err) {
-    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
-    console.error(err) // tslint:disable-line:no-console
-  }
-}
 
 export const levelUpField = async (conn: Connection, row: number, column: number, newLevel: number) => {
   try {
     const userReference = await db.ref(`users/${conn.id}`).once('value')
-    const user = userReference.toJSON() as UserData
-    const slotReference = await db.ref(`fields/${user.fields[row][column].name}/${newLevel}`).once('value')
-    const slot = slotReference.toJSON() as FieldSlot
+    const user: UserData = userReference.toJSON() as UserData
+    const slot: FieldSlot = fieldSlotData[user.fields[row][column].name][newLevel]
     const currentTime = new Date().getTime()
     const timePassed = currentTime - user.timestamp
     await db.ref(`users/${conn.id}`).update({
@@ -34,7 +20,6 @@ export const levelUpField = async (conn: Connection, row: number, column: number
       ironRate: user.ironRate + slot.ironRateGain,
       clayRate: user.clayRate + slot.clayRateGain,
       wheatRate: user.wheatRate + slot.wheatRateGain,
-      buildTime: currentTime + slot.buildTime,
       timestamp: currentTime
     })
     await db.ref(`users/${conn.id}/fields/${row}/${column}/level`).set(newLevel)
