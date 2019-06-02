@@ -60,6 +60,7 @@ class CivicoServer {
     const token = await login(conn, username, password)
     if (token) {
       conn.sendMessage({type: 'TOKEN', token, username})
+      getUserData(conn)
     } else {
       conn.sendMessage({type: 'ERROR', message: 'Wrong username or password'})
     }

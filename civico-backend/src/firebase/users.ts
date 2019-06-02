@@ -174,7 +174,18 @@ export const getUserData = async (conn: Connection) => {
         buildings.push(rowToPush)
       })
       const map = [...Object.values(user.map)]
-      conn.sendMessage({type: 'SEND_DATA', ...user, fields, buildings, map})
+      const timePassed = new Date().getTime() - user.timestamp
+      conn.sendMessage({
+        type: 'SEND_DATA',
+        ...user,
+        lumber: Math.min(user.lumber + timePassed / user.lumberRate , user.maxLumber),
+        iron: Math.min(user.iron + timePassed / user.ironRate, user.maxIron),
+        clay: Math.min(user.clay + timePassed / user.clayRate, user.maxClay),
+        wheat: Math.min(user.wheat + timePassed / (user.wheatRate - user.population * 1000), user.maxWheat),
+        fields,
+        buildings,
+        map
+      })
     }
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})

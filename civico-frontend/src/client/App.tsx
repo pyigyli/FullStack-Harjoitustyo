@@ -116,6 +116,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     const {connection, token} = this.state
     if (connection && token) {
       connection.send(JSON.stringify({type: 'GET_DATA', token}))
+      console.log(this.state.lumber)
     }
   }
 

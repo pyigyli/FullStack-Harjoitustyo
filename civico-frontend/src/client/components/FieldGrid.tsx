@@ -149,7 +149,7 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
                 onClick={() => this.handleOpen(i, j)}
               >
                 <div>{slotLabel}</div>
-                <div>{slotLabel && slotLabel !== 'Discover' ? slot.level : ''}</div>
+                <div>{slotLabel && slotLabel !== 'Discover' && slotLabel !== 'TOWN' ? slot.level : ''}</div>
               </Paper>
             )
           })
