@@ -1,7 +1,7 @@
 import React from 'react'
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
-import {Message, LoginMessage, LogoutMessage, CreateAccountMessage, FieldLevelUpMessage} from '../types/protocol'
+import {Message, LoginMessage, LogoutMessage, CreateAccountMessage, FieldLevelUpMessage, ExpandTownMessage} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
 import InboxScene from './scenes/Inbox'
@@ -232,6 +232,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleTownExpand = () => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: ExpandTownMessage = {type: 'EXPAND_TOWN', token}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public render() {
     const {classes} = this.props
     const {
@@ -301,7 +309,10 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/town' render={() =>
-          token ? <TownScene buildings={buildings}/> : <LoginScene onSubmit={this.handleLogin}/>
+          token ? <TownScene
+            buildings={buildings}
+            onExpand={this.handleTownExpand}
+          /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/map' render={() =>
           token ? <MapScene/> : <LoginScene onSubmit={this.handleLogin}/>

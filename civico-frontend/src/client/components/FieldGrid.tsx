@@ -112,16 +112,16 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
             let background: string = 'radial-gradient(100% 100%, #ffffff, #dddddddd)'
             if (slot.name.includes('?')) {
               slotLabel = (
-                i - 1 > 0               && !grid[i - 1][j].name.includes('?') ||
-                i + 1 < grid.length     && !grid[i + 1][j].name.includes('?') ||
-                j - 1 > 0               && !grid[i][j - 1].name.includes('?') ||
-                j + 1 < grid[0].length  && !grid[i][j + 1].name.includes('?')
+                i - 1 > 0           && !grid[i - 1][j].name.includes('?') ||
+                i + 1 < grid.length && !grid[i + 1][j].name.includes('?') ||
+                j - 1 > 0           && !grid[i][j - 1].name.includes('?') ||
+                j + 1 < grid.length && !grid[i][j + 1].name.includes('?')
               ) ? 'Discover' : ''
               background = (
-                i - 1 > 0               && !grid[i - 1][j].name.includes('?') ||
-                i + 1 < grid.length     && !grid[i + 1][j].name.includes('?') ||
-                j - 1 > 0               && !grid[i][j - 1].name.includes('?') ||
-                j + 1 < grid[0].length  && !grid[i][j + 1].name.includes('?')
+                i - 1 > 0           && !grid[i - 1][j].name.includes('?') ||
+                i + 1 < grid.length && !grid[i + 1][j].name.includes('?') ||
+                j - 1 > 0           && !grid[i][j - 1].name.includes('?') ||
+                j + 1 < grid.length && !grid[i][j + 1].name.includes('?')
               ) ? '#70cc7070' : 'radial-gradient(100% 100%, #88778855, #11111111)'
             }
             switch (slot.name) {

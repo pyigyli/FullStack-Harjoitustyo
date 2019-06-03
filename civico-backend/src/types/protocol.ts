@@ -6,6 +6,7 @@ type MessageType =
   'GET_DATA' |
   'SEND_DATA' |
   'FIELD_LEVELUP' |
+  'EXPAND_TOWN' |
   'ERROR'
 
 export type Message =
@@ -16,6 +17,7 @@ export type Message =
   GetUserDataMessage |
   SendUserDataMessage |
   FieldLevelUpMessage |
+  ExpandTownMessage |
   ErrorMessage
 
 export interface MessageBase {
@@ -89,6 +91,11 @@ export interface FieldLevelUpMessage extends MessageBase {
   row: number
   column: number
   newLevel: number
+}
+
+export interface ExpandTownMessage extends MessageBase {
+  type: 'EXPAND_TOWN'
+  token: string
 }
 
 export interface ErrorMessage extends MessageBase {
@@ -283,5 +290,20 @@ export const fieldSlotData = {
       clayCost: 205,
       wheatCost: 70
     }
+  }
+}
+
+export const townExpansionData = {
+  first: {
+    lumberCost: 1,
+    ironCost: 1,
+    clayCost: 1,
+    wheatCost: 1
+  },
+  second: {
+    lumberCost: 1,
+    ironCost: 1,
+    clayCost: 1,
+    wheatCost: 1
   }
 }
