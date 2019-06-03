@@ -112,11 +112,10 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public componentDidUpdate() {
+  public componentDidUpdate(prevProps, prevState) {
     const {connection, token} = this.state
     if (connection && token) {
       connection.send(JSON.stringify({type: 'GET_DATA', token}))
-      console.log(this.state.lumber)
     }
   }
 
@@ -288,6 +287,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         }/>
         <Route exact path='/fields' render={() =>
           token ? <FieldsScene
+            population={population}
             fields={fields}
             lumberRate={lumberRate}
             ironRate={ironRate}

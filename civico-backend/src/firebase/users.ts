@@ -59,10 +59,10 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       maxIron: 500,
       maxClay: 500,
       maxWheat: 500,
-      lumberRate: 18000000, // milliseconds to gain 1 lumber
-      ironRate: 18000000,   // milliseconds to gain 1 iron
-      clayRate: 18000000,   // milliseconds to gain 1 clay
-      wheatRate: 18000000,  // milliseconds to gain 1 wheat
+      lumberRate: 5,
+      ironRate: 5,
+      clayRate: 5,
+      wheatRate: 5,
       fields: [
         [
           {name: '?CAVE', level: 0},
@@ -178,10 +178,10 @@ export const getUserData = async (conn: Connection) => {
       conn.sendMessage({
         type: 'SEND_DATA',
         ...user,
-        lumber: Math.min(user.lumber + timePassed / user.lumberRate , user.maxLumber),
-        iron: Math.min(user.iron + timePassed / user.ironRate, user.maxIron),
-        clay: Math.min(user.clay + timePassed / user.clayRate, user.maxClay),
-        wheat: Math.min(user.wheat + timePassed / (user.wheatRate - user.population * 1000), user.maxWheat),
+        lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate , user.maxLumber),
+        iron: Math.min(user.iron + timePassed / 3600000 * user.ironRate, user.maxIron),
+        clay: Math.min(user.clay + timePassed / 3600000 * user.clayRate, user.maxClay),
+        wheat: Math.min(user.wheat + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat),
         fields,
         buildings,
         map

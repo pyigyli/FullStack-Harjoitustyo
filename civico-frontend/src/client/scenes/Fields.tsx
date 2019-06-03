@@ -53,10 +53,11 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  fields: {
+  population: number
+  fields: Array<Array<{
     name: string
     level: number
-  }[][]
+  }>>
   lumberRate: number
   ironRate: number
   clayRate: number
@@ -66,32 +67,32 @@ interface Props {
 
 class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {classes, fields, lumberRate, ironRate, clayRate, wheatRate, handleFieldLevelUp} = this.props
+    const {classes, population, fields, lumberRate, ironRate, clayRate, wheatRate, handleFieldLevelUp} = this.props
 
     return (
       <div className={classes.sceneWrapper}>
         <Paper className={classes.resourceRatesContainer}>
           <div className={classes.resourceRateWrapper}>
             <div className={classes.resourceRateValueWrapper}>
-              {lumberRate / 3600000}
+              {lumberRate}
             </div>
             <div className={classes.resourceRateTextWrapper}>lumber / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
             <div className={classes.resourceRateValueWrapper}>
-              {ironRate / 3600000}
+              {ironRate}
             </div>
             <div className={classes.resourceRateTextWrapper}>iron / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
             <div className={classes.resourceRateValueWrapper}>
-              {clayRate / 3600000}
+              {clayRate}
             </div>
             <div className={classes.resourceRateTextWrapper}>clay / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
             <div className={classes.resourceRateValueWrapper}>
-              {wheatRate / 3600000}
+              {wheatRate - population}
             </div>
             <div className={classes.resourceRateTextWrapper}>wheat / hour</div>
           </div>

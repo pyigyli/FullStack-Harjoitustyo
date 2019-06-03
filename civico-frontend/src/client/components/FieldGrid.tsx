@@ -48,7 +48,7 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  grid: {name: string, level: number}[][]
+  grid: Array<Array<{name: string, level: number}>>
   handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
@@ -68,8 +68,8 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
   public handleOpen(row: number, column: number) {
     this.setState({
       slotSelected: true,
-      row: row,
-      column: column
+      row,
+      column
     })
   }
 

@@ -66,20 +66,20 @@ export interface SendUserDataMessage extends MessageBase {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: {
+  fields: Array<Array<{
     name: string
     level: number
-  }[][]
-  buildings: {
+  }>>
+  buildings: Array<Array<{
     name: string
     level: number
-  }[][]
+  }>>
   map: number[]
-  inbox: {
+  inbox: Array<{
     sender: string
     title: string
     message: string
-  }[]
+  }>
   timestamp: number
 }
 
@@ -110,20 +110,20 @@ export interface UserData {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: {
+  fields: Array<Array<{
     name: string
     level: number
-  }[][]
-  buildings: {
+  }>>
+  buildings: Array<Array<{
     name: string
     level: number
-  }[][]
+  }>>
   map: number[]
-  inbox: {
+  inbox: Array<{
     sender: string
     title: string
     message: string
-  }[]
+  }>
   timestamp: number
 }
 
@@ -140,11 +140,11 @@ export interface FieldSlot {
 }
 
 export const fieldSlotData = {
-  'FOREST': {
+  FOREST: {
     upgradeText: 'Everyone needs wood. Just remember to replant the trees so you do not run out. Increases lumber gain by',
     1: {
       populationGain: 1,
-      lumberRateGain: 600000,
+      lumberRateGain: 6,
       ironRateGain: 0,
       clayRateGain: 0,
       wheatRateGain: 0,
@@ -155,7 +155,7 @@ export const fieldSlotData = {
     },
     2: {
       populationGain: 1,
-      lumberRateGain: 225000,
+      lumberRateGain: 11,
       ironRateGain: 0,
       clayRateGain: 0,
       wheatRateGain: 0,
@@ -166,7 +166,7 @@ export const fieldSlotData = {
     },
     3: {
       populationGain: 2,
-      lumberRateGain: 150000,
+      lumberRateGain: 18,
       ironRateGain: 0,
       clayRateGain: 0,
       wheatRateGain: 0,
@@ -176,12 +176,12 @@ export const fieldSlotData = {
       wheatCost: 150
     }
   },
-  'CAVE': {
+  CAVE: {
     upgradeText: 'From the darkest of caves the richest of iron minerals can be found. Increases iron gain by',
     1: {
       populationGain: 1,
       lumberRateGain: 0,
-      ironRateGain: 600000,
+      ironRateGain: 6,
       clayRateGain: 0,
       wheatRateGain: 0,
       lumberCost: 50,
@@ -192,7 +192,7 @@ export const fieldSlotData = {
     2: {
       populationGain: 1,
       lumberRateGain: 0,
-      ironRateGain: 225000,
+      ironRateGain: 11,
       clayRateGain: 0,
       wheatRateGain: 0,
       lumberCost: 100,
@@ -203,7 +203,7 @@ export const fieldSlotData = {
     3: {
       populationGain: 2,
       lumberRateGain: 0,
-      ironRateGain: 150000,
+      ironRateGain: 18,
       clayRateGain: 0,
       wheatRateGain: 0,
       lumberCost: 220,
@@ -212,13 +212,13 @@ export const fieldSlotData = {
       wheatCost: 145
     }
   },
-  'CLAY': {
+  CLAY: {
     upgradeText: 'Flexible material. Good for making pots and other things made of clay. Increases clay gain by',
     1: {
       populationGain: 1,
       lumberRateGain: 0,
       ironRateGain: 0,
-      clayRateGain: 600000,
+      clayRateGain: 6,
       wheatRateGain: 0,
       lumberCost: 50,
       ironCost: 45,
@@ -229,7 +229,7 @@ export const fieldSlotData = {
       populationGain: 1,
       lumberRateGain: 0,
       ironRateGain: 0,
-      clayRateGain: 225000,
+      clayRateGain: 11,
       wheatRateGain: 0,
       lumberCost: 105,
       ironCost: 100,
@@ -240,7 +240,7 @@ export const fieldSlotData = {
       populationGain: 2,
       lumberRateGain: 0,
       ironRateGain: 0,
-      clayRateGain: 150000,
+      clayRateGain: 18,
       wheatRateGain: 0,
       lumberCost: 200,
       ironCost: 200,
@@ -248,14 +248,14 @@ export const fieldSlotData = {
       wheatCost: 130
     }
   },
-  'WHEAT': {
+  WHEAT: {
     upgradeText: 'Wheat is essential for keeping your people alive. Increases wheat gain by',
     1: {
       populationGain: 1,
       lumberRateGain: 0,
       ironRateGain: 0,
       clayRateGain: 0,
-      wheatRateGain: 600000,
+      wheatRateGain: 6,
       lumberCost: 45,
       ironCost: 45,
       clayCost: 50,
@@ -266,7 +266,7 @@ export const fieldSlotData = {
       lumberRateGain: 0,
       ironRateGain: 0,
       clayRateGain: 0,
-      wheatRateGain: 225000,
+      wheatRateGain: 1,
       lumberCost: 95,
       ironCost: 100,
       clayCost: 95,
@@ -277,7 +277,7 @@ export const fieldSlotData = {
       lumberRateGain: 0,
       ironRateGain: 0,
       clayRateGain: 0,
-      wheatRateGain: 150000,
+      wheatRateGain: 18,
       lumberCost: 200,
       ironCost: 210,
       clayCost: 205,
