@@ -54,20 +54,24 @@ const styles = () => createStyles({
 
 interface Props {
   population: number
-  fields: Array<Array<{
-    name: string
-    level: number
-  }>>
+  lumber: number
+  iron: number
+  clay: number
+  wheat: number
   lumberRate: number
   ironRate: number
   clayRate: number
   wheatRate: number
+  fields: Array<Array<{
+    name: string
+    level: number
+  }>>
   handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
 class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {classes, population, fields, lumberRate, ironRate, clayRate, wheatRate, handleFieldLevelUp} = this.props
+    const {classes, population, lumber, iron, clay, wheat, lumberRate, ironRate, clayRate, wheatRate, fields, handleFieldLevelUp} = this.props
 
     return (
       <div className={classes.sceneWrapper}>
@@ -98,6 +102,10 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
           </div>
         </Paper>
         <FieldGrid
+          lumber={lumber}
+          iron={iron}
+          clay={clay}
+          wheat={wheat}
           grid={fields}
           handleFieldLevelUp={handleFieldLevelUp}
         />

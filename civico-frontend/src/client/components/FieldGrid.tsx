@@ -48,6 +48,10 @@ const styles = () => createStyles({
 })
 
 interface Props {
+  lumber: number
+  iron: number
+  clay: number
+  wheat: number
   grid: Array<Array<{name: string, level: number}>>
   handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
@@ -81,7 +85,7 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public render() {
-    const {classes, grid} = this.props
+    const {classes, grid, lumber, iron, clay, wheat} = this.props
     const {slotSelected, row, column} = this.state
     const width = 100
     const height = 100
@@ -90,13 +94,13 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
     let resourceRateGainLabel: string = ''
     if (slotName) {
       if (fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain > 0) {
-        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain / 3600000} lumber / hour.`
+        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain} lumber / hour.`
       } else if (fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain > 0) {
-        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain / 3600000} iron / hour.`
+        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain} iron / hour.`
       } else if (fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain > 0) {
-        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain / 3600000} clay / hour.`
+        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain} clay / hour.`
       } else if (fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain > 0) {
-        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain / 3600000} wheat / hour.`
+        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain} wheat / hour.`
       }
     }
 
@@ -191,6 +195,12 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
             <Button
               className={classes.button}
               onClick={() => this.handleSubmit(row, column, grid[row][column].level + 1)}
+              disabled={
+                lumber < fieldSlotData[slotName][grid[row][column].level + 1].lumberCost ||
+                iron < fieldSlotData[slotName][grid[row][column].level + 1].ironCost ||
+                clay < fieldSlotData[slotName][grid[row][column].level + 1].clayCost ||
+                wheat < fieldSlotData[slotName][grid[row][column].level + 1].wheatCost
+              }
             >
               Upgrade
             </Button>

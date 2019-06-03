@@ -288,11 +288,15 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         <Route exact path='/fields' render={() =>
           token ? <FieldsScene
             population={population}
-            fields={fields}
+            lumber={lumber}
+            iron={iron}
+            clay={clay}
+            wheat={wheat}
             lumberRate={lumberRate}
             ironRate={ironRate}
             clayRate={clayRate}
             wheatRate={wheatRate}
+            fields={fields}
             handleFieldLevelUp={this.handleFieldLevelUp}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
