@@ -11,11 +11,11 @@ const styles = () => createStyles({
     borderColor: '#32143277'
   },
   slot: {
+    position: 'fixed',
     textAlign: 'center',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center',
-    position: 'fixed'
+    justifyContent: 'center'
   }
 })
 
@@ -29,8 +29,8 @@ interface Props {
 class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
     const {classes, grid} = this.props
-    const width: number = 130 - 7 * grid.length
-    const height: number = 130 - 7 * grid.length
+    const width: number = 130 - 8 * grid.length
+    const height: number = 130 - 8 * grid.length
     const margin: number = 5
 
     return (
@@ -39,8 +39,9 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
         style={{
           width: (width + margin) * grid.length + margin,
           height: (height + margin) * grid.length + margin,
-          top: -grid.length * (height + margin) / 2 + 100,
-          left: -grid.length * (width + margin) / 2
+          top: 250,
+          left: '50%',
+          transform: 'translate(-50%, 0%)'
         }}
       >
         {grid.map((row, i) => {
@@ -83,13 +84,13 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
                   width: bigWidth ? bigWidth : width,
                   height: bigHeight ? bigHeight : height,
                   margin,
-                  top: i * (height + margin) - grid.length * (height + margin) / 2 + 100,
-                  left: j * (width + margin) - grid.length * (width + margin) / 2,
+                  top: i * (height + margin),
+                  left: j * (width + margin),
                   backgroundColor: slot.name === 'EMPTY' ? 'white' : '#ebefec'
                 }}
               >
-                <div>{slot.level}</div>
                 <div>{slot.name}</div>
+                <div>{slot.name === 'EMPTY' ? '' : slot.level}</div>
               </Paper>
             )
           })

@@ -293,6 +293,39 @@ export const fieldSlotData = {
   }
 }
 
+export const buildingsData = {
+  'Test Building 1': {
+    info: 'This building is the first one to use in a testing.',
+    width: 1,
+    height: 1,
+    populationGain: 1,
+    lumberCost: 1,
+    ironCost: 1,
+    clayCost: 1,
+    wheatCost: 1
+  },
+  'Test Building 2': {
+    info: 'This building is the second one to use in a testing.',
+    width: 1,
+    height: 2,
+    populationGain: 1,
+    lumberCost: 1,
+    ironCost: 1,
+    clayCost: 1,
+    wheatCost: 1
+  },
+  'Test Building 3': {
+    info: 'This building is the third one to use in testing. It has extra long text. And oh boy, is it long! it is, indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something.',
+    width: 2,
+    height: 2,
+    populationGain: 1,
+    lumberCost: 1,
+    ironCost: 1,
+    clayCost: 1,
+    wheatCost: 1
+  },
+}
+
 export const townExpansionData = {
   first: {
     lumberCost: 1,

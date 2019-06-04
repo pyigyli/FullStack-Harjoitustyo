@@ -310,6 +310,10 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         }/>
         <Route exact path='/town' render={() =>
           token ? <TownScene
+            lumber={lumber}
+            iron={iron}
+            clay={clay}
+            wheat={wheat}
             buildings={buildings}
             onExpand={this.handleTownExpand}
           /> : <LoginScene onSubmit={this.handleLogin}/>
