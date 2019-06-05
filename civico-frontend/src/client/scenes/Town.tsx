@@ -1,7 +1,7 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
 import ScrollArea from 'react-scrollbar'
-import {buildingsData} from '../../types/protocol'
+import {GridSlot, buildingsData} from '../../types/protocol'
 import TownGrid from '../components/TownGrid'
 
 const styles = () => createStyles({
@@ -80,43 +80,123 @@ interface Props {
   iron: number,
   clay: number,
   wheat: number,
-  buildings: Array<Array<{
-    name: string
-    level: number
-  }>>
+  buildings: GridSlot[][]
+  onPlaceBuilding: (buildings: GridSlot[][], newBuildingName: string) => void
   onExpand: () => void
 }
 
 interface State {
   buildingsSelectOpen: boolean
+  newBuildingName: string
+  newBuildingWidth: number
+  newBuildingHeight: number
+  newBuildingRow: number
+  newBuildingColumn: number
 }
 
 class TownScene extends React.Component<Props & WithStyles<typeof styles>, State> {
-  public state = {buildingsSelectOpen: false}
+  public state = {
+    buildingsSelectOpen: false,
+    newBuildingName: '',
+    newBuildingWidth: 0,
+    newBuildingHeight: 0,
+    newBuildingRow: 0,
+    newBuildingColumn: 0
+  }
 
   public handleOpenBuildingSelect = () => this.setState({buildingsSelectOpen: true})
 
   public handleCloseBuildingSelect = () => this.setState({buildingsSelectOpen: false})
 
-  public handleSubmitBuildingSelect = (selected: number) => {
-    this.setState({buildingsSelectOpen: false})
+  public handleSubmitBuildingSelect = (key: string) => {
+    this.setState({
+      buildingsSelectOpen: false,
+      newBuildingName: key,
+      newBuildingWidth: buildingsData[key].width,
+      newBuildingHeight: buildingsData[key].height
+    })
+  }
+
+  public cancelBuildingPlacement = () => {
+    this.setState({
+      newBuildingName: '',
+      newBuildingWidth: 0,
+      newBuildingHeight: 0,
+      newBuildingRow: 0,
+      newBuildingColumn: 0
+    })
+  }
+
+  public rotateBuilding = () => {
+    this.setState({
+      newBuildingWidth: this.state.newBuildingHeight,
+      newBuildingHeight: this.state.newBuildingWidth
+    })
+  }
+
+  public handleDragStop = (row: number, column: number) => {
+    this.setState({
+      newBuildingRow: row,
+      newBuildingColumn: column
+    })
+  }
+
+  public handlePlaceBuilding = () => {
+    const buildings = this.props.buildings
+    for (let i = 0; i < this.state.newBuildingWidth; i++) {
+      for (let j = 0; j < this.state.newBuildingHeight; j++) {
+        buildings[this.state.newBuildingColumn + j][this.state.newBuildingRow + i] = {
+          name: this.state.newBuildingName,
+          level: 0
+        }
+      }
+    }
+    this.props.onPlaceBuilding(buildings, this.state.newBuildingName)
+    this.setState({
+      newBuildingName: '',
+      newBuildingWidth: 0,
+      newBuildingHeight: 0,
+      newBuildingRow: 0,
+      newBuildingColumn: 0
+    })
   }
 
   public render() {
     const {classes, lumber, iron, clay, wheat, buildings, onExpand} = this.props
-    const {buildingsSelectOpen} = this.state
+    const {buildingsSelectOpen, newBuildingWidth, newBuildingHeight, newBuildingRow, newBuildingColumn} = this.state
 
     return (
       <div className={classes.sceneWrapper}>
-        <div className={classes.constructionButtonsContainer}>
-          <Button className={classes.button} onClick={onExpand}>
-            Expand
-          </Button>
-          <Button className={classes.button} onClick={this.handleOpenBuildingSelect}>
-            Build
-          </Button>
-        </div>
-        <TownGrid grid={buildings}/>
+        {newBuildingWidth > 0 && newBuildingHeight > 0 ? (
+          <div className={classes.constructionButtonsContainer}>
+            <Button className={classes.button} onClick={this.cancelBuildingPlacement}>
+              Cancel
+            </Button>
+            <Button className={classes.button} onClick={this.rotateBuilding}>
+              Rotate
+            </Button>
+            <Button className={classes.button} onClick={this.handlePlaceBuilding}>
+              Confirm
+            </Button>
+          </div>
+        ) : (
+          <div className={classes.constructionButtonsContainer}>
+            <Button className={classes.button} onClick={onExpand}>
+              Expand
+            </Button>
+            <Button className={classes.button} onClick={this.handleOpenBuildingSelect}>
+              Build
+            </Button>
+          </div>
+        )}
+        <TownGrid
+          grid={buildings}
+          newBuildingWidth={newBuildingWidth}
+          newBuildingHeight={newBuildingHeight}
+          newBuildingRow={newBuildingRow}
+          newBuildingColumn={newBuildingColumn}
+          onDragStop={this.handleDragStop}
+        />
         <Dialog open={buildingsSelectOpen} onClose={this.handleCloseBuildingSelect}>
           <div className={classes.closeButtonWrapper}>
             <Button className={classes.button} onClick={this.handleCloseBuildingSelect}>
@@ -125,7 +205,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           </div>
           <ScrollArea style={{height: '600px'}}>
             {Object.entries(buildingsData).map((buildingEntry, index) => (
-              <div>
+              <div key={index}>
                 <DialogTitle>
                   {buildingEntry[0]}
                 </DialogTitle>
@@ -158,7 +238,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 <DialogActions>
                   <Button
                     className={classes.button}
-                    onClick={() => this.handleSubmitBuildingSelect(index)}
+                    onClick={() => this.handleSubmitBuildingSelect(buildingEntry[0])}
                     disabled={
                       lumber < buildingEntry[1].lumberCost ||
                       iron < buildingEntry[1].ironCost ||
@@ -166,10 +246,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                       wheat < buildingEntry[1].wheatCost
                     }
                   >
-                    Upgrade
+                    Select {buildingEntry[0]} for building
                   </Button>
                 </DialogActions>
-                <div key={index} className={classes.lineBreak}/>
+                <div className={classes.lineBreak}/>
               </div>
             ))}
           </ScrollArea>

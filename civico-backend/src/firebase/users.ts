@@ -1,43 +1,8 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import db from './init'
+import {UserData, GridSlot} from '../types/protocol'
 import Connection from '../connection'
-
-interface UserData {
-  population: number
-  lumber: number
-  iron: number
-  clay: number
-  wheat: number
-  maxLumber: number
-  maxIron: number
-  maxClay: number
-  maxWheat: number
-  lumberRate: number
-  ironRate: number
-  clayRate: number
-  wheatRate: number
-  fields: Array<Array<{
-    name: string
-    level: number
-  }>>
-  buildings: Array<Array<{
-    name: string
-    level: number
-  }>>
-  map: number[]
-  inbox: Array<{
-    sender: string
-    title: string
-    message: string
-  }>
-  timestamp: number
-}
-
-interface GridSlot {
-  name: string
-  level: number
-}
 
 export const createNewAccount = async (conn: Connection, username: string, password: string) => {
   try {

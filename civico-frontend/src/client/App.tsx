@@ -1,7 +1,7 @@
 import React from 'react'
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
-import {Message, LoginMessage, LogoutMessage, CreateAccountMessage, FieldLevelUpMessage, ExpandTownMessage} from '../types/protocol'
+import {Message, LoginMessage, LogoutMessage, CreateAccountMessage, FieldLevelUpMessage, PlaceBuildingMessage, ExpandTownMessage, GridSlot} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
 import InboxScene from './scenes/Inbox'
@@ -42,14 +42,8 @@ interface State {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: Array<Array<{
-    name: string
-    level: number
-  }>>
-  buildings: Array<Array<{
-    name: string
-    level: number
-  }>>
+  fields: GridSlot[][]
+  buildings: GridSlot[][]
   map: number[]
   inbox: Array<{
     sender: string
@@ -112,9 +106,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public componentDidUpdate(prevProps, prevState) {
+  public componentDidUpdate(prevProps) {
     const {connection, token} = this.state
-    if (connection && token) {
+    if (connection && token && this.props.history !== prevProps.history) {
       connection.send(JSON.stringify({type: 'GET_DATA', token}))
     }
   }
@@ -232,6 +226,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handlePlaceBuilding = (buildings: GridSlot[][], newBuildingName: string) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: PlaceBuildingMessage = {type: 'PLACE_BUILDING', token, buildings, newBuildingName}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public handleTownExpand = () => {
     const {connection, token} = this.state
     if (connection && token) {
@@ -315,6 +317,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             clay={clay}
             wheat={wheat}
             buildings={buildings}
+            onPlaceBuilding={this.handlePlaceBuilding}
             onExpand={this.handleTownExpand}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>

@@ -6,6 +6,7 @@ type MessageType =
   'GET_DATA' |
   'SEND_DATA' |
   'FIELD_LEVELUP' |
+  'PLACE_BUILDING' |
   'EXPAND_TOWN' |
   'ERROR'
 
@@ -17,6 +18,7 @@ export type Message =
   GetUserDataMessage |
   SendUserDataMessage |
   FieldLevelUpMessage |
+  PlaceBuildingMessage |
   ExpandTownMessage |
   ErrorMessage
 
@@ -93,6 +95,16 @@ export interface FieldLevelUpMessage extends MessageBase {
   newLevel: number
 }
 
+export interface PlaceBuildingMessage extends MessageBase {
+  type: 'PLACE_BUILDING'
+  token: string
+  buildings: {
+    name: string
+    level: number
+  }[][]
+  newBuildingName: string
+}
+
 export interface ExpandTownMessage extends MessageBase {
   type: 'EXPAND_TOWN'
   token: string
@@ -132,6 +144,11 @@ export interface UserData {
     message: string
   }[]
   timestamp: number
+}
+
+export interface GridSlot {
+  name: string
+  level: number
 }
 
 export interface FieldSlot {

@@ -15,4 +15,5 @@
 | 2.6.   | 5    | - Rakennusten ja resurssikenttien data refaktoroitu sijaitsemaan protokollassa, eikä tietokannassa.<br> - Resurssipeltoja voi nyt nostaa tasolle 3 asti.<br> - Resurssien lukumäärän kasvamista ajan kanssa korjattu. |
 | 3.6.   | 5    | - Resurssien kasvu ajan kanssa refaktoroitu formaatista "millisekunttia seuraavaan" formaattiin "resurssia tunnissa".<br> - Resurssikenttien tasoa ei voi nostaa, jos resurssit eivät riitä.<br> - Resurssien kasvua tasapainotettu.<br> - Kyläruudukon laajentaminen toteutettu. |
 | 4.6.   | 6    | - Kyläruudukon ulkoasua ja rakennusten rakentamista edistetty. |
-| Yhteensä | 72    |
+| 5.6.   | 8    | - Kyläruudukkoon voi rakentaa uusia rakennuksia, joiden sijainnin ja orientaation voi päättää itse.<br> - Kyläruudukon rakennettavien rakennusten listan ulkoasu toteutettu. |
+| Yhteensä | 80    |

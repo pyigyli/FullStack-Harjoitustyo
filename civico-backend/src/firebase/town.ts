@@ -1,12 +1,7 @@
 import db from './init'
 import Connection from '../connection'
-import {UserData, townExpansionData} from '../types/protocol'
+import {UserData, GridSlot, townExpansionData, buildingsData} from '../types/protocol'
 import {getUserData} from './users'
-
-interface GridSlot {
-  name: string
-  level: number
-}
 
 export const levelUpBuilding = async (conn: Connection) => {
   try {
@@ -14,6 +9,30 @@ export const levelUpBuilding = async (conn: Connection) => {
     const user: UserData = userReference.toJSON() as UserData
     if (user) {
       // TODO
+    }
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], newBuildingName: string) => {
+  try {
+    const userReference = await db.ref(`users/${conn.id}`).once('value')
+    const user: UserData = userReference.toJSON() as UserData
+    if (user) {
+      const building = buildingsData[newBuildingName]
+      const currentTime = new Date().getTime()
+      const timePassed = currentTime - user.timestamp
+      await db.ref(`users/${conn.id}`).update({
+        lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber) - building.lumberCost,
+        iron: Math.min(user.iron + timePassed / 3600000 * user.ironRate, user.maxIron) - building.ironCost,
+        clay: Math.min(user.clay + timePassed / 3600000 * user.clayRate, user.maxClay) - building.clayCost,
+        wheat: Math.min(user.wheat + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - building.wheatCost,
+        buildings: buildings,
+        timestamp: currentTime
+      })
+      getUserData(conn)
     }
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})

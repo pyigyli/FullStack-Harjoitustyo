@@ -1,6 +1,7 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
 import FieldGrid from '../components/FieldGrid'
+import {GridSlot} from '../../types/protocol'
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -62,10 +63,7 @@ interface Props {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: Array<Array<{
-    name: string
-    level: number
-  }>>
+  fields: GridSlot[][]
   handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 

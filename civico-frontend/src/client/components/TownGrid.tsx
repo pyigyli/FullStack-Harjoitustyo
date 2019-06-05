@@ -1,5 +1,8 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
+import DragIcon from '@material-ui/icons/openWith'
+import Draggable from 'react-draggable'
+import {GridSlot} from '../../types/protocol'
 
 const styles = () => createStyles({
   root: {
@@ -16,22 +19,50 @@ const styles = () => createStyles({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center'
+  },
+  dragIconContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center'
   }
 })
 
 interface Props {
-  grid: Array<Array<{
-    name: string
-    level: number
-  }>>
+  grid: GridSlot[][]
+  newBuildingWidth: number
+  newBuildingHeight: number
+  newBuildingRow: number
+  newBuildingColumn: number
+  onDragStop: (row: number, column: number) => void
 }
 
-class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
+interface State {
+  width: number
+  height: number
+  margin: number
+}
+
+class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State> {
+  public state = {
+    width: 130 - 8 * this.props.grid.length,
+    height: 130 - 8 * this.props.grid.length,
+    margin: 5
+  }
+
+  public handleDragStop = (e: MouseEvent, data: any) => {
+    const {width, height, margin} = this.state
+    const row = Math.round(data.lastX / (width + margin))
+    const column = Math.round(data.lastY / (height + margin))
+    this.props.onDragStop(row, column)
+  }
+
   public render() {
-    const {classes, grid} = this.props
-    const width: number = 130 - 8 * grid.length
-    const height: number = 130 - 8 * grid.length
-    const margin: number = 5
+    const {classes, grid, newBuildingWidth, newBuildingHeight, newBuildingRow, newBuildingColumn} = this.props
+    const {width, height, margin} = this.state
+    let placeBuildingDisabled: boolean = false
+    if (grid.length < newBuildingWidth + newBuildingRow || grid.length < newBuildingHeight + newBuildingColumn) {
+      placeBuildingDisabled = true
+    }
 
     return (
       <div
@@ -39,7 +70,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
         style={{
           width: (width + margin) * grid.length + margin,
           height: (height + margin) * grid.length + margin,
-          top: 250,
+          top: '250px',
           left: '50%',
           transform: 'translate(-50%, 0%)'
         }}
@@ -95,6 +126,29 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>> {
             )
           })
         })}
+        {newBuildingWidth > 0 && newBuildingHeight > 0 && (
+          <Draggable
+            grid={[width + margin, height + margin]}
+            bounds='parent'
+            onStop={this.handleDragStop}
+          >
+            <Paper
+              className={classes.slot}
+              style={{
+                width: (width + margin) * newBuildingWidth - margin,
+                height: (height + margin) * newBuildingHeight - margin,
+                margin,
+                top: 0 * (height + margin),
+                left: 0 * (width + margin),
+                backgroundColor: placeBuildingDisabled ? '#b14d6fcc' : '#70cc70cc'
+              }}
+            >
+              <div className={classes.dragIconContainer}>
+                <DragIcon/>
+              </div>
+            </Paper>
+          </Draggable>
+        )}
       </div>
     )
   }
