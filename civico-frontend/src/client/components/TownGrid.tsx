@@ -33,6 +33,7 @@ interface Props {
   newBuildingHeight: number
   newBuildingRow: number
   newBuildingColumn: number
+  placeBuildingDisabled: boolean
   onDragStop: (row: number, column: number) => void
 }
 
@@ -51,18 +52,12 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
 
   public handleDragStop = (e: MouseEvent, data: any) => {
     const {width, height, margin} = this.state
-    const row = Math.round(data.lastX / (width + margin))
-    const column = Math.round(data.lastY / (height + margin))
-    this.props.onDragStop(row, column)
+    this.props.onDragStop(Math.round(data.lastX / (width + margin)), Math.round(data.lastY / (height + margin)))
   }
 
   public render() {
-    const {classes, grid, newBuildingWidth, newBuildingHeight, newBuildingRow, newBuildingColumn} = this.props
+    const {classes, grid, newBuildingWidth, newBuildingHeight, placeBuildingDisabled} = this.props
     const {width, height, margin} = this.state
-    let placeBuildingDisabled: boolean = false
-    if (grid.length < newBuildingWidth + newBuildingRow || grid.length < newBuildingHeight + newBuildingColumn) {
-      placeBuildingDisabled = true
-    }
 
     return (
       <div
@@ -138,8 +133,6 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
                 width: (width + margin) * newBuildingWidth - margin,
                 height: (height + margin) * newBuildingHeight - margin,
                 margin,
-                top: 0 * (height + margin),
-                left: 0 * (width + margin),
                 backgroundColor: placeBuildingDisabled ? '#b14d6fcc' : '#70cc70cc'
               }}
             >

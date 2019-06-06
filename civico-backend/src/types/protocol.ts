@@ -341,6 +341,16 @@ export const buildingsData = {
     clayCost: 1,
     wheatCost: 1
   },
+  'Test Building 4': {
+    info: 'And another one!',
+    width: 3,
+    height: 2,
+    populationGain: 1,
+    lumberCost: 1,
+    ironCost: 1,
+    clayCost: 1,
+    wheatCost: 1
+  }
 }
 
 export const townExpansionData = {

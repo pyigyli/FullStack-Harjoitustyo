@@ -164,6 +164,14 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   public render() {
     const {classes, lumber, iron, clay, wheat, buildings, onExpand} = this.props
     const {buildingsSelectOpen, newBuildingWidth, newBuildingHeight, newBuildingRow, newBuildingColumn} = this.state
+    let placeBuildingDisabled: boolean = false
+    for (let i = newBuildingColumn; i < newBuildingColumn + newBuildingHeight; i++) {
+      for (let j = newBuildingRow; j < newBuildingRow + newBuildingWidth; j++) {
+        if (i >= buildings.length || j >= buildings.length || buildings[i][j].name !== 'EMPTY') {
+          placeBuildingDisabled = true
+        }
+      }
+    }
 
     return (
       <div className={classes.sceneWrapper}>
@@ -172,10 +180,18 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
             <Button className={classes.button} onClick={this.cancelBuildingPlacement}>
               Cancel
             </Button>
-            <Button className={classes.button} onClick={this.rotateBuilding}>
+            <Button
+              className={classes.button}
+              onClick={this.rotateBuilding}
+              disabled={newBuildingWidth === newBuildingHeight}
+            >
               Rotate
             </Button>
-            <Button className={classes.button} onClick={this.handlePlaceBuilding}>
+            <Button
+              className={classes.button}
+              onClick={this.handlePlaceBuilding}
+              disabled={placeBuildingDisabled}
+            >
               Confirm
             </Button>
           </div>
@@ -195,6 +211,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           newBuildingHeight={newBuildingHeight}
           newBuildingRow={newBuildingRow}
           newBuildingColumn={newBuildingColumn}
+          placeBuildingDisabled={placeBuildingDisabled}
           onDragStop={this.handleDragStop}
         />
         <Dialog open={buildingsSelectOpen} onClose={this.handleCloseBuildingSelect}>
