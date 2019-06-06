@@ -92,6 +92,8 @@ interface State {
   newBuildingHeight: number
   newBuildingRow: number
   newBuildingColumn: number
+  buildingMenuName: string
+  buildingMenuLevel: number
 }
 
 class TownScene extends React.Component<Props & WithStyles<typeof styles>, State> {
@@ -101,7 +103,9 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     newBuildingWidth: 0,
     newBuildingHeight: 0,
     newBuildingRow: 0,
-    newBuildingColumn: 0
+    newBuildingColumn: 0,
+    buildingMenuName: '',
+    buildingMenuLevel: 0
   }
 
   public handleOpenBuildingSelect = () => this.setState({buildingsSelectOpen: true})
@@ -135,10 +139,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public handleDragStop = (row: number, column: number) => {
-    this.setState({
-      newBuildingRow: row,
-      newBuildingColumn: column
-    })
+    this.setState({newBuildingRow: row, newBuildingColumn: column})
   }
 
   public handlePlaceBuilding = () => {
@@ -147,7 +148,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       for (let j = 0; j < this.state.newBuildingHeight; j++) {
         buildings[this.state.newBuildingColumn + j][this.state.newBuildingRow + i] = {
           name: this.state.newBuildingName,
-          level: 0
+          level: 1
         }
       }
     }
@@ -161,9 +162,32 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     })
   }
 
+  public handleOpenBuildingMenu = (buildingName: string, row: number, column: number) => {
+    this.setState({
+      buildingMenuName: buildingName,
+      buildingMenuLevel: this.props.buildings[row][column].level
+    })
+  }
+
+  public handleSubmitBuildingUpgrade = () => {
+    // TODO send to server
+    this.setState({buildingMenuName: ''})
+  }
+
+  public handleCloseBuildingMenu = () => this.setState({buildingMenuName: ''})
+
   public render() {
     const {classes, lumber, iron, clay, wheat, buildings, onExpand} = this.props
-    const {buildingsSelectOpen, newBuildingWidth, newBuildingHeight, newBuildingRow, newBuildingColumn} = this.state
+    const {
+      buildingsSelectOpen,
+      newBuildingWidth,
+      newBuildingHeight,
+      newBuildingRow,
+      newBuildingColumn,
+      buildingMenuName,
+      buildingMenuLevel
+    } = this.state
+
     let placeBuildingDisabled: boolean = false
     for (let i = newBuildingColumn; i < newBuildingColumn + newBuildingHeight; i++) {
       for (let j = newBuildingRow; j < newBuildingRow + newBuildingWidth; j++) {
@@ -197,9 +221,11 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           </div>
         ) : (
           <div className={classes.constructionButtonsContainer}>
-            <Button className={classes.button} onClick={onExpand}>
-              Expand
-            </Button>
+            {buildings.length < 6 && (
+              <Button className={classes.button} onClick={onExpand}>
+                Expand
+              </Button>
+            )}
             <Button className={classes.button} onClick={this.handleOpenBuildingSelect}>
               Build
             </Button>
@@ -213,6 +239,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           newBuildingColumn={newBuildingColumn}
           placeBuildingDisabled={placeBuildingDisabled}
           onDragStop={this.handleDragStop}
+          onOpenBuildingMenu={this.handleOpenBuildingMenu}
         />
         <Dialog open={buildingsSelectOpen} onClose={this.handleCloseBuildingSelect}>
           <div className={classes.closeButtonWrapper}>
@@ -270,6 +297,58 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
               </div>
             ))}
           </ScrollArea>
+        </Dialog>
+        <Dialog open={buildingMenuName.length > 0} onClose={this.handleCloseBuildingSelect}>
+          {buildingMenuName && (
+            <div>
+              <DialogTitle>
+                {buildingMenuName}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  {buildingsData[buildingMenuName].info}
+                </DialogContentText>
+                <div className={classes.buildingCostsContainer}>
+                <div className={classes.buildingCostWrapper}>
+                    <div className={classes.costLabel}>Cost:</div>
+                  </div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div>Lumber</div>
+                    <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost}</div>
+                  </div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div>Iron</div>
+                    <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost}</div>
+                  </div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div>Clay</div>
+                    <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost}</div>
+                  </div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div>Wheat</div>
+                    <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost}</div>
+                  </div>
+                </div>
+              </DialogContent>
+              <DialogActions>
+                <Button className={classes.button} onClick={this.handleCloseBuildingMenu}>
+                  Cancel
+                </Button>
+                <Button
+                  className={classes.button}
+                  onClick={this.handleSubmitBuildingUpgrade}
+                  disabled={
+                    lumber < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost ||
+                    iron < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost ||
+                    clay < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost ||
+                    wheat < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost
+                  }
+                >
+                  Upgrade
+                </Button>
+              </DialogActions>
+            </div>
+          )}
         </Dialog>
       </div>
     )

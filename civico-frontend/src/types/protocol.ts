@@ -319,7 +319,21 @@ export const buildingsData = {
     lumberCost: 1,
     ironCost: 1,
     clayCost: 1,
-    wheatCost: 1
+    wheatCost: 1,
+    upgrade: {
+      1: {
+        lumberCost: 1,
+        ironCost: 1,
+        clayCost: 1,
+        wheatCost: 1
+      },
+      2: {
+        lumberCost: 1,
+        ironCost: 1,
+        clayCost: 1,
+        wheatCost: 1
+      }
+    }
   },
   'Test Building 2': {
     info: 'This building is the second one to use in a testing.',
@@ -329,7 +343,21 @@ export const buildingsData = {
     lumberCost: 1,
     ironCost: 1,
     clayCost: 1,
-    wheatCost: 1
+    wheatCost: 1,
+    upgrade: {
+      1: {
+        lumberCost: 1,
+        ironCost: 1,
+        clayCost: 1,
+        wheatCost: 1
+      },
+      2: {
+        lumberCost: 1,
+        ironCost: 1,
+        clayCost: 1,
+        wheatCost: 1
+      }
+    }
   },
   'Test Building 3': {
     info: 'This building is the third one to use in testing. It has extra long text. And oh boy, is it long! it is, indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something.',
@@ -339,7 +367,21 @@ export const buildingsData = {
     lumberCost: 1,
     ironCost: 1,
     clayCost: 1,
-    wheatCost: 1
+    wheatCost: 1,
+    upgrade: {
+      1: {
+        lumberCost: 1,
+        ironCost: 1,
+        clayCost: 1,
+        wheatCost: 1
+      },
+      2: {
+        lumberCost: 1,
+        ironCost: 1,
+        clayCost: 1,
+        wheatCost: 1
+      }
+    }
   },
   'Test Building 4': {
     info: 'And another one!',
@@ -349,7 +391,21 @@ export const buildingsData = {
     lumberCost: 1,
     ironCost: 1,
     clayCost: 1,
-    wheatCost: 1
+    wheatCost: 1,
+    upgrade: {
+      1: {
+        lumberCost: 1,
+        ironCost: 1,
+        clayCost: 1,
+        wheatCost: 1
+      },
+      2: {
+        lumberCost: 1,
+        ironCost: 1,
+        clayCost: 1,
+        wheatCost: 1
+      }
+    }
   }
 }
 

@@ -87,29 +87,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public state = {...NULL_STATE}
   public errorTimer: NodeJS.Timeout
 
-  public componentDidMount() {
+  public componentWillMount() {
     this.connect()
-    const token = window.localStorage.getItem('civico-token')
-    const username = window.localStorage.getItem('civico-username')
-    const connection = this.state.connection
-    if (connection && token && username) {
-      connection.send(JSON.stringify({type: 'GET_DATA', token}))
-      this.setState({token, username})
-      this.props.history.push('/fields')
-    }
   }
 
   public componentWillUnmount() {
     const connection = this.state.connection
     if (connection) {
       connection.close()
-    }
-  }
-
-  public componentDidUpdate(prevProps) {
-    const {connection, token} = this.state
-    if (connection && token && this.props.history !== prevProps.history) {
-      connection.send(JSON.stringify({type: 'GET_DATA', token}))
     }
   }
 
@@ -131,12 +116,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         case 'TOKEN':
           this.setState({token: message.token, username: message.username})
           if (message.token) {
-            window.localStorage.setItem('civico-token', message.token)
-            window.localStorage.setItem('civico-username', message.username)
             this.props.history.push('/fields')
           } else {
-            window.localStorage.removeItem('civico-token')
-            window.localStorage.removeItem('civico-username')
             this.props.history.push('/login')
           }
           break
@@ -189,8 +170,6 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   }
 
   public handleLogout = () => {
-    window.localStorage.removeItem('civico-token')
-    window.localStorage.removeItem('civico-username')
     this.setState({token: ''})
     const {connection, token} = this.state
     if (connection) {
@@ -217,6 +196,12 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       }
     }
   }
+
+  public handleGetUserData = () => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      connection.send(JSON.stringify({type: 'GET_DATA', token}))}
+    }
 
   public handleFieldLevelUp = (row: number, column: number, newLevel: number) => {
     const {connection, token} = this.state
@@ -271,6 +256,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           token={token}
           username={username}
           onLogout={this.handleLogout}
+          onGetUserData={this.handleGetUserData}
         />
         <Notification message={errorMessage}/>
         <Route exact path='/' render={() =>

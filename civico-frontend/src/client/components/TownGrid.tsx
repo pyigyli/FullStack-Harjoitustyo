@@ -35,6 +35,7 @@ interface Props {
   newBuildingColumn: number
   placeBuildingDisabled: boolean
   onDragStop: (row: number, column: number) => void
+  onOpenBuildingMenu: (buildingName: string, row: number, column: number) => void
 }
 
 interface State {
@@ -56,7 +57,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
   }
 
   public render() {
-    const {classes, grid, newBuildingWidth, newBuildingHeight, placeBuildingDisabled} = this.props
+    const {classes, grid, newBuildingWidth, newBuildingHeight, placeBuildingDisabled, onOpenBuildingMenu} = this.props
     const {width, height, margin} = this.state
 
     return (
@@ -114,6 +115,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
                   left: j * (width + margin),
                   backgroundColor: slot.name === 'EMPTY' ? 'white' : '#ebefec'
                 }}
+                onClick={() => onOpenBuildingMenu(slot.name, i, j)}
               >
                 <div>{slot.name}</div>
                 <div>{slot.name === 'EMPTY' ? '' : slot.level}</div>
