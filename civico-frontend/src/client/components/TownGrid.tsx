@@ -1,6 +1,6 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
-import DragIcon from '@material-ui/icons/openWith'
+import DragIcon from '@material-ui/icons/OpenWith'
 import Draggable from 'react-draggable'
 import {GridSlot} from '../../types/protocol'
 
