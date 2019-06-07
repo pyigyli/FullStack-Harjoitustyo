@@ -3,7 +3,7 @@ import Connection from './connection'
 import {Message} from './types/protocol'
 import {createNewAccount, login, logout, getUserData} from './firebase/users'
 import {levelUpField} from './firebase/fields'
-import {placeBuilding, expandTown} from './firebase/town'
+import {placeBuilding, levelUpBuilding, expandTown} from './firebase/town'
 
 class CivicoServer {
   private connections: Connection[] = []
@@ -29,6 +29,8 @@ class CivicoServer {
         return levelUpField(conn, message.row, message.column, message.newLevel)
       case 'PLACE_BUILDING':
         return placeBuilding(conn, message.buildings, message.newBuildingName)
+      case 'BUILDING_LEVELUP':
+        return levelUpBuilding(conn, message.row, message.column, message.newLevel)
       case 'EXPAND_TOWN':
         return expandTown(conn)
       default:

@@ -1,7 +1,17 @@
 import React from 'react'
 import {Route, withRouter, RouteComponentProps} from 'react-router-dom'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
-import {Message, LoginMessage, LogoutMessage, CreateAccountMessage, FieldLevelUpMessage, PlaceBuildingMessage, ExpandTownMessage, GridSlot} from '../types/protocol'
+import {
+  Message,
+  LoginMessage,
+  LogoutMessage,
+  CreateAccountMessage,
+  FieldLevelUpMessage,
+  PlaceBuildingMessage,
+  BuildingLevelUpMessage,
+  ExpandTownMessage,
+  GridSlot
+} from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
 import InboxScene from './scenes/Inbox'
@@ -219,6 +229,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleBuildingLevelUp = (row: number, column: number, newLevel: number) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: BuildingLevelUpMessage = {type: 'BUILDING_LEVELUP', token, row, column, newLevel}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public handleTownExpand = () => {
     const {connection, token} = this.state
     if (connection && token) {
@@ -293,7 +311,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             clayRate={clayRate}
             wheatRate={wheatRate}
             fields={fields}
-            handleFieldLevelUp={this.handleFieldLevelUp}
+            onFieldLevelUp={this.handleFieldLevelUp}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/town' render={() =>
@@ -305,6 +323,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             buildings={buildings}
             onPlaceBuilding={this.handlePlaceBuilding}
             onExpand={this.handleTownExpand}
+            onBuildingLevelUp={this.handleBuildingLevelUp}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/map' render={() =>

@@ -51,14 +51,21 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
     margin: 5
   }
 
+  public componentDidUpdate(prevProps) {
+    if (this.props.grid.length !== prevProps.grid.length) {
+      this.setState({width: 130 - 8 * this.props.grid.length, height: 130 - 8 * this.props.grid.length})
+    }
+  }
+
   public handleDragStop = (e: MouseEvent, data: any) => {
     const {width, height, margin} = this.state
     this.props.onDragStop(Math.round(data.lastX / (width + margin)), Math.round(data.lastY / (height + margin)))
   }
 
   public render() {
-    const {classes, grid, newBuildingWidth, newBuildingHeight, placeBuildingDisabled, onOpenBuildingMenu} = this.props
+    const {classes, newBuildingWidth, newBuildingHeight, placeBuildingDisabled, onOpenBuildingMenu} = this.props
     const {width, height, margin} = this.state
+    const grid = [...this.props.grid]
 
     return (
       <div
@@ -76,31 +83,18 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
             let bigHeight: number | null = null
             let bigWidth: number | null = null
             if (grid[i][j].name !== 'EMPTY') {
-              if (!grid[i][j]) {
+              if ((i > 0 && grid[i][j].name === grid[i - 1][j].name) || (j > 0 && grid[i][j].name === grid[i][j - 1].name)) {
                 return null
               }
               let heightIndex: number = i + 1
-              let elementUnderDeleted: Boolean = false
-              while (heightIndex < grid.length && grid[heightIndex][j] && grid[i][j] === grid[heightIndex][j]) {
-                grid[heightIndex][j].name = ''
+              while (heightIndex < grid.length && grid[heightIndex][j] && grid[i][j].name === grid[heightIndex][j].name) {
                 heightIndex += 1
                 bigHeight = (height + margin) * (heightIndex - i) - margin
-                elementUnderDeleted = true
               }
               let widthIndex: number = j + 1
-              let elementRightDeleted: Boolean = false
-              while (widthIndex < grid.length && grid[i][widthIndex] && grid[i][j] === grid[i][widthIndex]) {
-                grid[i][widthIndex].name = ''
+              while (widthIndex < grid.length && grid[i][widthIndex] && grid[i][j].name === grid[i][widthIndex].name) {
                 widthIndex += 1
                 bigWidth = (width + margin) * (widthIndex - j) - margin
-                elementRightDeleted = true
-              }
-              if (elementUnderDeleted && elementRightDeleted) {
-                for (let a: number = i + 1; a < heightIndex; a++) {
-                  for (let b: number = j + 1; b < widthIndex; b++) {
-                    grid[a][b].name = ''
-                  }
-                }
               }
             }
             return (

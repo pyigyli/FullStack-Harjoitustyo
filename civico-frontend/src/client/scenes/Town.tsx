@@ -82,6 +82,7 @@ interface Props {
   wheat: number,
   buildings: GridSlot[][]
   onPlaceBuilding: (buildings: GridSlot[][], newBuildingName: string) => void
+  onBuildingLevelUp: (row: number, column: number, newLevel: number) => void
   onExpand: () => void
 }
 
@@ -94,6 +95,8 @@ interface State {
   newBuildingColumn: number
   buildingMenuName: string
   buildingMenuLevel: number
+  buildingMenuRow: number
+  buildingMenuColumn: number
 }
 
 class TownScene extends React.Component<Props & WithStyles<typeof styles>, State> {
@@ -105,7 +108,9 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     newBuildingRow: 0,
     newBuildingColumn: 0,
     buildingMenuName: '',
-    buildingMenuLevel: 0
+    buildingMenuLevel: 0,
+    buildingMenuRow: 0,
+    buildingMenuColumn: 0
   }
 
   public handleOpenBuildingSelect = () => this.setState({buildingsSelectOpen: true})
@@ -163,14 +168,19 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public handleOpenBuildingMenu = (buildingName: string, row: number, column: number) => {
-    this.setState({
-      buildingMenuName: buildingName,
-      buildingMenuLevel: this.props.buildings[row][column].level
-    })
+    if (buildingName !== 'EMPTY') {
+      this.setState({
+        buildingMenuName: buildingName,
+        buildingMenuLevel: this.props.buildings[row][column].level,
+        buildingMenuRow: row,
+        buildingMenuColumn: column
+      })
+    }
   }
 
   public handleSubmitBuildingUpgrade = () => {
-    // TODO send to server
+    const {buildingMenuLevel, buildingMenuRow, buildingMenuColumn} = this.state
+    this.props.onBuildingLevelUp(buildingMenuRow, buildingMenuColumn, buildingMenuLevel + 1)
     this.setState({buildingMenuName: ''})
   }
 
@@ -248,7 +258,15 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
             </Button>
           </div>
           <ScrollArea style={{height: '600px'}}>
-            {Object.entries(buildingsData).map((buildingEntry, index) => (
+            {Object.entries(buildingsData).filter(buildingEntry => {
+              let keepBuilding: boolean = true
+              buildings.forEach((row: GridSlot[]) => {
+                if (row.map((slot: GridSlot) => slot.name).includes(buildingEntry[0])) {
+                  keepBuilding = false
+                }
+              })
+              return keepBuilding
+            }).map((buildingEntry, index) => (
               <div key={index}>
                 <DialogTitle>
                   {buildingEntry[0]}

@@ -53,7 +53,7 @@ interface Props {
   clay: number
   wheat: number
   grid: Array<Array<{name: string, level: number}>>
-  handleFieldLevelUp: (row: number, column: number, newLevel: number) => void
+  onFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
 interface State {
@@ -80,7 +80,7 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
   public handleClose = () => this.setState({slotSelected: false})
 
   public handleSubmit = (row: number, column: number, newLevel: number) => {
-    this.props.handleFieldLevelUp(row, column, newLevel)
+    this.props.onFieldLevelUp(row, column, newLevel)
     this.setState({slotSelected: false})
   }
 

@@ -7,6 +7,7 @@ type MessageType =
   'SEND_DATA' |
   'FIELD_LEVELUP' |
   'PLACE_BUILDING' |
+  'BUILDING_LEVELUP' |
   'EXPAND_TOWN' |
   'ERROR'
 
@@ -19,6 +20,7 @@ export type Message =
   SendUserDataMessage |
   FieldLevelUpMessage |
   PlaceBuildingMessage |
+  BuildingLevelUpMessage |
   ExpandTownMessage |
   ErrorMessage
 
@@ -105,6 +107,14 @@ export interface PlaceBuildingMessage extends MessageBase {
   newBuildingName: string
 }
 
+export interface BuildingLevelUpMessage extends MessageBase {
+  type: 'BUILDING_LEVELUP'
+  token: string
+  row: number
+  column: number
+  newLevel: number
+}
+
 export interface ExpandTownMessage extends MessageBase {
   type: 'EXPAND_TOWN'
   token: string
@@ -157,6 +167,14 @@ export interface FieldSlot {
   ironRateGain: number
   clayRateGain: number
   wheatRateGain: number
+  lumberCost: number
+  ironCost: number
+  clayCost: number
+  wheatCost: number
+}
+
+export interface BuildingSlot {
+  populationGain: number
   lumberCost: number
   ironCost: number
   clayCost: number
@@ -322,12 +340,14 @@ export const buildingsData = {
     wheatCost: 1,
     upgrade: {
       1: {
+        populationGain: 1,
         lumberCost: 1,
         ironCost: 1,
         clayCost: 1,
         wheatCost: 1
       },
       2: {
+        populationGain: 1,
         lumberCost: 1,
         ironCost: 1,
         clayCost: 1,
@@ -346,12 +366,14 @@ export const buildingsData = {
     wheatCost: 1,
     upgrade: {
       1: {
+        populationGain: 1,
         lumberCost: 1,
         ironCost: 1,
         clayCost: 1,
         wheatCost: 1
       },
       2: {
+        populationGain: 1,
         lumberCost: 1,
         ironCost: 1,
         clayCost: 1,
@@ -370,12 +392,14 @@ export const buildingsData = {
     wheatCost: 1,
     upgrade: {
       1: {
+        populationGain: 1,
         lumberCost: 1,
         ironCost: 1,
         clayCost: 1,
         wheatCost: 1
       },
       2: {
+        populationGain: 1,
         lumberCost: 1,
         ironCost: 1,
         clayCost: 1,
@@ -394,12 +418,14 @@ export const buildingsData = {
     wheatCost: 1,
     upgrade: {
       1: {
+        populationGain: 1,
         lumberCost: 1,
         ironCost: 1,
         clayCost: 1,
         wheatCost: 1
       },
       2: {
+        populationGain: 1,
         lumberCost: 1,
         ironCost: 1,
         clayCost: 1,
