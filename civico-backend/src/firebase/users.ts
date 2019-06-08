@@ -30,34 +30,34 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       wheatRate: 5,
       fields: [
         [
-          {name: '?CAVE', level: 0},
-          {name: '?ELECTRICITY', level: 0},
-          {name: '?CLAY', level: 0}, 
-          {name: '?CAVE', level: 0},
+          {name: '?CAVE',  level: 0},
+          {name: '?WHEAT', level: 0},
+          {name: '?CLAY',  level: 0}, 
+          {name: '?CAVE',  level: 0},
           {name: '?WHEAT', level: 0}
         ], [
           {name: '?WHEAT', level: 0},
-          {name: '?WHEAT', level: 0},
+          {name: '?CLAY',  level: 0},
           {name: 'FOREST', level: 0},
-          {name: '?CAVE', level: 0},
+          {name: '?CAVE',  level: 0},
           {name: '?WHEAT', level: 0}
         ], [
           {name: '?FOREST', level: 0},
-          {name: 'CLAY', level: 0},
-          {name: 'TOWN', level: 0},
-          {name: 'CAVE', level: 0},
-          {name: '?CLAY', level: 0}
+          {name: 'CLAY',    level: 0},
+          {name: 'TOWN',    level: 0},
+          {name: 'CAVE',    level: 0},
+          {name: '?CLAY',   level: 0}
         ], [
-          {name: '?LAIR', level: 0},
-          {name: '?WHEAT', level: 0},
-          {name: 'WHEAT', level: 0},
-          {name: '?LAKE', level: 0},
-          {name: '?AIRPORT', level: 0}
+          {name: '?CLAY',   level: 0},
+          {name: '?WHEAT',  level: 0},
+          {name: 'WHEAT',   level: 0},
+          {name: '?CAVE',   level: 0},
+          {name: '?FOREST', level: 0}
         ], [
           {name: '?FOREST', level: 0},
-          {name: '?CAVE', level: 0},
+          {name: '?CAVE',   level: 0},
           {name: '?FOREST', level: 0},
-          {name: '?CLAY', level: 0},
+          {name: '?CLAY',   level: 0},
           {name: '?FOREST', level: 0}
         ]
       ],
@@ -144,9 +144,9 @@ export const getUserData = async (conn: Connection) => {
         type: 'SEND_DATA',
         ...user,
         lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate , user.maxLumber),
-        iron: Math.min(user.iron + timePassed / 3600000 * user.ironRate, user.maxIron),
-        clay: Math.min(user.clay + timePassed / 3600000 * user.clayRate, user.maxClay),
-        wheat: Math.min(user.wheat + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat),
+        iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron),
+        clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay),
+        wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat),
         fields,
         buildings,
         map

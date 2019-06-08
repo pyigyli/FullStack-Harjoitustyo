@@ -6,8 +6,9 @@ type MessageType =
   'GET_DATA' |
   'SEND_DATA' |
   'FIELD_LEVELUP' |
-  'PLACE_BUILDING' |
+  'BUILDING_PLACE' |
   'BUILDING_LEVELUP' |
+  'BUILDING_DELETE' |
   'EXPAND_TOWN' |
   'ERROR'
 
@@ -21,6 +22,7 @@ export type Message =
   FieldLevelUpMessage |
   PlaceBuildingMessage |
   BuildingLevelUpMessage |
+  DeleteBuildingMessage |
   ExpandTownMessage |
   ErrorMessage
 
@@ -72,20 +74,10 @@ export interface SendUserDataMessage extends MessageBase {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: {
-    name: string
-    level: number
-  }[][]
-  buildings: {
-    name: string
-    level: number
-  }[][]
+  fields: {name: string, level: number}[][]
+  buildings: {name: string, level: number}[][]
   map: number[]
-  inbox: {
-    sender: string
-    title: string
-    message: string
-  }[]
+  inbox: {sender: string, title: string, message: string}[]
   timestamp: number
 }
 
@@ -98,13 +90,11 @@ export interface FieldLevelUpMessage extends MessageBase {
 }
 
 export interface PlaceBuildingMessage extends MessageBase {
-  type: 'PLACE_BUILDING'
+  type: 'BUILDING_PLACE'
   token: string
-  buildings: {
-    name: string
-    level: number
-  }[][]
+  buildings: {name: string, level: number}[][]
   newBuildingName: string
+  moving: boolean
 }
 
 export interface BuildingLevelUpMessage extends MessageBase {
@@ -113,6 +103,13 @@ export interface BuildingLevelUpMessage extends MessageBase {
   row: number
   column: number
   newLevel: number
+}
+
+export interface DeleteBuildingMessage extends MessageBase {
+  type: 'BUILDING_DELETE'
+  token: string
+  buildings: GridSlot[][]
+  removedBuilding: GridSlot
 }
 
 export interface ExpandTownMessage extends MessageBase {
@@ -139,20 +136,10 @@ export interface UserData {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: {
-    name: string
-    level: number
-  }[][]
-  buildings: {
-    name: string
-    level: number
-  }[][]
+  fields: {name: string, level: number}[][]
+  buildings: {name: string, level: number}[][]
   map: number[]
-  inbox: {
-    sender: string
-    title: string
-    message: string
-  }[]
+  inbox: {sender: string, title: string, message: string}[]
   timestamp: number
 }
 

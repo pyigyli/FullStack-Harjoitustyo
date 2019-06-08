@@ -27,7 +27,7 @@ class Notification extends React.Component<Props & WithStyles<typeof styles>> {
 
     return (
       <div>
-        <Fade in={Boolean(message)}>
+        <Fade in={!!message}>
           <Paper className={classes.root}>
             {message}
           </Paper>

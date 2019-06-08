@@ -3,6 +3,33 @@ import Connection from '../connection'
 import {UserData, GridSlot, BuildingSlot, townExpansionData, buildingsData} from '../types/protocol'
 import {getUserData} from './users'
 
+export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], newBuildingName: string, moving: boolean) => {
+  try {
+    const userReference = await db.ref(`users/${conn.id}`).once('value')
+    const user: UserData = userReference.toJSON() as UserData
+    const building = buildingsData[newBuildingName]
+    const currentTime = new Date().getTime()
+    const timePassed = currentTime - user.timestamp
+    const currentLumber = Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber)
+    const currentIron   = Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron)
+    const currentClay   = Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay)
+    const currentWheat  = Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat)
+    await db.ref(`users/${conn.id}`).update({
+      population: moving ? user.population : user.population + building.populationGain,
+      lumber: currentLumber - (moving ? Math.floor(building.lumberCost / 5) : building.lumberCost),
+      iron:   currentIron   - (moving ? Math.floor(building.ironCost   / 5) : building.ironCost),
+      clay:   currentClay   - (moving ? Math.floor(building.clayCost   / 5) : building.clayCost),
+      wheat:  currentWheat  - (moving ? Math.floor(building.wheatCost  / 5) : building.wheatCost),
+      buildings: buildings,
+      timestamp: currentTime
+    })
+    getUserData(conn)
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
 export const levelUpBuilding = async (conn: Connection, row: number, column: number, newLevel: number) => {
   try {
     const userReference = await db.ref(`users/${conn.id}`).once('value')
@@ -13,9 +40,9 @@ export const levelUpBuilding = async (conn: Connection, row: number, column: num
     await db.ref(`users/${conn.id}`).update({
       population: user.population + slot.populationGain,
       lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber) - slot.lumberCost,
-      iron: Math.min(user.iron + timePassed / 3600000 * user.ironRate, user.maxIron) - slot.ironCost,
-      clay: Math.min(user.clay + timePassed / 3600000 * user.clayRate, user.maxClay) - slot.clayCost,
-      wheat: Math.min(user.wheat + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - slot.wheatCost,
+      iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron) - slot.ironCost,
+      clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay) - slot.clayCost,
+      wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - slot.wheatCost,
       timestamp: currentTime
     })
     await db.ref(`users/${conn.id}/buildings/${row}/${column}/level`).set(newLevel)
@@ -26,21 +53,18 @@ export const levelUpBuilding = async (conn: Connection, row: number, column: num
   }
 }
 
-export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], newBuildingName: string) => {
+export const deleteBuilding = async (conn: Connection, buildings: GridSlot[][], removedBuilding: GridSlot) => {
   try {
     const userReference = await db.ref(`users/${conn.id}`).once('value')
     const user: UserData = userReference.toJSON() as UserData
-    const building = buildingsData[newBuildingName]
-    const currentTime = new Date().getTime()
-    const timePassed = currentTime - user.timestamp
+    const building = buildingsData[removedBuilding.name]
+    let buildingPopulationGain = building.populationGain
+    for (let i = 1; i < removedBuilding.level; i++) {
+      buildingPopulationGain += building.upgrade[i].populationGain
+    }
     await db.ref(`users/${conn.id}`).update({
-      population: user.population + building.populationGain,
-      lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber) - building.lumberCost,
-      iron: Math.min(user.iron + timePassed / 3600000 * user.ironRate, user.maxIron) - building.ironCost,
-      clay: Math.min(user.clay + timePassed / 3600000 * user.clayRate, user.maxClay) - building.clayCost,
-      wheat: Math.min(user.wheat + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - building.wheatCost,
-      buildings: buildings,
-      timestamp: currentTime
+      population: user.population - buildingPopulationGain,
+      buildings: buildings
     })
     getUserData(conn)
   } catch (err) {
@@ -74,9 +98,9 @@ export const expandTown = async (conn: Connection) => {
     const timePassed = currentTime - user.timestamp
     await db.ref(`users/${conn.id}`).update({
       lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber) - expansion.lumberCost,
-      iron: Math.min(user.iron + timePassed / 3600000 * user.ironRate, user.maxIron) - expansion.ironCost,
-      clay: Math.min(user.clay + timePassed / 3600000 * user.clayRate, user.maxClay) - expansion.clayCost,
-      wheat: Math.min(user.wheat + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - expansion.wheatCost,
+      iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron) - expansion.ironCost,
+      clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay) - expansion.clayCost,
+      wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - expansion.wheatCost,
       buildings: newGrid,
       timestamp: currentTime
     })

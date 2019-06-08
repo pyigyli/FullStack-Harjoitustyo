@@ -9,6 +9,7 @@ import {
   FieldLevelUpMessage,
   PlaceBuildingMessage,
   BuildingLevelUpMessage,
+  DeleteBuildingMessage,
   ExpandTownMessage,
   GridSlot
 } from '../types/protocol'
@@ -211,10 +212,10 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public handlePlaceBuilding = (buildings: GridSlot[][], newBuildingName: string) => {
+  public handlePlaceBuilding = (buildings: GridSlot[][], newBuildingName: string, moving: boolean) => {
     const {connection, token} = this.state
     if (connection && token) {
-      const message: PlaceBuildingMessage = {type: 'PLACE_BUILDING', token, buildings, newBuildingName}
+      const message: PlaceBuildingMessage = {type: 'BUILDING_PLACE', token, buildings, newBuildingName, moving}
       connection.send(JSON.stringify(message))
     }
   }
@@ -223,6 +224,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     const {connection, token} = this.state
     if (connection && token) {
       const message: BuildingLevelUpMessage = {type: 'BUILDING_LEVELUP', token, row, column, newLevel}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
+  public handleDeleteBuilding = (buildings: GridSlot[][], removedBuilding: GridSlot) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: DeleteBuildingMessage = {type: 'BUILDING_DELETE', token, buildings, removedBuilding}
       connection.send(JSON.stringify(message))
     }
   }
@@ -312,8 +321,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             wheat={wheat}
             buildings={buildings}
             onPlaceBuilding={this.handlePlaceBuilding}
-            onExpand={this.handleTownExpand}
+            onDeleteBuilding={this.handleDeleteBuilding}
             onBuildingLevelUp={this.handleBuildingLevelUp}
+            onExpand={this.handleTownExpand}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/map' render={() =>

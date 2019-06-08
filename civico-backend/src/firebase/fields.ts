@@ -13,13 +13,13 @@ export const levelUpField = async (conn: Connection, row: number, column: number
     await db.ref(`users/${conn.id}`).update({
       population: user.population + slot.populationGain,
       lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber) - slot.lumberCost,
-      iron: Math.min(user.iron + timePassed / 3600000 * user.ironRate, user.maxIron) - slot.ironCost,
-      clay: Math.min(user.clay + timePassed / 3600000 * user.clayRate, user.maxClay) - slot.clayCost,
-      wheat: Math.min(user.wheat + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - slot.wheatCost,
+      iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron) - slot.ironCost,
+      clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay) - slot.clayCost,
+      wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - slot.wheatCost,
       lumberRate: user.lumberRate + slot.lumberRateGain,
-      ironRate: user.ironRate + slot.ironRateGain,
-      clayRate: user.clayRate + slot.clayRateGain,
-      wheatRate: user.wheatRate + slot.wheatRateGain,
+      ironRate:   user.ironRate   + slot.ironRateGain,
+      clayRate:   user.clayRate   + slot.clayRateGain,
+      wheatRate:  user.wheatRate  + slot.wheatRateGain,
       timestamp: currentTime
     })
     await db.ref(`users/${conn.id}/fields/${row}/${column}/level`).set(newLevel)

@@ -92,8 +92,9 @@ interface Props {
   clay: number,
   wheat: number,
   buildings: GridSlot[][]
-  onPlaceBuilding: (buildings: GridSlot[][], newBuildingName: string) => void
+  onPlaceBuilding: (buildings: GridSlot[][], newBuildingName: string, moving: boolean) => void
   onBuildingLevelUp: (row: number, column: number, newLevel: number) => void
+  onDeleteBuilding: (buildings: GridSlot[][], removedBuilding: GridSlot) => void
   onExpand: () => void
 }
 
@@ -109,6 +110,7 @@ interface State {
   buildingMenuRow: number
   buildingMenuColumn: number
   buildingsOnMoving: GridSlot[][] | null
+  buildingDeleteConfirmOpen: boolean
 }
 
 class TownScene extends React.Component<Props & WithStyles<typeof styles>, State> {
@@ -123,7 +125,8 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     buildingMenuLevel: 1,
     buildingMenuRow: 0,
     buildingMenuColumn: 0,
-    buildingsOnMoving: null
+    buildingsOnMoving: null,
+    buildingDeleteConfirmOpen: false
   }
 
   public handleOpenBuildingSelect = () => this.setState({buildingsSelectOpen: true})
@@ -171,7 +174,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
         }
       }
     }
-    this.props.onPlaceBuilding(buildings, this.state.newBuildingName)
+    this.props.onPlaceBuilding(buildings, this.state.newBuildingName, !!this.state.buildingsOnMoving)
     this.setState({
       newBuildingName: '',
       newBuildingWidth: 0,
@@ -223,7 +226,25 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     this.setState({buildingMenuName: ''})
   }
 
+  public handleDeleteBuilding = () => {
+    const {buildings} = this.props
+    const {buildingMenuName, buildingMenuLevel} = this.state
+    for (let i = 0; i < buildings.length; i++) {
+      for (let j = 0; j < buildings.length; j++) {
+        if (buildings[i][j].name === buildingMenuName) {
+          buildings[i][j].name = 'EMPTY'
+        }
+      }
+    }
+    this.props.onDeleteBuilding(buildings, {name: buildingMenuName, level: buildingMenuLevel})
+    this.setState({buildingMenuName: '', buildingDeleteConfirmOpen: false})
+  }
+
   public handleCloseBuildingMenu = () => this.setState({buildingMenuName: ''})
+
+  public handleOpenBuildingDeleteConfirm = () => this.setState({buildingDeleteConfirmOpen: true})
+
+  public handleCloseBuildingDeleteConfirm = () => this.setState({buildingDeleteConfirmOpen: false})
 
   public render() {
     const {classes, lumber, iron, clay, wheat, buildings, onExpand} = this.props
@@ -235,7 +256,8 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       newBuildingColumn,
       buildingMenuName,
       buildingMenuLevel,
-      buildingsOnMoving
+      buildingsOnMoving,
+      buildingDeleteConfirmOpen
     } = this.state
     const grid: GridSlot[][] = buildingsOnMoving || buildings
 
@@ -453,9 +475,24 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 >
                   Upgrade
                 </Button>
-                <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleCloseBuildingMenu}>
+                <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleOpenBuildingDeleteConfirm}>
                   Destruct
                 </Button>
+                <Dialog open={buildingDeleteConfirmOpen} onClose={this.handleCloseBuildingSelect}>
+                  <DialogTitle>
+                    Are you sure you want to destruct this building?
+                  </DialogTitle>
+                  <DialogActions>
+                    <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+                      <Button className={classes.button} onClick={this.handleCloseBuildingDeleteConfirm}>
+                        Cancel
+                      </Button>
+                      <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleDeleteBuilding}>
+                        Confirm
+                      </Button>
+                    </div>
+                  </DialogActions>
+                </Dialog>
               </DialogActions>
             </div>
           )}
