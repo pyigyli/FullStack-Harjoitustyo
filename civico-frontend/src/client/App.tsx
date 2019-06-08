@@ -55,11 +55,7 @@ interface State {
   fields: GridSlot[][]
   buildings: GridSlot[][]
   map: number[]
-  inbox: Array<{
-    sender: string
-    title: string
-    message: string
-  }>
+  inbox: Array<{sender: string, title: string, message: string}>
   errorMessage: string
 }
 
@@ -80,14 +76,8 @@ const NULL_STATE: State = {
   ironRate: 0,
   clayRate: 0,
   wheatRate: 0,
-  fields: [[{
-    name: '',
-    level: 0
-  }]],
-  buildings: [[{
-    name: '',
-    level: 0
-  }]],
+  fields: [[{name: '', level: 0}]],
+  buildings: [[{name: '', level: 0}]],
   map: [0, 0],
   inbox: [],
   errorMessage: ''

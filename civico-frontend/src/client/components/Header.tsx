@@ -48,9 +48,9 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
   }
 
   public render() {
-    const {classes, history, token, username, onLogout} = this.props
+    const {classes, history, location, token, username, onLogout} = this.props
     let tabValue: number | boolean = false
-    switch (history.location.pathname) {
+    switch (location.pathname) {
       case '/login':
       case '/fields':
         tabValue = 0

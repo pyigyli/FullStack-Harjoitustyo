@@ -1,6 +1,7 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
 import ScrollArea from 'react-scrollbar'
+import {cloneDeep} from 'lodash'
 import {GridSlot, buildingsData} from '../../types/protocol'
 import TownGrid from '../components/TownGrid'
 
@@ -46,8 +47,8 @@ const styles = () => createStyles({
     justifyContent: 'space-between',
     paddingLeft: '20px',
     paddingRight: '30px',
-    paddingTop: '20px',
-    paddingBottom: '20px'
+    paddingTop: '10px',
+    paddingBottom: '10px'
   },
   buildingCostWrapper: {
     display: 'flex',
@@ -64,14 +65,24 @@ const styles = () => createStyles({
     paddingLeft: '30px',
     paddingRight: '30px',
     marginLeft: '20px',
-    marginRight: '20px'
+    marginRight: '20px',
+    marginBottom: '5px',
+    '&$redButton': {
+			background: '#aa2c2caa'
+		}
   },
+  redButton: {},
   closeButtonWrapper: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginTop: '20px',
     marginBottom: '1px'
+  },
+  buildingInfoTitleWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start'
   }
 })
 
@@ -97,6 +108,7 @@ interface State {
   buildingMenuLevel: number
   buildingMenuRow: number
   buildingMenuColumn: number
+  buildingsOnMoving: GridSlot[][] | null
 }
 
 class TownScene extends React.Component<Props & WithStyles<typeof styles>, State> {
@@ -108,9 +120,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     newBuildingRow: 0,
     newBuildingColumn: 0,
     buildingMenuName: '',
-    buildingMenuLevel: 0,
+    buildingMenuLevel: 1,
     buildingMenuRow: 0,
-    buildingMenuColumn: 0
+    buildingMenuColumn: 0,
+    buildingsOnMoving: null
   }
 
   public handleOpenBuildingSelect = () => this.setState({buildingsSelectOpen: true})
@@ -132,7 +145,8 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       newBuildingWidth: 0,
       newBuildingHeight: 0,
       newBuildingRow: 0,
-      newBuildingColumn: 0
+      newBuildingColumn: 0,
+      buildingsOnMoving: null
     })
   }
 
@@ -148,12 +162,12 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public handlePlaceBuilding = () => {
-    const buildings = this.props.buildings
+    const buildings = this.state.buildingsOnMoving || this.props.buildings
     for (let i = 0; i < this.state.newBuildingWidth; i++) {
       for (let j = 0; j < this.state.newBuildingHeight; j++) {
         buildings[this.state.newBuildingColumn + j][this.state.newBuildingRow + i] = {
           name: this.state.newBuildingName,
-          level: 1
+          level: this.state.buildingMenuLevel
         }
       }
     }
@@ -163,7 +177,9 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       newBuildingWidth: 0,
       newBuildingHeight: 0,
       newBuildingRow: 0,
-      newBuildingColumn: 0
+      newBuildingColumn: 0,
+      buildingMenuLevel: 1,
+      buildingsOnMoving: null
     })
   }
 
@@ -176,6 +192,29 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
         buildingMenuColumn: column
       })
     }
+  }
+  
+  public handleMoveBuilding = () => {
+    const grid = cloneDeep(this.props.buildings)
+    const {buildingMenuName} = this.state
+    for (let i = 0; i < grid.length; i++) {
+      for (let j = 0; j < grid.length; j++) {
+        if (grid[i][j].name === buildingMenuName) {
+          grid[i][j].name = 'EMPTY'
+        }
+      }
+    }
+    this.setState({
+      newBuildingName: buildingMenuName,
+      newBuildingWidth: buildingsData[buildingMenuName].width,
+      newBuildingHeight: buildingsData[buildingMenuName].height,
+      newBuildingRow: 0,
+      newBuildingColumn: 0,
+      buildingMenuName: '',
+      buildingMenuRow: 0,
+      buildingMenuColumn: 0,
+      buildingsOnMoving: grid
+    })
   }
 
   public handleSubmitBuildingUpgrade = () => {
@@ -195,13 +234,15 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       newBuildingRow,
       newBuildingColumn,
       buildingMenuName,
-      buildingMenuLevel
+      buildingMenuLevel,
+      buildingsOnMoving
     } = this.state
+    const grid: GridSlot[][] = buildingsOnMoving || buildings
 
     let placeBuildingDisabled: boolean = false
     for (let i = newBuildingColumn; i < newBuildingColumn + newBuildingHeight; i++) {
       for (let j = newBuildingRow; j < newBuildingRow + newBuildingWidth; j++) {
-        if (i >= buildings.length || j >= buildings.length || buildings[i][j].name !== 'EMPTY') {
+        if (i >= grid.length || j >= grid.length || grid[i][j].name !== 'EMPTY') {
           placeBuildingDisabled = true
         }
       }
@@ -231,7 +272,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           </div>
         ) : (
           <div className={classes.constructionButtonsContainer}>
-            {buildings.length < 6 && (
+            {grid.length < 6 && (
               <Button className={classes.button} onClick={onExpand}>
                 Expand
               </Button>
@@ -242,7 +283,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           </div>
         )}
         <TownGrid
-          grid={buildings}
+          grid={grid}
           newBuildingWidth={newBuildingWidth}
           newBuildingHeight={newBuildingHeight}
           newBuildingRow={newBuildingRow}
@@ -257,10 +298,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
               Cancel
             </Button>
           </div>
-          <ScrollArea style={{height: '600px'}}>
+          <ScrollArea style={{minWidth: '500px', minHeight: '200px', maxHeight: '600px'}}>
             {Object.entries(buildingsData).filter(buildingEntry => {
               let keepBuilding: boolean = true
-              buildings.forEach((row: GridSlot[]) => {
+              grid.forEach((row: GridSlot[]) => {
                 if (row.map((slot: GridSlot) => slot.name).includes(buildingEntry[0])) {
                   keepBuilding = false
                 }
@@ -320,15 +361,22 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           {buildingMenuName && (
             <div>
               <DialogTitle>
-                {buildingMenuName}
+                <div className={classes.buildingInfoTitleWrapper}>
+                  <div>
+                    {buildingMenuName}
+                  </div>
+                  <div style={{fontSize: '18px', marginTop: '2px', marginLeft: '25px'}}>
+                    level {buildingMenuLevel}
+                  </div>
+                </div>
               </DialogTitle>
               <DialogContent>
                 <DialogContentText>
                   {buildingsData[buildingMenuName].info}
                 </DialogContentText>
                 <div className={classes.buildingCostsContainer}>
-                <div className={classes.buildingCostWrapper}>
-                    <div className={classes.costLabel}>Cost:</div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div className={classes.costLabel}>Upgrade cost:</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>
@@ -347,10 +395,51 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                     <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost}</div>
                   </div>
                 </div>
+                <div className={classes.buildingCostsContainer}>
+                  <div className={classes.buildingCostWrapper}>
+                    <div className={classes.costLabel}>Moving cost:</div>
+                  </div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div>Lumber</div>
+                    <div>
+                      {Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost / 5)}
+                    </div>
+                  </div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div>Iron</div>
+                    <div>
+                      {Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost / 5)}
+                    </div>
+                  </div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div>Clay</div>
+                    <div>
+                      {Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost / 5)}
+                    </div>
+                  </div>
+                  <div className={classes.buildingCostWrapper}>
+                    <div>Wheat</div>
+                    <div>
+                      {Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost / 5)}
+                    </div>
+                  </div>
+                </div>
               </DialogContent>
               <DialogActions>
                 <Button className={classes.button} onClick={this.handleCloseBuildingMenu}>
                   Cancel
+                </Button>
+                <Button
+                  className={classes.button}
+                  onClick={this.handleMoveBuilding}
+                  disabled={
+                    lumber < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost / 5) ||
+                    iron < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost / 5) ||
+                    clay < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost / 5) ||
+                    wheat < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost / 5)
+                  }
+                >
+                  Move
                 </Button>
                 <Button
                   className={classes.button}
@@ -363,6 +452,9 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   }
                 >
                   Upgrade
+                </Button>
+                <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleCloseBuildingMenu}>
+                  Destruct
                 </Button>
               </DialogActions>
             </div>

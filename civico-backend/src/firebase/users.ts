@@ -91,10 +91,10 @@ export const createNewAccount = async (conn: Connection, username: string, passw
 
 export const login = async (conn: Connection, username: string, password: string) => {
   try {
-    const user = await db.ref('users').orderByChild('username').equalTo(username).once('value')
-    const userJSON = user.toJSON()
-    if (userJSON && await bcrypt.compare(password, Object.values(userJSON)[0].passwordHash)) {
-      const id = Object.keys(userJSON)[0]
+    const userReference = await db.ref('users').orderByChild('username').equalTo(username).once('value')
+    const user = userReference.toJSON()
+    if (user && await bcrypt.compare(password, Object.values(user)[0].passwordHash)) {
+      const id = Object.keys(user)[0]
       const token = `Bearer ${jwt.sign(id, process.env.SECRET || 'DEVELOPMENT')}`
       await db.ref(`users/${id}/token`).set(token)
       conn.id = id

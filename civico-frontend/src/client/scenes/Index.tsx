@@ -36,7 +36,6 @@ const styles = () => createStyles({
   button: {
     fontSize: '30px',
     backgroundColor: '#32143244',
-    color: '#552255',
     paddingLeft: '50px',
     paddingRight: '50px',
     paddingTop: '10px',

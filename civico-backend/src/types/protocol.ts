@@ -334,24 +334,24 @@ export const buildingsData = {
     width: 1,
     height: 1,
     populationGain: 1,
-    lumberCost: 1,
-    ironCost: 1,
-    clayCost: 1,
-    wheatCost: 1,
+    lumberCost: 10,
+    ironCost: 10,
+    clayCost: 10,
+    wheatCost: 10,
     upgrade: {
       1: {
         populationGain: 1,
-        lumberCost: 1,
-        ironCost: 1,
-        clayCost: 1,
-        wheatCost: 1
+        lumberCost: 10,
+        ironCost: 10,
+        clayCost: 10,
+        wheatCost: 10
       },
       2: {
         populationGain: 1,
-        lumberCost: 1,
-        ironCost: 1,
-        clayCost: 1,
-        wheatCost: 1
+        lumberCost: 10,
+        ironCost: 10,
+        clayCost: 10,
+        wheatCost: 10
       }
     }
   },
@@ -360,24 +360,24 @@ export const buildingsData = {
     width: 1,
     height: 2,
     populationGain: 1,
-    lumberCost: 1,
-    ironCost: 1,
-    clayCost: 1,
-    wheatCost: 1,
+    lumberCost: 10,
+    ironCost: 10,
+    clayCost: 10,
+    wheatCost: 10,
     upgrade: {
       1: {
         populationGain: 1,
-        lumberCost: 1,
-        ironCost: 1,
-        clayCost: 1,
-        wheatCost: 1
+        lumberCost: 10,
+        ironCost: 10,
+        clayCost: 10,
+        wheatCost: 10
       },
       2: {
         populationGain: 1,
-        lumberCost: 1,
-        ironCost: 1,
-        clayCost: 1,
-        wheatCost: 1
+        lumberCost: 10,
+        ironCost: 10,
+        clayCost: 10,
+        wheatCost: 10
       }
     }
   },
@@ -386,24 +386,24 @@ export const buildingsData = {
     width: 2,
     height: 2,
     populationGain: 1,
-    lumberCost: 1,
-    ironCost: 1,
-    clayCost: 1,
-    wheatCost: 1,
+    lumberCost: 10,
+    ironCost: 10,
+    clayCost: 10,
+    wheatCost: 10,
     upgrade: {
       1: {
         populationGain: 1,
-        lumberCost: 1,
-        ironCost: 1,
-        clayCost: 1,
-        wheatCost: 1
+        lumberCost: 10,
+        ironCost: 10,
+        clayCost: 10,
+        wheatCost: 10
       },
       2: {
         populationGain: 1,
-        lumberCost: 1,
-        ironCost: 1,
-        clayCost: 1,
-        wheatCost: 1
+        lumberCost: 10,
+        ironCost: 10,
+        clayCost: 10,
+        wheatCost: 10
       }
     }
   },
@@ -412,24 +412,24 @@ export const buildingsData = {
     width: 3,
     height: 2,
     populationGain: 1,
-    lumberCost: 1,
-    ironCost: 1,
-    clayCost: 1,
-    wheatCost: 1,
+    lumberCost: 10,
+    ironCost: 10,
+    clayCost: 10,
+    wheatCost: 10,
     upgrade: {
       1: {
         populationGain: 1,
-        lumberCost: 1,
-        ironCost: 1,
-        clayCost: 1,
-        wheatCost: 1
+        lumberCost: 10,
+        ironCost: 10,
+        clayCost: 10,
+        wheatCost: 10
       },
       2: {
         populationGain: 1,
-        lumberCost: 1,
-        ironCost: 1,
-        clayCost: 1,
-        wheatCost: 1
+        lumberCost: 10,
+        ironCost: 10,
+        clayCost: 10,
+        wheatCost: 10
       }
     }
   }
@@ -437,15 +437,15 @@ export const buildingsData = {
 
 export const townExpansionData = {
   first: {
-    lumberCost: 1,
-    ironCost: 1,
-    clayCost: 1,
-    wheatCost: 1
+    lumberCost: 10,
+    ironCost: 10,
+    clayCost: 10,
+    wheatCost: 10
   },
   second: {
-    lumberCost: 1,
-    ironCost: 1,
-    clayCost: 1,
-    wheatCost: 1
+    lumberCost: 10,
+    ironCost: 10,
+    clayCost: 10,
+    wheatCost: 10
   }
 }

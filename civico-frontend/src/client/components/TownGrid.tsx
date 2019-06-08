@@ -63,9 +63,8 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
   }
 
   public render() {
-    const {classes, newBuildingWidth, newBuildingHeight, placeBuildingDisabled, onOpenBuildingMenu} = this.props
+    const {classes, grid, newBuildingWidth, newBuildingHeight, placeBuildingDisabled, onOpenBuildingMenu} = this.props
     const {width, height, margin} = this.state
-    const grid = [...this.props.grid]
 
     return (
       <div

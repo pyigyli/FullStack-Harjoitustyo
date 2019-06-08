@@ -18,4 +18,5 @@
 | 5.6.   | 8    | - Kyläruudukkoon voi rakentaa uusia rakennuksia, joiden sijainnin ja orientaation voi päättää itse.<br> - Kyläruudukon rakennettavien rakennusten listan ulkoasu toteutettu. |
 | 6.6.   | 5    | - Rakennusta ei voi asettaa, ellei valittu paikka ole vapaa.<br> - Asiakas ei enää pyydä palvelimelta jatkuvasti käyttäjän dataa.<br> - Rakennuksen tason nostamista edistetty. |
 | 7.6.   | 4    | - Rakennusten tason nostaminen toteutettu.<br> - Useamman ruudun peittävien rakennusten ulkoasu kyläruudukossa korjattu.<br> - Index-näkymä toteutettu. |
-| Yhteensä | 88    |
+| 8.6.   | 4    | - Olemassa olevien rakennusten uudelleen sijoittaminen toteutettu. |
+| Yhteensä | 92    |

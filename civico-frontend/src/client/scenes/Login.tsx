@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter, RouteComponentProps} from 'react-router-dom'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
 import TextField from '@material-ui/core/TextField'
 import {Button} from '@material-ui/core'
@@ -48,8 +49,14 @@ interface State {
   password: string
 }
 
-class LoginScene extends React.Component<Props & WithStyles<typeof styles>, State> {
+class LoginScene extends React.Component<Props & RouteComponentProps & WithStyles<typeof styles>, State> {
   public state = {username: '', password: ''}
+
+  public componentWillMount = () => {
+    if (this.props.location.pathname !== '/login') {
+      this.props.history.push('/login')
+    }
+  }
 
   public handleUsernameChange = (value: string) => this.setState({username: value})
   public handlePasswordChange = (value: string) => this.setState({password: value})
@@ -93,4 +100,4 @@ class LoginScene extends React.Component<Props & WithStyles<typeof styles>, Stat
   }
 }
 
-export default withStyles(styles)(LoginScene)
+export default withRouter(withStyles(styles)(LoginScene))
