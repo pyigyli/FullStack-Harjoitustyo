@@ -20,7 +20,7 @@ export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], n
       iron:   currentIron   - (moving ? Math.floor(building.ironCost   / 5) : building.ironCost),
       clay:   currentClay   - (moving ? Math.floor(building.clayCost   / 5) : building.clayCost),
       wheat:  currentWheat  - (moving ? Math.floor(building.wheatCost  / 5) : building.wheatCost),
-      buildings: buildings,
+      buildings,
       timestamp: currentTime
     })
     getUserData(conn)
@@ -64,7 +64,7 @@ export const deleteBuilding = async (conn: Connection, buildings: GridSlot[][], 
     }
     await db.ref(`users/${conn.id}`).update({
       population: user.population - buildingPopulationGain,
-      buildings: buildings
+      buildings
     })
     getUserData(conn)
   } catch (err) {

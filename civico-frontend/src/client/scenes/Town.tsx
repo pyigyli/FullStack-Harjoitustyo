@@ -68,8 +68,8 @@ const styles = () => createStyles({
     marginRight: '20px',
     marginBottom: '5px',
     '&$redButton': {
-			background: '#aa2c2caa'
-		}
+      background: '#aa2c2caa'
+    }
   },
   redButton: {},
   closeButtonWrapper: {
@@ -200,10 +200,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   public handleMoveBuilding = () => {
     const grid = cloneDeep(this.props.buildings)
     const {buildingMenuName} = this.state
-    for (let i = 0; i < grid.length; i++) {
-      for (let j = 0; j < grid.length; j++) {
-        if (grid[i][j].name === buildingMenuName) {
-          grid[i][j].name = 'EMPTY'
+    for (const row of grid) {
+      for (const slot of row) {
+        if (slot.name === buildingMenuName) {
+          slot.name = 'EMPTY'
         }
       }
     }
@@ -229,10 +229,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   public handleDeleteBuilding = () => {
     const {buildings} = this.props
     const {buildingMenuName, buildingMenuLevel} = this.state
-    for (let i = 0; i < buildings.length; i++) {
-      for (let j = 0; j < buildings.length; j++) {
-        if (buildings[i][j].name === buildingMenuName) {
-          buildings[i][j].name = 'EMPTY'
+    for (const row of buildings) {
+      for (const slot of row) {
+        if (slot.name === buildingMenuName) {
+          slot.name = 'EMPTY'
         }
       }
     }

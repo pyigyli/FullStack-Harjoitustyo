@@ -1,5 +1,5 @@
 import React from 'react'
-import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
+import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
 import FieldGrid from '../components/FieldGrid'
 import {GridSlot} from '../../types/protocol'
 
@@ -50,6 +50,13 @@ const styles = () => createStyles({
   resourceRateTextWrapper: {
     width: '93px',
     textAlign: 'right'
+  },
+  button: {
+    backgroundColor: '#32143244',
+    color: '#321432',
+    paddingLeft: '30px',
+    paddingRight: '30px',
+    margin: '30px'
   }
 })
 
@@ -67,9 +74,28 @@ interface Props {
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
-class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
+interface State {
+  openDiscoverMenu: boolean
+  selectedRow: number
+  selectedColumn: number
+}
+
+class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, State> {
+  public state = {
+    openDiscoverMenu: false,
+    selectedRow: 0,
+    selectedColumn: 0
+  }
+
+  public handleOpenDiscoverMenu = (row: number, column: number) => {
+    this.setState({openDiscoverMenu: true, selectedRow: row, selectedColumn: column})
+  }
+
+  public handleCloseDiscoverMenu = () => this.setState({openDiscoverMenu: false})
+
   public render() {
     const {classes, population, lumber, iron, clay, wheat, lumberRate, ironRate, clayRate, wheatRate, fields, onFieldLevelUp} = this.props
+    const {openDiscoverMenu} = this.state
 
     return (
       <div className={classes.sceneWrapper}>
@@ -106,7 +132,31 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>> {
           wheat={wheat}
           grid={fields}
           onFieldLevelUp={onFieldLevelUp}
+          onOpenDiscoverMenu={this.handleOpenDiscoverMenu}
         />
+        <Dialog open={openDiscoverMenu} onClose={this.handleCloseDiscoverMenu}>
+          <DialogTitle>
+            Discover a new field
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Send your troops to conquer uncharted land.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button className={classes.button} onClick={this.handleCloseDiscoverMenu}>
+              Cancel
+            </Button>
+            <Button
+              className={classes.button}
+              onClick={this.handleCloseDiscoverMenu}
+              disabled={false}
+              // TODO
+            >
+              Send
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     )
   }

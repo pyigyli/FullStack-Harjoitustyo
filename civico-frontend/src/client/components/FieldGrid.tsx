@@ -1,6 +1,7 @@
 import React from 'react'
+import {withRouter, RouteComponentProps} from 'react-router-dom'
 import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
-import {fieldSlotData} from '../../types/protocol'
+import {GridSlot, fieldSlotData} from '../../types/protocol'
 
 const styles = () => createStyles({
   root: {
@@ -54,6 +55,7 @@ interface Props {
   wheat: number
   grid: Array<Array<{name: string, level: number}>>
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
+  onOpenDiscoverMenu: (row: number, column: number) => void
 }
 
 interface State {
@@ -62,7 +64,7 @@ interface State {
   column: number
 }
 
-class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State> {
+class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles<typeof styles>, State> {
   public state = {
     slotSelected: false,
     row: 0,
@@ -70,11 +72,21 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public handleOpen(row: number, column: number) {
-    this.setState({
-      slotSelected: true,
-      row,
-      column
-    })
+    const {grid} = this.props
+    if (grid[row][column].name.startsWith('?')) {
+      if ((row    - 1 > 0           && !grid[row - 1][column].name.startsWith('?')) ||
+          (row    + 1 < grid.length && !grid[row + 1][column].name.startsWith('?')) ||
+          (column - 1 > 0           && !grid[row][column - 1].name.startsWith('?')) ||
+          (column + 1 < grid.length && !grid[row][column + 1].name.startsWith('?'))) {
+        this.props.onOpenDiscoverMenu(row, column)
+      }
+    } else {
+      if (grid[row][column].name === 'TOWN') {
+        this.props.history.push('/town')
+      } else {
+        this.setState({slotSelected: true, row, column})
+      }
+    }
   }
 
   public handleClose = () => this.setState({slotSelected: false})
@@ -90,7 +102,7 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
     const width = 100
     const height = 100
     const margin = 5
-    const slotName = grid[row][column].name.includes('?') ? grid[row][column].name.substr(1) : grid[row][column].name
+    const slotName = grid[row][column].name.startsWith('?') ? grid[row][column].name.substr(1) : grid[row][column].name
     let resourceRateGainLabel: string = ''
     if (slotName) {
       if (fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain > 0) {
@@ -106,23 +118,21 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
 
     return (
       <div className={classes.root}>
-        {grid.map((gridRow, i) => {
-          return gridRow.map((slot, j) => {
+        {grid.map((gridRow: GridSlot[], i: number) => {
+          return gridRow.map((slot: GridSlot, j: number) => {
             let slotLabel: string = slot.name
             let background: string = 'radial-gradient(100% 100%, #ffffff, #dddddddd)'
-            if (slot.name.includes('?')) {
-              slotLabel = (
-                i - 1 > 0           && !grid[i - 1][j].name.includes('?') ||
-                i + 1 < grid.length && !grid[i + 1][j].name.includes('?') ||
-                j - 1 > 0           && !grid[i][j - 1].name.includes('?') ||
-                j + 1 < grid.length && !grid[i][j + 1].name.includes('?')
-              ) ? 'Discover' : ''
-              background = (
-                i - 1 > 0           && !grid[i - 1][j].name.includes('?') ||
-                i + 1 < grid.length && !grid[i + 1][j].name.includes('?') ||
-                j - 1 > 0           && !grid[i][j - 1].name.includes('?') ||
-                j + 1 < grid.length && !grid[i][j + 1].name.includes('?')
-              ) ? '#70cc7070' : 'radial-gradient(100% 100%, #88778855, #11111111)'
+            if (slot.name.startsWith('?')) {
+              if (i - 1 > 0           && !grid[i - 1][j].name.startsWith('?') ||
+                  i + 1 < grid.length && !grid[i + 1][j].name.startsWith('?') ||
+                  j - 1 > 0           && !grid[i][j - 1].name.startsWith('?') ||
+                  j + 1 < grid.length && !grid[i][j + 1].name.startsWith('?') ) {
+                slotLabel = 'Discover'
+                background = '#70cc7070'
+              } else {
+                slotLabel = ''
+                background = 'radial-gradient(100% 100%, #88778855, #11111111)'
+              }
             }
             switch (slot.name) {
               case 'FOREST':
@@ -211,4 +221,4 @@ class FieldGrid extends React.Component<Props & WithStyles<typeof styles>, State
   }
 }
 
-export default withStyles(styles)(FieldGrid)
+export default withRouter(withStyles(styles)(FieldGrid))

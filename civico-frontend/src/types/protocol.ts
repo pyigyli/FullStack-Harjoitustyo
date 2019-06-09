@@ -74,10 +74,10 @@ export interface SendUserDataMessage extends MessageBase {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: {name: string, level: number}[][]
-  buildings: {name: string, level: number}[][]
+  fields: Array<Array<{name: string, level: number}>>
+  buildings: Array<Array<{name: string, level: number}>>
   map: number[]
-  inbox: {sender: string, title: string, message: string}[]
+  inbox: Array<{sender: string, title: string, message: string}>
   timestamp: number
 }
 
@@ -92,7 +92,7 @@ export interface FieldLevelUpMessage extends MessageBase {
 export interface PlaceBuildingMessage extends MessageBase {
   type: 'BUILDING_PLACE'
   token: string
-  buildings: {name: string, level: number}[][]
+  buildings: Array<Array<{name: string, level: number}>>
   newBuildingName: string
   moving: boolean
 }
@@ -136,10 +136,10 @@ export interface UserData {
   ironRate: number
   clayRate: number
   wheatRate: number
-  fields: {name: string, level: number}[][]
-  buildings: {name: string, level: number}[][]
+  fields: Array<Array<{name: string, level: number}>>
+  buildings: Array<Array<{name: string, level: number}>>
   map: number[]
-  inbox: {sender: string, title: string, message: string}[]
+  inbox: Array<{sender: string, title: string, message: string}>
   timestamp: number
 }
 
@@ -169,7 +169,7 @@ export interface BuildingSlot {
 }
 
 export const fieldSlotData = {
-  'FOREST': {
+  FOREST: {
     upgradeText: 'Everyone needs wood. Just remember to replant the trees so you do not run out. Increases lumber gain by',
     1: {
       populationGain: 1,
@@ -205,7 +205,7 @@ export const fieldSlotData = {
       wheatCost: 150
     }
   },
-  'CAVE': {
+  CAVE: {
     upgradeText: 'From the darkest of caves the richest of iron minerals can be found. Increases iron gain by',
     1: {
       populationGain: 1,
@@ -241,7 +241,7 @@ export const fieldSlotData = {
       wheatCost: 145
     }
   },
-  'CLAY': {
+  CLAY: {
     upgradeText: 'Flexible material. Good for making pots and other things made of clay. Increases clay gain by',
     1: {
       populationGain: 1,
@@ -277,7 +277,7 @@ export const fieldSlotData = {
       wheatCost: 130
     }
   },
-  'WHEAT': {
+  WHEAT: {
     upgradeText: 'Wheat is essential for keeping your people alive. Increases wheat gain by',
     1: {
       populationGain: 1,
