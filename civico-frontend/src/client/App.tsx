@@ -11,6 +11,7 @@ import {
   BuildingLevelUpMessage,
   DeleteBuildingMessage,
   ExpandTownMessage,
+  GetMapMessage,
   GridSlot
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
@@ -55,7 +56,8 @@ interface State {
   wheatRate: number
   fields: GridSlot[][]
   buildings: GridSlot[][]
-  map: number[]
+  mapCoordinates: number[]
+  map: string[][]
   inbox: Array<{sender: string, title: string, message: string}>
   errorMessage: string
 }
@@ -79,7 +81,8 @@ const NULL_STATE: State = {
   wheatRate: 0,
   fields: [[{name: '', level: 0}]],
   buildings: [[{name: '', level: 0}]],
-  map: [0, 0],
+  mapCoordinates: [0, 0],
+  map: [['']],
   inbox: [],
   errorMessage: ''
 }
@@ -139,9 +142,12 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             wheatRate: message.wheatRate,
             fields: message.fields,
             buildings: message.buildings,
-            map: message.map,
+            mapCoordinates: message.mapCoordinates,
             inbox: message.inbox
           })
+          break
+        case 'SEND_MAP':
+          this.setState({map: message.map})
           break
         case 'ERROR':
           this.handleErrorNotification(message.message)
@@ -244,12 +250,18 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleGetMap = () => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: GetMapMessage = {type: 'GET_MAP', token}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public render() {
     const {classes} = this.props
     const {
       token,
-      fields,
-      buildings,
       username,
       population,
       lumber,
@@ -264,6 +276,10 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       ironRate,
       clayRate,
       wheatRate,
+      fields,
+      buildings,
+      map,
+      mapCoordinates,
       errorMessage
     } = this.state
 
@@ -327,7 +343,12 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/map' render={() =>
-          token ? <MapScene/> : <LoginScene onSubmit={this.handleLogin}/>
+          token ? <MapScene
+          map={map}
+          mapCoordinates={mapCoordinates}
+          selfCoordinates={mapCoordinates}
+          onGetMap={this.handleGetMap}
+        /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/inbox' render={() =>
           token ? <InboxScene/> : <LoginScene onSubmit={this.handleLogin}/>

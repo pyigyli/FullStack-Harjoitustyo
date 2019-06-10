@@ -1,5 +1,6 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles} from '@material-ui/core'
+import MapGrid from '../components/MapGrid'
 
 const styles = () => createStyles({
   sceneContainer: {
@@ -25,14 +26,27 @@ const styles = () => createStyles({
   }
 })
 
-class MapScene extends React.Component<WithStyles<typeof styles>> {
+interface Props {
+  map: string[][]
+  selfCoordinates: number[]
+  mapCoordinates: number[]
+  onGetMap: () => void
+}
+
+class MapScene extends React.Component<Props & WithStyles<typeof styles>> {
   public render() {
-    const {classes} = this.props
+    const {classes, map, selfCoordinates, mapCoordinates, onGetMap} = this.props
 
     return (
       <div className={classes.sceneContainer}>
         <div className={classes.sceneWrapper}>
-          Map
+          <MapGrid
+            map={map}
+            selfCoordinates={selfCoordinates}
+            x={mapCoordinates[0]}
+            y={mapCoordinates[1]}
+            onGetMap={onGetMap}
+          />
         </div>
       </div>
     )

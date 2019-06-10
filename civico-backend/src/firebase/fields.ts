@@ -5,8 +5,8 @@ import {getUserData} from './users'
 
 export const levelUpField = async (conn: Connection, row: number, column: number, newLevel: number) => {
   try {
-    const userReference = await db.ref(`users/${conn.id}`).once('value')
-    const user: UserData = userReference.toJSON() as UserData
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user: UserData = userSnapshot.toJSON() as UserData
     const slot: FieldSlot = fieldSlotData[user.fields[row][column].name][newLevel]
     const currentTime = new Date().getTime()
     const timePassed = currentTime - user.timestamp

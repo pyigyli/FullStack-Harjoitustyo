@@ -10,6 +10,8 @@ type MessageType =
   'BUILDING_LEVELUP' |
   'BUILDING_DELETE' |
   'EXPAND_TOWN' |
+  'GET_MAP' |
+  'SEND_MAP' |
   'ERROR'
 
 export type Message =
@@ -24,6 +26,8 @@ export type Message =
   BuildingLevelUpMessage |
   DeleteBuildingMessage |
   ExpandTownMessage |
+  GetMapMessage |
+  SendMapMessage |
   ErrorMessage
 
 export interface MessageBase {
@@ -76,7 +80,7 @@ export interface SendUserDataMessage extends MessageBase {
   wheatRate: number
   fields: Array<Array<{name: string, level: number}>>
   buildings: Array<Array<{name: string, level: number}>>
-  map: number[]
+  mapCoordinates: number[]
   inbox: Array<{sender: string, title: string, message: string}>
   timestamp: number
 }
@@ -117,6 +121,16 @@ export interface ExpandTownMessage extends MessageBase {
   token: string
 }
 
+export interface GetMapMessage extends MessageBase {
+  type: 'GET_MAP'
+  token: string
+}
+
+export interface SendMapMessage extends MessageBase {
+  type: 'SEND_MAP'
+  map: string[][]
+}
+
 export interface ErrorMessage extends MessageBase {
   type: 'ERROR'
   message: string
@@ -138,7 +152,7 @@ export interface UserData {
   wheatRate: number
   fields: Array<Array<{name: string, level: number}>>
   buildings: Array<Array<{name: string, level: number}>>
-  map: number[]
+  mapCoordinates: number[]
   inbox: Array<{sender: string, title: string, message: string}>
   timestamp: number
 }
@@ -166,6 +180,12 @@ export interface BuildingSlot {
   ironCost: number
   clayCost: number
   wheatCost: number
+}
+
+export interface MapSlot {
+  username: string
+  x: number
+  y: number
 }
 
 export const fieldSlotData = {

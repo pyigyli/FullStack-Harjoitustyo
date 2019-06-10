@@ -12,6 +12,17 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       return false
     }
     const passwordHash = await bcrypt.hash(password, 10)
+    let x: number = Math.floor(Math.random() * 500)
+    let y: number = Math.floor(Math.random() * 500)
+    let mapSlotSnapshot = await db.ref(`map/${x}/${y}`).once('value')
+    let mapSlot = mapSlotSnapshot.toJSON() as string
+    while (mapSlot !== null) {
+      x = Math.floor(Math.random() * 500)
+      y = Math.floor(Math.random() * 500)
+      mapSlotSnapshot = await db.ref(`map/${x}/${y}`).once('value')
+      mapSlot = mapSlotSnapshot.toJSON() as string
+    }
+    await db.ref(`map/${x}/${y}`).set(username)
     const ref = db.ref(`users`).push({
       username,
       passwordHash,
@@ -76,7 +87,7 @@ export const createNewAccount = async (conn: Connection, username: string, passw
           {name: 'EMPTY', level: 0}
         ]
       ],
-      map: [0, 0], // TODO
+      mapCoordinates: {x, y},
       inbox: [], // TODO welcoming message
       timestamp: new Date().getTime()
     })
@@ -91,8 +102,8 @@ export const createNewAccount = async (conn: Connection, username: string, passw
 
 export const login = async (conn: Connection, username: string, password: string) => {
   try {
-    const userReference = await db.ref('users').orderByChild('username').equalTo(username).once('value')
-    const user = userReference.toJSON()
+    const userSnapshot = await db.ref('users').orderByChild('username').equalTo(username).once('value')
+    const user = userSnapshot.toJSON()
     if (user && await bcrypt.compare(password, Object.values(user)[0].passwordHash)) {
       const id = Object.keys(user)[0]
       const token = `Bearer ${jwt.sign(id, process.env.SECRET || 'DEVELOPMENT')}`
@@ -119,8 +130,8 @@ export const logout = (conn: Connection) => {
 
 export const getUserData = async (conn: Connection) => {
   try {
-    const userReference = await db.ref(`users/${conn.id}`).once('value')
-    const user = userReference.toJSON() as UserData
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user = userSnapshot.toJSON() as UserData
     if (user) {
       const fields: GridSlot[][] = []
       Object.values(user.fields).forEach((row: any[]) => {
@@ -138,7 +149,6 @@ export const getUserData = async (conn: Connection) => {
         })
         buildings.push(rowToPush)
       })
-      const map = [...Object.values(user.map)]
       const timePassed = new Date().getTime() - user.timestamp
       conn.sendMessage({
         type: 'SEND_DATA',
@@ -149,7 +159,7 @@ export const getUserData = async (conn: Connection) => {
         wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat),
         fields,
         buildings,
-        map
+        mapCoordinates: Object.values(user.mapCoordinates)
       })
     }
   } catch (err) {

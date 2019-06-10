@@ -20,4 +20,5 @@
 | 7.6.   | 4    | - Rakennusten tason nostaminen toteutettu.<br> - Useamman ruudun peittävien rakennusten ulkoasu kyläruudukossa korjattu.<br> - Index-näkymä toteutettu. |
 | 8.6.   | 7    | - Olemassa olevien rakennusten uudelleen sijoittaminen toteutettu.<br> - Rakennusten tuhoaminen kyläverkossa toteutettu. |
 | 9.6.   | 2    | - Kenttänäkymän ruudukon eri ruutujen klikkaaminen korjattu ja toteutettu. |
-| Yhteensä | 95    |
+| 10.6.  | 8    | - Karttanäkymä aloitettu. |
+| Yhteensä | 106    |

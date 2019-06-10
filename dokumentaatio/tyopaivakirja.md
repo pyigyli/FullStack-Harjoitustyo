@@ -15,3 +15,10 @@ Työpäiväkirjan tarkoituksena on dokumentoida mietteitä ja huomioita, sekä s
 
 #### 2.6.2019
 - Tein tärkeän oivalluksen huomatessani, ettei muuttumatonta tietoa kannata tallentaa tietokantaan, mistä sen noutaminen on turhan monimutkaista, kun voin yhtä hyvin kovakoodata ne protokollaan asiakkaan ja palvelimen käytettäväksi. Kun tekee yhtä asiaa liian kauan, voi unohtaa helposti, että muitakin vaihtoehtoja on tarjolla.
+
+#### 10.6.2019
+- Itseäni mietityttää kartan toteuttaminen. Kylien etäisyys toisiinsa määrää kylien välillä tapahtuvien toimintojen nopeuden, joten helpoin tapa ei ehkä ole kaikista järkevin, koska tiedän, ettei tällaiseen opiskelijaprojektiin liity kuin muutama testikäyttäjä. Haluanko luoda ison kartan, jonne teoriassa voisi mahtua tuhansia pelaajia? Haluanko luoda pienen kartan, johon mahtuu maksimissaan sen verran pelaajia, että iso pelaajamäärä ei olisi ikinä mahdollista? Taidan kuitenkin yrittää luoda kartan, joka laajenee pelaajamäärän lisääntyessä. Haluan myös, että kartta pyörii kierroksen ympäri, jotta kylän sijainti kartalla on mahdollisimman tasapuolinen. Se kuitenkin monimutkaistaa toteutusta kovasti.
+
+- Minulla ei myöskään ole mitään hajua, kuinka pahasti esimerkiksi 1000x1000 kokoisen kartan hakeminen ja lähettäminen tukkii serveriä, joka joutuu pahimmassa tapauksessa käsittelemään satoja pyyntöjä sekunnissa. *(olettaen että peli olisi oikeasti suosittu MMOG)* Saatan ehkä suorittaa kartan toteutuksen huolella ja ladata karttaa sitä mukaan, kun kartan näkymää liikutetaan.
+
+- Loppujen lopuksi päädyin 500*500 kokoiseen karttaan, johon siis mahtuisi yhteensä 250000 pelaajaa. Itsestään kasvava kartta olisi ollut turhan monimutkainen toteuttaa, joten en halunnut enää myöhemmin edes yrittää.
