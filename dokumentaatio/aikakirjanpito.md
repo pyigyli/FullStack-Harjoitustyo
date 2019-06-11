@@ -21,4 +21,5 @@
 | 8.6.   | 7    | - Olemassa olevien rakennusten uudelleen sijoittaminen toteutettu.<br> - Rakennusten tuhoaminen kyläverkossa toteutettu. |
 | 9.6.   | 2    | - Kenttänäkymän ruudukon eri ruutujen klikkaaminen korjattu ja toteutettu. |
 | 10.6.  | 8    | - Karttanäkymä aloitettu. |
-| Yhteensä | 106    |
+| 11.6.  | 3    | - Karttanäkymää edistetty. |
+| Yhteensä | 109    |

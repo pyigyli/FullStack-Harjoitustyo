@@ -258,6 +258,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public setNewMapCoordinates = (newX: number, newY: number) => this.setState({mapCoordinates: [newX, newY]})
+
   public render() {
     const {classes} = this.props
     const {
@@ -348,6 +350,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           mapCoordinates={mapCoordinates}
           selfCoordinates={mapCoordinates}
           onGetMap={this.handleGetMap}
+          onNewMapCoordinates={this.setNewMapCoordinates}
         /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/inbox' render={() =>
