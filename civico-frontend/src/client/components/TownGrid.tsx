@@ -20,6 +20,17 @@ const styles = () => createStyles({
     flexDirection: 'column',
     justifyContent: 'center'
   },
+  slotWithHover: {
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    position: 'fixed',
+    cursor: 'pointer',
+    '&:hover': {
+      opacity: 0.7
+    }
+  },
   dragIconContainer: {
     display: 'flex',
     flexDirection: 'row',
@@ -99,7 +110,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
             return (
               <Paper
                 key={`${i}${j}`}
-                className={classes.slot}
+                className={grid[i][j].name === 'EMPTY' || newBuildingWidth > 0 ? classes.slot : classes.slotWithHover}
                 style={{
                   width: bigWidth ? bigWidth : width,
                   height: bigHeight ? bigHeight : height,
@@ -128,7 +139,8 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
                 width: (width + margin) * newBuildingWidth - margin,
                 height: (height + margin) * newBuildingHeight - margin,
                 margin,
-                backgroundColor: placeBuildingDisabled ? '#b14d6fcc' : '#70cc70cc'
+                backgroundColor: placeBuildingDisabled ? '#b14d6fcc' : '#70cc70cc',
+                cursor: 'move'
               }}
             >
               <div className={classes.dragIconContainer}>

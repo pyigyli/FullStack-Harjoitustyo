@@ -187,7 +187,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public handleOpenBuildingMenu = (buildingName: string, row: number, column: number) => {
-    if (buildingName !== 'EMPTY') {
+    if (buildingName !== 'EMPTY' && this.state.newBuildingWidth === 0) {
       this.setState({
         buildingMenuName: buildingName,
         buildingMenuLevel: this.props.buildings[row][column].level,

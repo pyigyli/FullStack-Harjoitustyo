@@ -22,5 +22,5 @@
 | 9.6.   | 2    | - Kenttänäkymän ruudukon eri ruutujen klikkaaminen korjattu ja toteutettu. |
 | 10.6.  | 8    | - Karttanäkymä aloitettu. |
 | 11.6.  | 3    | - Karttanäkymää edistetty. |
-| 12.6.  | 2    | - Karttanäkymän ruudun klikkaaminen esittää kylän tiedot. |
-| Yhteensä | 111    |
+| 12.6.  | 3    | - Karttanäkymän ruudun klikkaaminen esittää kylän tiedot.<br> - Kenttä-, kylä- sekä karttaruudukon ruuduille lisätty efektejä, kun kursoria liikutetaan sopivalle ruudulle. |
+| Yhteensä | 112    |

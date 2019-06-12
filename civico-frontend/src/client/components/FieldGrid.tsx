@@ -23,6 +23,17 @@ const styles = () => createStyles({
     justifyContent: 'center',
     position: 'fixed'
   },
+  slotWithHover: {
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    position: 'fixed',
+    cursor: 'pointer',
+    '&:hover': {
+      opacity: 0.7
+    }
+  },
   upgradeCostsContainer: {
     display: 'flex',
     flexDirection: 'row',
@@ -151,7 +162,7 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
             return (
               <Paper
                 key={`${i}${j}`}
-                className={classes.slot}
+                className={slotLabel === '' ? classes.slot : classes.slotWithHover}
                 style={{
                   width,
                   height,

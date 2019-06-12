@@ -50,6 +50,17 @@ const styles = () => createStyles({
     justifyContent: 'center',
     position: 'fixed'
   },
+  slotWithHover: {
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    position: 'fixed',
+    cursor: 'pointer',
+    '&:hover': {
+      opacity: 0.7
+    }
+  },
   dragIconContainer: {
     display: 'flex',
     flexDirection: 'row',
@@ -183,7 +194,7 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
                 return (
                   <Paper
                     key={`${i}${j}`}
-                    className={classes.slot}
+                    className={slot ? classes.slotWithHover : classes.slot}
                     style={{
                       width,
                       height,

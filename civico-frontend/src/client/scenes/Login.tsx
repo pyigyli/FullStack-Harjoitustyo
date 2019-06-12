@@ -61,13 +61,18 @@ class LoginScene extends React.Component<Props & RouteComponentProps & WithStyle
   public handleUsernameChange = (value: string) => this.setState({username: value})
   public handlePasswordChange = (value: string) => this.setState({password: value})
 
+  public handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault()
+    this.props.onSubmit(this.state.username, this.state.password)
+  }
+
   public render() {
-    const {classes, onSubmit} = this.props
+    const {classes} = this.props
     const {username, password} = this.state
 
     return (
       <div className={classes.sceneContainer}>
-        <div className={classes.sceneWrapper}>
+        <form className={classes.sceneWrapper} onSubmit={this.handleSubmit}>
         <h1>Welcome back!</h1>
           <div>
             <TextField
@@ -91,10 +96,10 @@ class LoginScene extends React.Component<Props & RouteComponentProps & WithStyle
               InputProps={{classes: {notchedOutline: classes.textfield}}}
             />
           </div>
-          <Button className={classes.loginButton} onClick={() => onSubmit(username, password)}>
+          <Button className={classes.loginButton} type='submit'>
             Login
           </Button>
-        </div>
+        </form>
       </div>
     )
   }
