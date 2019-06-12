@@ -3,7 +3,7 @@ type MessageType =
   'LOGIN' |
   'LOGOUT' |
   'TOKEN' |
-  'GET_DATA' |
+  'GET_USERDATA' |
   'SEND_DATA' |
   'FIELD_LEVELUP' |
   'BUILDING_PLACE' |
@@ -12,6 +12,8 @@ type MessageType =
   'EXPAND_TOWN' |
   'GET_MAP' |
   'SEND_MAP' |
+  'GET_MAPSLOT' |
+  'SEND_MAPSLOT' |
   'ERROR'
 
 export type Message =
@@ -28,6 +30,8 @@ export type Message =
   ExpandTownMessage |
   GetMapMessage |
   SendMapMessage |
+  GetMapSlotMessage |
+  SendMapSlotMessage |
   ErrorMessage
 
 export interface MessageBase {
@@ -59,7 +63,7 @@ export interface TokenMessage extends MessageBase {
 }
 
 export interface GetUserDataMessage extends MessageBase {
-  type: 'GET_DATA'
+  type: 'GET_USERDATA'
   token: string
 }
 
@@ -131,6 +135,17 @@ export interface SendMapMessage extends MessageBase {
   map: string[][]
 }
 
+export interface GetMapSlotMessage extends MessageBase {
+  type: 'GET_MAPSLOT'
+  token: string
+  username: string
+}
+
+export interface SendMapSlotMessage extends MessageBase {
+  type: 'SEND_MAPSLOT'
+  population: number
+}
+
 export interface ErrorMessage extends MessageBase {
   type: 'ERROR'
   message: string
@@ -183,9 +198,7 @@ export interface BuildingSlot {
 }
 
 export interface MapSlot {
-  username: string
-  x: number
-  y: number
+  population: number
 }
 
 export const fieldSlotData = {

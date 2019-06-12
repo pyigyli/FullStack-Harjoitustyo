@@ -22,4 +22,5 @@
 | 9.6.   | 2    | - Kenttänäkymän ruudukon eri ruutujen klikkaaminen korjattu ja toteutettu. |
 | 10.6.  | 8    | - Karttanäkymä aloitettu. |
 | 11.6.  | 3    | - Karttanäkymää edistetty. |
-| Yhteensä | 109    |
+| 12.6.  | 2    | - Karttanäkymän ruudun klikkaaminen esittää kylän tiedot. |
+| Yhteensä | 111    |

@@ -1,6 +1,5 @@
 import db from './init'
 import Connection from '../connection'
-import {MapSlot} from '../types/protocol'
 
 export const getMap = async (conn: Connection) => {
   try {
@@ -24,11 +23,14 @@ export const getMap = async (conn: Connection) => {
   }
 }
 
-export const getUserCoordinates = async (conn: Connection, username: string) => {
+export const getMapSlot = async (conn: Connection, username: string) => {
   try {
-    const coordinatesSnapshot = await db.ref('map').orderByChild('username').equalTo(username).once('value')
-    const coordinates = coordinatesSnapshot.toJSON() as MapSlot
-    console.log(coordinates)
+    const townDataSnapshot = await db.ref('users').orderByChild('username').equalTo(username).once('value')
+    const townData = townDataSnapshot.toJSON() as Object
+    conn.sendMessage({
+      type: 'SEND_MAPSLOT',
+      population: Object.values(townData)[0].population
+    })
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console

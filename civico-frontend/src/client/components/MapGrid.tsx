@@ -71,7 +71,9 @@ interface Props {
   selfCoordinates: number[]
   x: number
   y: number
+  selectedMapSlotData: {population: number}
   onGetMap: () => void
+  onGetMapSlot: (username: string) => void
 }
 
 interface State {
@@ -98,6 +100,7 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
   }
 
   public handleOpenMapSlot = (selectedX: number, selectedY: number) => {
+    this.props.onGetMapSlot(this.props.map[selectedX][selectedY])
     this.setState({mapMenuOpen: true, selectedX, selectedY})
   }
 
@@ -105,8 +108,8 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
 
   public render() {
 
-    const {classes, map, x, y} = this.props
-    const {width, height, margin, mapMenuOpen} = this.state
+    const {classes, map, x, y, selectedMapSlotData} = this.props
+    const {width, height, margin, mapMenuOpen, selectedX, selectedY} = this.state
 
     if (map.length < 500) {
       return (
@@ -200,11 +203,11 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
         </div>
         <Dialog open={mapMenuOpen} onClose={this.handleCloseMapSlot}>
           <DialogTitle>
-            Title
+            {map[selectedX][selectedY]}
           </DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Text
+              Population: {selectedMapSlotData.population}
             </DialogContentText>
           </DialogContent>
           <DialogActions>

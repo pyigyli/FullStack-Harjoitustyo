@@ -66,7 +66,6 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
         tabValue = 3
         break
     }
-
     if (token) {
       return (
         <Paper square className={classes.tabsContainer}>
@@ -88,7 +87,9 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
         </Paper>
       )
     }
-
+    if (tabValue > 1) {
+      tabValue = 0
+    }
     return (
       <Paper square className={classes.tabsContainer}>
         <Tabs
@@ -96,7 +97,6 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
           value={tabValue}
           onChange={this.handleTabChange}
           variant='fullWidth'
-          
         >
           <Tab icon={<LoginIcon/>}         label='LOGIN'          onClick={() => history.push('/login')}/>
           <Tab icon={<CreateAccountIcon/>} label='CREATE ACCOUNT' onClick={() => history.push('/create-account')}/>

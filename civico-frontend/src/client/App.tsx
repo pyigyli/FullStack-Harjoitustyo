@@ -12,7 +12,9 @@ import {
   DeleteBuildingMessage,
   ExpandTownMessage,
   GetMapMessage,
-  GridSlot
+  GetMapSlotMessage,
+  GridSlot,
+  MapSlot
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -58,6 +60,7 @@ interface State {
   buildings: GridSlot[][]
   mapCoordinates: number[]
   map: string[][]
+  selectedMapSlotData: MapSlot
   inbox: Array<{sender: string, title: string, message: string}>
   errorMessage: string
 }
@@ -83,6 +86,7 @@ const NULL_STATE: State = {
   buildings: [[{name: '', level: 0}]],
   mapCoordinates: [0, 0],
   map: [['']],
+  selectedMapSlotData: {population: 0},
   inbox: [],
   errorMessage: ''
 }
@@ -149,6 +153,11 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         case 'SEND_MAP':
           this.setState({map: message.map})
           break
+        case 'SEND_MAPSLOT':
+          this.setState({selectedMapSlotData: {
+            population: message.population
+          }})
+          break
         case 'ERROR':
           this.handleErrorNotification(message.message)
           break
@@ -207,7 +216,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public handleGetUserData = () => {
     const {connection, token} = this.state
     if (connection && token) {
-      connection.send(JSON.stringify({type: 'GET_DATA', token}))}
+      connection.send(JSON.stringify({type: 'GET_USERDATA', token}))}
     }
 
   public handleFieldLevelUp = (row: number, column: number, newLevel: number) => {
@@ -258,6 +267,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleGetMapSlot = (username: string) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: GetMapSlotMessage = {type: 'GET_MAPSLOT', token, username}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public setNewMapCoordinates = (newX: number, newY: number) => this.setState({mapCoordinates: [newX, newY]})
 
   public render() {
@@ -282,6 +299,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       buildings,
       map,
       mapCoordinates,
+      selectedMapSlotData,
       errorMessage
     } = this.state
 
@@ -349,7 +367,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           map={map}
           mapCoordinates={mapCoordinates}
           selfCoordinates={mapCoordinates}
+          selectedMapSlotData={selectedMapSlotData}
           onGetMap={this.handleGetMap}
+          onGetMapSlot={this.handleGetMapSlot}
           onNewMapCoordinates={this.setNewMapCoordinates}
         /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>

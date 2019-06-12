@@ -47,7 +47,9 @@ interface Props {
   map: string[][]
   selfCoordinates: number[]
   mapCoordinates: number[]
+  selectedMapSlotData: {population: number}
   onGetMap: () => void
+  onGetMapSlot: (username: string) => void
   onNewMapCoordinates: (newX: number, newY: number) => void
 }
 
@@ -78,7 +80,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
   }
 
   public render() {
-    const {classes, map, selfCoordinates, mapCoordinates, onGetMap, onNewMapCoordinates} = this.props
+    const {classes, map, selfCoordinates, mapCoordinates, selectedMapSlotData, onGetMap, onGetMapSlot, onNewMapCoordinates} = this.props
     const {newX, newY} = this.state
 
     return (
@@ -87,25 +89,25 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
           <TextField
             type='number'
             value={newX}
-            onChange={({target}) => this.handleNewXChange(parseInt(target.value))}
+            onChange={({target}) => this.handleNewXChange(parseInt(target.value, 10))}
             margin='normal'
             variant='outlined'
             InputLabelProps={{classes: {root: classes.textfield}}}
             InputProps={{
               classes: {notchedOutline: classes.textfield},
-              startAdornment: <InputAdornment position="start">X:</InputAdornment>,
+              startAdornment: <InputAdornment position='start'>X:</InputAdornment>
             }}
           />
           <TextField
             type='number'
             value={newY}
-            onChange={({target}) => this.handleNewYChange(parseInt(target.value))}
+            onChange={({target}) => this.handleNewYChange(parseInt(target.value, 10))}
             margin='normal'
             variant='outlined'
             InputLabelProps={{classes: {root: classes.textfield}}}
             InputProps={{
               classes: {notchedOutline: classes.textfield},
-              startAdornment: <InputAdornment position="start">Y:</InputAdornment>
+              startAdornment: <InputAdornment position='start'>Y:</InputAdornment>
             }}
           />
           <div style={{position: 'relative', top: '25px'}}>
@@ -119,7 +121,9 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
           selfCoordinates={selfCoordinates}
           x={mapCoordinates[0]}
           y={mapCoordinates[1]}
+          selectedMapSlotData={selectedMapSlotData}
           onGetMap={onGetMap}
+          onGetMapSlot={onGetMapSlot}
         />
       </div>
     )
