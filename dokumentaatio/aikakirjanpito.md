@@ -24,4 +24,4 @@
 | 11.6.  | 3    | - Karttanäkymää edistetty. |
 | 12.6.  | 3    | - Karttanäkymän ruudun klikkaaminen esittää kylän tiedot.<br> - Kenttä-, kylä- sekä karttaruudukon ruuduille lisätty efektejä, kun kursoria liikutetaan sopivalle ruudulle. |
 | 13.6.  | 7    | - Karttanäkymä toteutettu.<br> - Viestinäkymä aloitettu.<br> - viestin lähettäminen osittain toteutettu. |
-| Yhteensä | 112    |
+| Yhteensä | 119    |
