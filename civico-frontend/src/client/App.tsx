@@ -13,8 +13,10 @@ import {
   ExpandTownMessage,
   GetMapMessage,
   GetMapSlotMessage,
+  SendInboxMessage,
   GridSlot,
-  MapSlot
+  MapSlot,
+  InboxMessage
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -61,7 +63,7 @@ interface State {
   mapCoordinates: number[]
   map: string[][]
   selectedMapSlotData: MapSlot
-  inbox: Array<{sender: string, title: string, message: string}>
+  inbox: InboxMessage[]
   errorMessage: string
 }
 
@@ -277,6 +279,23 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
 
   public setNewMapCoordinates = (newX: number, newY: number) => this.setState({mapCoordinates: [newX, newY]})
 
+  public handleSendInboxMessage = (title: string, receiver: string, messageContent: string) => {
+    const {connection, token, username} = this.state
+    if (connection && token && title && receiver && messageContent) {
+      const inboxMessage: InboxMessage = {
+        author: username,
+        title,
+        receiver,
+        message: messageContent,
+        date: new Date()
+      }
+      const message: SendInboxMessage = {type: 'SEND_INBOX', token, inboxMessage}
+      connection.send(JSON.stringify(message))
+    } else {
+      this.handleErrorNotification('All fields must be filled.')
+    }
+  }
+
   public render() {
     const {classes} = this.props
     const {
@@ -300,6 +319,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       map,
       mapCoordinates,
       selectedMapSlotData,
+      inbox,
       errorMessage
     } = this.state
 
@@ -321,7 +341,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         <Route exact path='/create-account' render={() =>
           <CreateAccountScene onSubmit={this.handleCreateAccount}/>
         }/>
-        <Route exact path={['/fields', '/town']} render={() => 
+        <Route exact path={['/fields', '/town', '/map', '/inbox']} render={() => 
           token && <ProfileBar
             population={population}
             lumber={lumber}
@@ -374,7 +394,10 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/inbox' render={() =>
-          token ? <InboxScene/> : <LoginScene onSubmit={this.handleLogin}/>
+          token ? <InboxScene
+            messages={inbox}
+            onSendInboxMessage={this.handleSendInboxMessage}
+          /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
       </div>
     )

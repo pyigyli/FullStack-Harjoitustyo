@@ -14,6 +14,7 @@ type MessageType =
   'SEND_MAP' |
   'GET_MAPSLOT' |
   'SEND_MAPSLOT' |
+  'SEND_INBOX' |
   'ERROR'
 
 export type Message =
@@ -32,6 +33,7 @@ export type Message =
   SendMapMessage |
   GetMapSlotMessage |
   SendMapSlotMessage |
+  SendInboxMessage |
   ErrorMessage
 
 export interface MessageBase {
@@ -85,7 +87,7 @@ export interface SendUserDataMessage extends MessageBase {
   fields: Array<Array<{name: string, level: number}>>
   buildings: Array<Array<{name: string, level: number}>>
   mapCoordinates: number[]
-  inbox: Array<{sender: string, title: string, message: string}>
+  inbox: InboxMessage[]
   timestamp: number
 }
 
@@ -146,6 +148,12 @@ export interface SendMapSlotMessage extends MessageBase {
   population: number
 }
 
+export interface SendInboxMessage extends MessageBase {
+  type: 'SEND_INBOX'
+  token: string
+  inboxMessage: InboxMessage
+}
+
 export interface ErrorMessage extends MessageBase {
   type: 'ERROR'
   message: string
@@ -168,7 +176,7 @@ export interface UserData {
   fields: Array<Array<{name: string, level: number}>>
   buildings: Array<Array<{name: string, level: number}>>
   mapCoordinates: number[]
-  inbox: Array<{sender: string, title: string, message: string}>
+  inbox: InboxMessage[]
   timestamp: number
 }
 
@@ -199,6 +207,14 @@ export interface BuildingSlot {
 
 export interface MapSlot {
   population: number
+}
+
+export interface InboxMessage {
+  author: string
+  title: string
+  receiver: string
+  message: string
+  date: Date
 }
 
 export const fieldSlotData = {

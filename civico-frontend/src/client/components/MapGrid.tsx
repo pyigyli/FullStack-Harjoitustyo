@@ -3,12 +3,15 @@ import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, Dialog
 
 const styles = () => createStyles({
   root: {
-    position: 'fixed',
+    position: 'relative',
     backgroundColor: '#32143255',
     borderStyle: 'solid',
     borderRadius: '8px',
     borderWidth: '1px',
-    borderColor: '#32143277'
+    borderColor: '#32143277',
+    top: '250px',
+    left: '50%',
+    transform: 'translate(-49%, 0%)'
   },
   mapContainer: {
     display: 'flex',
@@ -163,10 +166,7 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
         className={classes.root}
         style={{
           width: (width + margin) * grid.length + margin,
-          height: (height + margin) * grid.length + margin,
-          top: '230px',
-          left: '50%',
-          transform: 'translate(-49%, 0%)'
+          height: (height + margin) * grid.length + margin
         }}
       >
         <div className={classes.mapContainer}>

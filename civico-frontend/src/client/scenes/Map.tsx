@@ -20,7 +20,7 @@ const styles = () => createStyles({
   },
   mapButtonsContainer: {
     position: 'fixed',
-    top: '100px',
+    top: '130px',
     left: '50%',
     transform: 'translate(-50%, 0%)',
     display: 'flex',

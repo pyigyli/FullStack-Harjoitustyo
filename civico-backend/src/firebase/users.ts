@@ -88,7 +88,7 @@ export const createNewAccount = async (conn: Connection, username: string, passw
         ]
       ],
       mapCoordinates: {x, y},
-      inbox: [], // TODO welcoming message
+      inbox: [],
       timestamp: new Date().getTime()
     })
     const user = await ref.once('value')
