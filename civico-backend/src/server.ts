@@ -5,7 +5,7 @@ import {createNewAccount, login, logout, getUserData} from './firebase/users'
 import {levelUpField} from './firebase/fields'
 import {placeBuilding, levelUpBuilding, deleteBuilding, expandTown} from './firebase/town'
 import {getMap, getMapSlot} from './firebase/map'
-import {sendInboxMessage} from './firebase/inbox'
+import {sendInboxMessage, deleteInboxMessage} from './firebase/inbox'
 
 class CivicoServer {
   private connections: Connection[] = []
@@ -43,6 +43,8 @@ class CivicoServer {
         return getMapSlot(conn, message.username)
       case 'SEND_INBOX':
         return sendInboxMessage(conn, message.inboxMessage)
+      case 'DELETE_INBOX':
+        return deleteInboxMessage(conn, message.newMessageList)
       default:
         console.error('Client sent a message of unknown type.') // tslint:disable-line:no-console
         break

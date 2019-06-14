@@ -136,17 +136,13 @@ export const getUserData = async (conn: Connection) => {
       const fields: GridSlot[][] = []
       Object.values(user.fields).forEach((row: any[]) => {
         const rowToPush: GridSlot[] = []
-        Object.values(row).forEach((slot: GridSlot) => {
-          rowToPush.push(slot)
-        })
+        Object.values(row).forEach((slot: GridSlot) => rowToPush.push(slot))
         fields.push(rowToPush)
       })
       const buildings: GridSlot[][] = []
       Object.values(user.buildings).forEach((row: any[]) => {
         const rowToPush: GridSlot[] = []
-        Object.values(row).forEach((slot: GridSlot) => {
-          rowToPush.push(slot)
-        })
+        Object.values(row).forEach((slot: GridSlot) => rowToPush.push(slot))
         buildings.push(rowToPush)
       })
       const timePassed = new Date().getTime() - user.timestamp
@@ -159,7 +155,8 @@ export const getUserData = async (conn: Connection) => {
         wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat),
         fields,
         buildings,
-        mapCoordinates: Object.values(user.mapCoordinates)
+        mapCoordinates: Object.values(user.mapCoordinates),
+        inbox: user.inbox ? Object.values(user.inbox) : []
       })
     }
   } catch (err) {

@@ -15,6 +15,7 @@ type MessageType =
   'GET_MAPSLOT' |
   'SEND_MAPSLOT' |
   'SEND_INBOX' |
+  'DELETE_INBOX' |
   'ERROR'
 
 export type Message =
@@ -34,6 +35,7 @@ export type Message =
   GetMapSlotMessage |
   SendMapSlotMessage |
   SendInboxMessage |
+  DeleteInboxMessage |
   ErrorMessage
 
 export interface MessageBase {
@@ -210,11 +212,17 @@ export interface MapSlot {
 }
 
 export interface InboxMessage {
-  author: string
+  sender: string
   title: string
   receiver: string
   message: string
   date: Date
+}
+
+export interface DeleteInboxMessage {
+  type: 'DELETE_INBOX',
+  token,
+  newMessageList
 }
 
 export const fieldSlotData = {

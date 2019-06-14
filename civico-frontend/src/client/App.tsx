@@ -14,6 +14,7 @@ import {
   GetMapMessage,
   GetMapSlotMessage,
   SendInboxMessage,
+  DeleteInboxMessage,
   GridSlot,
   MapSlot,
   InboxMessage
@@ -200,15 +201,15 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public handleCreateAccount = (username: string, password: string) => {
     const {connection} = this.state
     if (connection) {
-      if (username.length > 2 && username.length < 16 && password.length > 4) {
+      if (username.length > 2 && username.length < 13 && password.length > 4) {
         const message: CreateAccountMessage = {type: 'CREATE_ACCOUNT', username, password}
         connection.send(JSON.stringify(message))
-      } else if (username.length < 3 && username.length < 16 && password.length < 5) {
+      } else if (username.length < 3 && username.length < 13 && password.length < 5) {
         this.handleErrorNotification('Username and password too short. Please provide lengths of at least 3 and 5')
       } else if (username.length < 3) {
         this.handleErrorNotification('Username must be at least 3 characters long.')
-      } else if (username.length > 15) {
-        this.handleErrorNotification('Username cannot be over 15 characters long.')
+      } else if (username.length > 12) {
+        this.handleErrorNotification('Username cannot be over 12 characters long.')
       } else {
         this.handleErrorNotification('Password must be at least 5 characters long.')
       }
@@ -283,7 +284,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     const {connection, token, username} = this.state
     if (connection && token && title && receiver && messageContent) {
       const inboxMessage: InboxMessage = {
-        author: username,
+        sender: username,
         title,
         receiver,
         message: messageContent,
@@ -293,6 +294,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       connection.send(JSON.stringify(message))
     } else {
       this.handleErrorNotification('All fields must be filled.')
+    }
+  }
+
+  public handleDeleteInboxMessages = (newMessageList: InboxMessage[]) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: DeleteInboxMessage = {type: 'DELETE_INBOX', token, newMessageList}
+      connection.send(JSON.stringify(message))
     }
   }
 
@@ -397,6 +406,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           token ? <InboxScene
             messages={inbox}
             onSendInboxMessage={this.handleSendInboxMessage}
+            onDeleteMessages={this.handleDeleteInboxMessages}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
       </div>
