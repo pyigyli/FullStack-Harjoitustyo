@@ -1,5 +1,5 @@
 import React from 'react'
-import {createStyles, withStyles, WithStyles, Dialog, DialogTitle, DialogContent, DialogActions, Button, Checkbox, TextField} from '@material-ui/core'
+import {createStyles, withStyles, WithStyles, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Checkbox, TextField} from '@material-ui/core'
 import {InboxMessage} from '../../types/protocol'
 import moment from 'moment'
 
@@ -21,7 +21,7 @@ const styles = () => createStyles({
   },
   mapButtonsContainer: {
     position: 'fixed',
-    width: '560px',
+    width: '700px',
     top: '140px',
     left: '50%',
     transform: 'translate(-50%, 0%)',
@@ -69,8 +69,12 @@ const styles = () => createStyles({
     paddingLeft: '10px',
     '&:hover': {
       backgroundColor: '#32143218'
+    },
+    '&$unread': {
+      fontWeight: 'bold'
     }
   },
+  unread: {},
   inboxMessageTitle: {
     width: '370px',
     textAlign: 'left',
@@ -81,6 +85,7 @@ const styles = () => createStyles({
     borderRightStyle: 'solid',
     borderRightWidth: '1px',
     fontSize: '14px',
+    cursor: 'pointer',
     '&$header': {
       fontWeight: 'bold',
       fontSize: '16px',
@@ -99,6 +104,7 @@ const styles = () => createStyles({
     borderRightStyle: 'solid',
     borderRightWidth: '1px',
     fontSize: '14px',
+    cursor: 'pointer',
     '&$header': {
       fontWeight: 'bold',
       fontSize: '16px',
@@ -155,13 +161,29 @@ const styles = () => createStyles({
     marginBottom: '5px',
     '&$redButton': {
       background: '#aa2c2caa'
+    },
+    '&$container': {
+      marginLeft: '0px',
+      marginRight: '0px'
     }
   },
   redButton: {},
+  container: {},
   textfield: {
-    borderColor: '#321432 !important',
-    color: '#321432 !important'
+    width: '500px',
+    color: '#321432 !important',
+    '&:after': {
+      borderColor: '#red !important'
+    }
   },
+  textfieldError: {
+    width: '500px',
+    color: 'red !important',
+    '&:after': {
+      borderColor: 'red !important'
+    }
+  },
+  input: {},
   noMessagesLabel: {
     position: 'relative',
     top: '50%',
@@ -173,11 +195,15 @@ const styles = () => createStyles({
 
 interface Props {
   messages: InboxMessage[]
+  inboxMessageSent: boolean
+  onSetMessagesToRead: (inboxIndexes: number[]) => void 
   onSendInboxMessage: (title: string, receiver: string, messageContent: string) => void
   onDeleteMessages: (newMessageList: InboxMessage[]) => void
 }
 
 interface State {
+  readMessageOpen: boolean
+  selectedMessage: InboxMessage
   title: string
   receiver: string
   messageDraft: string
@@ -188,6 +214,8 @@ interface State {
 
 class InboxScene extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {
+    readMessageOpen: false,
+    selectedMessage: {sender: '', title: '', receiver: '', message: '', date: new Date(), unread: false},
     title: '',
     receiver: '',
     messageDraft: '',
@@ -196,9 +224,39 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
     deleteMessagesOpen: false
   }
 
+  public componentDidUpdate(prevProps) {
+    if (prevProps.inboxMessageSent === false && this.props.inboxMessageSent === true) {
+      this.setState({title: '', receiver: '', messageDraft: '', messageDraftOpen: false})
+    }
+  }
+
+  public handleOpenReadMessage = (selectedMessage: InboxMessage, index: number) => {
+    this.setState({readMessageOpen: true, selectedMessage})
+    if (selectedMessage.unread) {
+      this.props.onSetMessagesToRead([index])
+    }
+  }
+
+  public handleCloseReadMessage = () => {
+    this.setState({
+      readMessageOpen: false,
+      selectedMessage: {sender: '', title: '', receiver: '', message: '', date: new Date(), unread: false}
+    })
+  }
+
+  public handleOpenReply = () => {
+    this.setState({
+      readMessageOpen: false,
+      selectedMessage: {sender: '', title: '', receiver: '', message: '', date: new Date(), unread: false},
+      messageDraftOpen: true,
+      title: `Re: ${this.state.selectedMessage.title}`,
+      receiver: this.state.selectedMessage.sender
+    })
+  }
+
   public handleOpenDraftMessage = () => this.setState({messageDraftOpen: true})
   
-  public handleCloseDraftMessage = () => this.setState({messageDraftOpen: false})
+  public handleCloseDraftMessage = () => this.setState({title: '', receiver: '', messageDraft: '', messageDraftOpen: false})
 
   public toggleCheckbox = (index: number) => {
     let checkboxes = [...this.state.checkboxes]
@@ -234,21 +292,29 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
 
   public handleMessageDraftChange = (value: string) => this.setState({messageDraft: value})
 
-  public handleSendInboxMessage = () => {
-    this.props.onSendInboxMessage(this.state.title, this.state.receiver, this.state.messageDraft)
-    this.setState({title: '', receiver: '', messageDraft: '', messageDraftOpen: false})
-  }
-
   public render() {
-    const {classes, messages} = this.props
-    const {messageDraftOpen, title, receiver, messageDraft, checkboxes, deleteMessagesOpen} = this.state
+    const {classes, messages, onSetMessagesToRead, onSendInboxMessage} = this.props
+    const {readMessageOpen, selectedMessage, messageDraftOpen, title, receiver, messageDraft, checkboxes, deleteMessagesOpen} = this.state
 
     return (
       <div className={classes.sceneWrapper}>
         <div className={classes.mapButtonsContainer}>
-          <Button className={classes.button} onClick={this.handleOpenDraftMessage}>New Message</Button>
-          <Button className={classes.button} onClick={this.handleSelectAll}>Select all</Button>
-          <Button className={classes.button} onClick={this.handleOpenDeleteMessages} disabled={checkboxes.length === 0}>Delete</Button>
+          <Button className={`${classes.button} ${classes.container}`} onClick={this.handleOpenDraftMessage}>New Message</Button>
+          <Button className={`${classes.button} ${classes.container}`} onClick={this.handleSelectAll}>Select all</Button>
+          <Button
+            className={`${classes.button} ${classes.container}`}
+            onClick={() => onSetMessagesToRead(checkboxes)}
+            disabled={checkboxes.length === 0}
+          >
+            Mark as read
+          </Button>
+          <Button
+            className={`${classes.button} ${classes.container}`}
+            onClick={this.handleOpenDeleteMessages}
+            disabled={checkboxes.length === 0}
+          >
+            Delete
+          </Button>
         </div>
         <div className={classes.inboxContainer}>
           <div className={classes.inboxWrapper}>
@@ -260,9 +326,9 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
           <div className={classes.inboxWrapper}>
             <div className={classes.inboxMessageListContainer}>
               {messages.length > 0 ? messages.map((message: InboxMessage, index: number) => (
-                <div key={index} className={classes.inboxMessageListItem}>
-                  <div className={classes.inboxMessageTitle}>{message.title}</div>
-                  <div className={classes.inboxMessageSender}>{message.sender}</div>
+                <div key={index} className={`${classes.inboxMessageListItem} ${message.unread ? classes.unread : ''}`}>
+                  <div className={classes.inboxMessageTitle} onClick={() => this.handleOpenReadMessage(message, index)}>{message.title}</div>
+                  <div className={classes.inboxMessageSender} /*TODO open profile page */>{message.sender}</div>
                   <div className={classes.inboxMessageDate}>
                     <div>{moment(message.date).format('HH:mm')}</div>
                     <div>{moment(message.date).format('MMM.D.YYYY')}</div>
@@ -279,31 +345,55 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
             </div>
           </div>
         </div>
+          {messages.length > 0 && <Dialog open={readMessageOpen} onClose={this.handleCloseReadMessage}>
+          <DialogTitle style={{wordWrap: 'break-word'}}>{selectedMessage.title}, send by {selectedMessage.sender}</DialogTitle>
+          <DialogContent>
+            <DialogContentText style={{wordWrap: 'break-word'}}>{selectedMessage.message}</DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button className={classes.button} onClick={this.handleCloseReadMessage}>Close</Button>
+            <Button
+              className={classes.button}
+              onClick={this.handleOpenReply}
+              disabled={false}
+            >
+              Reply
+            </Button>
+          </DialogActions>
+        </Dialog>}
         <Dialog open={messageDraftOpen} onClose={this.handleCloseDraftMessage}>
           <DialogTitle>Draft a new message</DialogTitle>
           <DialogContent>
-            <TextField
-              label='Title'
-              value={title}
-              onChange={({target}) => this.handleTitleChange(target.value)}
-              margin='normal'
-              variant='filled'
-              InputLabelProps={{classes: {root: classes.textfield}}}
-            />
-            <TextField
-              label='Send to'
-              value={receiver}
-              onChange={({target}) => this.handleReceiverChange(target.value)}
-              margin='normal'
-              variant='filled'
-              InputLabelProps={{classes: {root: classes.textfield}}}
-            />
+            <div>
+              <TextField
+                label='Title'
+                value={title}
+                error={title.length > 22}
+                onChange={({target}) => this.handleTitleChange(target.value)}
+                margin='normal'
+                variant='filled'
+                InputProps={{classes: {root: classes.textfield, error: classes.textfieldError}}}
+                InputLabelProps={{classes: {root: classes.textfield, error: classes.textfieldError}}}
+              />
+            </div>
+            <div>
+              <TextField
+                label='Send to'
+                value={receiver}
+                onChange={({target}) => this.handleReceiverChange(target.value)}
+                margin='normal'
+                variant='filled'
+                InputProps={{classes: {root: classes.textfield}}}
+                InputLabelProps={{classes: {root: classes.textfield}}}
+              />
+            </div>
             <TextField
               label='Message'
               value={messageDraft}
               onChange={({target}) => this.handleMessageDraftChange(target.value)}
               margin='normal'
               variant='filled'
+              InputProps={{classes: {root: classes.textfield}}}
               InputLabelProps={{classes: {root: classes.textfield}}}
               multiline
               rows={10}
@@ -311,7 +401,13 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseDraftMessage}>Cancel</Button>
-            <Button className={classes.button} onClick={this.handleSendInboxMessage}>Send</Button>
+            <Button
+              className={classes.button}
+              disabled={title.length > 22}
+              onClick={() => onSendInboxMessage(title, receiver, messageDraft)}
+            >
+              Send
+            </Button>
           </DialogActions>
         </Dialog>
         <Dialog open={deleteMessagesOpen} onClose={this.handleCloseDeleteMessages}>

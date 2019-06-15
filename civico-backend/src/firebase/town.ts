@@ -5,8 +5,8 @@ import {getUserData} from './users'
 
 export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], newBuildingName: string, moving: boolean) => {
   try {
-    const userReference = await db.ref(`users/${conn.id}`).once('value')
-    const user: UserData = userReference.toJSON() as UserData
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user: UserData = userSnapshot.toJSON() as UserData
     const building = buildingsData[newBuildingName]
     const currentTime = new Date().getTime()
     const timePassed = currentTime - user.timestamp
@@ -32,8 +32,8 @@ export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], n
 
 export const levelUpBuilding = async (conn: Connection, row: number, column: number, newLevel: number) => {
   try {
-    const userReference = await db.ref(`users/${conn.id}`).once('value')
-    const user: UserData = userReference.toJSON() as UserData
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user: UserData = userSnapshot.toJSON() as UserData
     const slot: BuildingSlot = buildingsData[user.buildings[row][column].name].upgrade[newLevel]
     const currentTime = new Date().getTime()
     const timePassed = currentTime - user.timestamp
@@ -55,8 +55,8 @@ export const levelUpBuilding = async (conn: Connection, row: number, column: num
 
 export const deleteBuilding = async (conn: Connection, buildings: GridSlot[][], removedBuilding: GridSlot) => {
   try {
-    const userReference = await db.ref(`users/${conn.id}`).once('value')
-    const user: UserData = userReference.toJSON() as UserData
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user: UserData = userSnapshot.toJSON() as UserData
     const building = buildingsData[removedBuilding.name]
     let buildingPopulationGain = building.populationGain
     for (let i = 1; i < removedBuilding.level; i++) {
@@ -75,8 +75,8 @@ export const deleteBuilding = async (conn: Connection, buildings: GridSlot[][], 
 
 export const expandTown = async (conn: Connection) => {
   try {
-    const userReference = await db.ref(`users/${conn.id}`).once('value')
-    const user: UserData = userReference.toJSON() as UserData
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user: UserData = userSnapshot.toJSON() as UserData
     const newGrid: GridSlot[][] = []
     const emptyRow: GridSlot[] = []
     for (let i = 0; i < Object.values(user.buildings).length + 2; i++) {

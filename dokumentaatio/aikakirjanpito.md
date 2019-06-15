@@ -25,4 +25,5 @@
 | 12.6.  | 3    | - Karttanäkymän ruudun klikkaaminen esittää kylän tiedot.<br> - Kenttä-, kylä- sekä karttaruudukon ruuduille lisätty efektejä, kun kursoria liikutetaan sopivalle ruudulle. |
 | 13.6.  | 7    | - Karttanäkymä toteutettu.<br> - Viestinäkymä aloitettu.<br> - Viestin lähettäminen osittain toteutettu. |
 | 14.6.  | 6    | - Viestien lähettäminen toteutettu.<br> - Viestien poistaminen toteutettu. |
-| Yhteensä | 125    |
+| 15.6.  | 5    | - Viestinäkymän ulkoasu valmis.<br> - Lukemattomat ja luetut viestit toteutettu.<br> - Viestien lähettämiselle asetettu sopivia validointeja. |
+| Yhteensä | 130    |

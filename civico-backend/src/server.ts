@@ -5,7 +5,7 @@ import {createNewAccount, login, logout, getUserData} from './firebase/users'
 import {levelUpField} from './firebase/fields'
 import {placeBuilding, levelUpBuilding, deleteBuilding, expandTown} from './firebase/town'
 import {getMap, getMapSlot} from './firebase/map'
-import {sendInboxMessage, deleteInboxMessage} from './firebase/inbox'
+import {setInboxMessagesToRead, sendInboxMessage, deleteInboxMessage} from './firebase/inbox'
 
 class CivicoServer {
   private connections: Connection[] = []
@@ -41,6 +41,8 @@ class CivicoServer {
         return getMap(conn)
       case 'GET_MAPSLOT':
         return getMapSlot(conn, message.username)
+      case 'READ_INBOX':
+        return setInboxMessagesToRead(conn, message.inboxIndexes)
       case 'SEND_INBOX':
         return sendInboxMessage(conn, message.inboxMessage)
       case 'DELETE_INBOX':

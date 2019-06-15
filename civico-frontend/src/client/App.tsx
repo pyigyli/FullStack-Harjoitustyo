@@ -13,6 +13,7 @@ import {
   ExpandTownMessage,
   GetMapMessage,
   GetMapSlotMessage,
+  SetInboxMessagesToReadMessage,
   SendInboxMessage,
   DeleteInboxMessage,
   GridSlot,
@@ -65,6 +66,7 @@ interface State {
   map: string[][]
   selectedMapSlotData: MapSlot
   inbox: InboxMessage[]
+  inboxMessageSent: boolean
   errorMessage: string
 }
 
@@ -91,6 +93,7 @@ const NULL_STATE: State = {
   map: [['']],
   selectedMapSlotData: {population: 0},
   inbox: [],
+  inboxMessageSent: false,
   errorMessage: ''
 }
 
@@ -161,6 +164,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             population: message.population
           }})
           break
+        case 'CONFIRM_INBOX':
+            if (message.successful) {
+              this.setState({inboxMessageSent: true})
+            } else {
+              this.handleErrorNotification('Could not find matching username.')
+              this.setState({inboxMessageSent: false})
+            }
+            break
         case 'ERROR':
           this.handleErrorNotification(message.message)
           break
@@ -175,7 +186,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     clearInterval(this.errorTimer)
     this.setState({errorMessage: message})
     this.errorTimer = setInterval(() => {
-      this.setState({errorMessage: ''})
+      this.setState({errorMessage: '', inboxMessageSent: false})
       clearInterval(this.errorTimer)
     }, 5000)
   }
@@ -280,6 +291,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
 
   public setNewMapCoordinates = (newX: number, newY: number) => this.setState({mapCoordinates: [newX, newY]})
 
+  public handleSetMessagesToRead = (inboxIndexes: number[]) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: SetInboxMessagesToReadMessage = {type: 'READ_INBOX', token, inboxIndexes}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public handleSendInboxMessage = (title: string, receiver: string, messageContent: string) => {
     const {connection, token, username} = this.state
     if (connection && token && title && receiver && messageContent) {
@@ -288,7 +307,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         title,
         receiver,
         message: messageContent,
-        date: new Date()
+        date: new Date(),
+        unread: true
       }
       const message: SendInboxMessage = {type: 'SEND_INBOX', token, inboxMessage}
       connection.send(JSON.stringify(message))
@@ -329,6 +349,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       mapCoordinates,
       selectedMapSlotData,
       inbox,
+      inboxMessageSent,
       errorMessage
     } = this.state
 
@@ -405,6 +426,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         <Route exact path='/inbox' render={() =>
           token ? <InboxScene
             messages={inbox}
+            inboxMessageSent={inboxMessageSent}
+            onSetMessagesToRead={this.handleSetMessagesToRead}
             onSendInboxMessage={this.handleSendInboxMessage}
             onDeleteMessages={this.handleDeleteInboxMessages}
           /> : <LoginScene onSubmit={this.handleLogin}/>

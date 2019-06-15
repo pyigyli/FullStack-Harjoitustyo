@@ -14,7 +14,9 @@ type MessageType =
   'SEND_MAP' |
   'GET_MAPSLOT' |
   'SEND_MAPSLOT' |
+  'READ_INBOX' |
   'SEND_INBOX' |
+  'CONFIRM_INBOX' |
   'DELETE_INBOX' |
   'ERROR'
 
@@ -34,7 +36,9 @@ export type Message =
   SendMapMessage |
   GetMapSlotMessage |
   SendMapSlotMessage |
+  SetInboxMessagesToReadMessage |
   SendInboxMessage |
+  InboxConfirmMessage |
   DeleteInboxMessage |
   ErrorMessage
 
@@ -150,10 +154,21 @@ export interface SendMapSlotMessage extends MessageBase {
   population: number
 }
 
+export interface SetInboxMessagesToReadMessage extends MessageBase {
+  type: 'READ_INBOX'
+  token: string
+  inboxIndexes: number[]
+}
+
 export interface SendInboxMessage extends MessageBase {
   type: 'SEND_INBOX'
   token: string
   inboxMessage: InboxMessage
+}
+
+export interface InboxConfirmMessage extends MessageBase {
+  type: 'CONFIRM_INBOX'
+  successful: boolean
 }
 
 export interface ErrorMessage extends MessageBase {
@@ -217,12 +232,13 @@ export interface InboxMessage {
   receiver: string
   message: string
   date: Date
+  unread: boolean
 }
 
 export interface DeleteInboxMessage {
-  type: 'DELETE_INBOX',
-  token,
-  newMessageList
+  type: 'DELETE_INBOX'
+  token: string
+  newMessageList: InboxMessage[]
 }
 
 export const fieldSlotData = {
