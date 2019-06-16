@@ -130,7 +130,6 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public handleOpenBuildingSelect = () => this.setState({buildingsSelectOpen: true})
-
   public handleCloseBuildingSelect = () => this.setState({buildingsSelectOpen: false})
 
   public handleSubmitBuildingSelect = (key: string) => {
@@ -160,9 +159,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     })
   }
 
-  public handleDragStop = (row: number, column: number) => {
-    this.setState({newBuildingRow: row, newBuildingColumn: column})
-  }
+  public handleDragStop = (row: number, column: number) => this.setState({newBuildingRow: row, newBuildingColumn: column})
 
   public handlePlaceBuilding = () => {
     const buildings = this.state.buildingsOnMoving || this.props.buildings
@@ -243,7 +240,6 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   public handleCloseBuildingMenu = () => this.setState({buildingMenuName: ''})
 
   public handleOpenBuildingDeleteConfirm = () => this.setState({buildingDeleteConfirmOpen: true})
-
   public handleCloseBuildingDeleteConfirm = () => this.setState({buildingDeleteConfirmOpen: false})
 
   public render() {
@@ -274,9 +270,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       <div className={classes.sceneWrapper}>
         {newBuildingWidth > 0 && newBuildingHeight > 0 ? (
           <div className={classes.constructionButtonsContainer}>
-            <Button className={classes.button} onClick={this.cancelBuildingPlacement}>
-              Cancel
-            </Button>
+            <Button className={classes.button} onClick={this.cancelBuildingPlacement}>Cancel</Button>
             <Button
               className={classes.button}
               onClick={this.rotateBuilding}
@@ -284,24 +278,12 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
             >
               Rotate
             </Button>
-            <Button
-              className={classes.button}
-              onClick={this.handlePlaceBuilding}
-              disabled={placeBuildingDisabled}
-            >
-              Confirm
-            </Button>
+            <Button className={classes.button} onClick={this.handlePlaceBuilding} disabled={placeBuildingDisabled}>Confirm</Button>
           </div>
         ) : (
           <div className={classes.constructionButtonsContainer}>
-            {grid.length < 6 && (
-              <Button className={classes.button} onClick={onExpand}>
-                Expand
-              </Button>
-            )}
-            <Button className={classes.button} onClick={this.handleOpenBuildingSelect}>
-              Build
-            </Button>
+            {grid.length < 6 && <Button className={classes.button} onClick={onExpand}>Expand</Button>}
+            <Button className={classes.button} onClick={this.handleOpenBuildingSelect}>Build</Button>
           </div>
         )}
         <TownGrid
@@ -316,9 +298,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
         />
         <Dialog open={buildingsSelectOpen} onClose={this.handleCloseBuildingSelect}>
           <div className={classes.closeButtonWrapper}>
-            <Button className={classes.button} onClick={this.handleCloseBuildingSelect}>
-              Cancel
-            </Button>
+            <Button className={classes.button} onClick={this.handleCloseBuildingSelect}>Cancel</Button>
           </div>
           <ScrollArea style={{minWidth: '500px', minHeight: '200px', maxHeight: '600px'}}>
             {Object.entries(buildingsData).filter(buildingEntry => {
@@ -329,18 +309,14 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 }
               })
               return keepBuilding
-            }).map((buildingEntry, index) => (
+            }).map((buildingEntry, index) => 
               <div key={index}>
-                <DialogTitle>
-                  {buildingEntry[0]}
-                </DialogTitle>
+                <DialogTitle>{buildingEntry[0]}</DialogTitle>
                 <DialogContent>
-                  <DialogContentText>
-                    {buildingEntry[1].info}
-                  </DialogContentText>
+                  <DialogContentText>{buildingEntry[1].info}</DialogContentText>
                   <div className={classes.buildingCostsContainer}>
                   <div className={classes.buildingCostWrapper}>
-                      <div className={classes.costLabel}>Cost:</div>
+                    <div className={classes.costLabel}>Cost:</div>
                     </div>
                     <div className={classes.buildingCostWrapper}>
                       <div>Lumber</div>
@@ -376,7 +352,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 </DialogActions>
                 <div className={classes.lineBreak}/>
               </div>
-            ))}
+            )}
           </ScrollArea>
         </Dialog>
         <Dialog open={buildingMenuName.length > 0} onClose={this.handleCloseBuildingSelect}>
@@ -384,18 +360,12 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
             <div>
               <DialogTitle>
                 <div className={classes.buildingInfoTitleWrapper}>
-                  <div>
-                    {buildingMenuName}
-                  </div>
-                  <div style={{fontSize: '18px', marginTop: '2px', marginLeft: '25px'}}>
-                    level {buildingMenuLevel}
-                  </div>
+                  <div>{buildingMenuName}</div>
+                  <div style={{fontSize: '18px', marginTop: '2px', marginLeft: '25px'}}>level {buildingMenuLevel}</div>
                 </div>
               </DialogTitle>
               <DialogContent>
-                <DialogContentText>
-                  {buildingsData[buildingMenuName].info}
-                </DialogContentText>
+                <DialogContentText>{buildingsData[buildingMenuName].info}</DialogContentText>
                 <div className={classes.buildingCostsContainer}>
                   <div className={classes.buildingCostWrapper}>
                     <div className={classes.costLabel}>Upgrade cost:</div>
@@ -423,42 +393,32 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>
-                    <div>
-                      {Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost / 5)}
-                    </div>
+                    <div>{Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost / 5)}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Iron</div>
-                    <div>
-                      {Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost / 5)}
-                    </div>
+                    <div>{Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost / 5)}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Clay</div>
-                    <div>
-                      {Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost / 5)}
-                    </div>
+                    <div>{Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost / 5)}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Wheat</div>
-                    <div>
-                      {Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost / 5)}
-                    </div>
+                    <div>{Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost / 5)}</div>
                   </div>
                 </div>
               </DialogContent>
               <DialogActions>
-                <Button className={classes.button} onClick={this.handleCloseBuildingMenu}>
-                  Cancel
-                </Button>
+                <Button className={classes.button} onClick={this.handleCloseBuildingMenu}>Cancel</Button>
                 <Button
                   className={classes.button}
                   onClick={this.handleMoveBuilding}
                   disabled={
                     lumber < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost / 5) ||
-                    iron < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost / 5) ||
-                    clay < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost / 5) ||
-                    wheat < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost / 5)
+                    iron   < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost   / 5) ||
+                    clay   < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost   / 5) ||
+                    wheat  < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost  / 5)
                   }
                 >
                   Move
@@ -468,28 +428,25 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   onClick={this.handleSubmitBuildingUpgrade}
                   disabled={
                     lumber < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost ||
-                    iron < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost ||
-                    clay < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost ||
-                    wheat < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost
+                    iron   < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost   ||
+                    clay   < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost   ||
+                    wheat  < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost
                   }
                 >
                   Upgrade
                 </Button>
-                <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleOpenBuildingDeleteConfirm}>
+                <Button
+                  className={`${classes.button} ${classes.redButton}`}
+                  onClick={this.handleOpenBuildingDeleteConfirm}
+                >
                   Destruct
                 </Button>
                 <Dialog open={buildingDeleteConfirmOpen} onClose={this.handleCloseBuildingSelect}>
-                  <DialogTitle>
-                    Are you sure you want to destruct this building?
-                  </DialogTitle>
+                  <DialogTitle>Are you sure you want to destruct this building?</DialogTitle>
                   <DialogActions>
                     <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
-                      <Button className={classes.button} onClick={this.handleCloseBuildingDeleteConfirm}>
-                        Cancel
-                      </Button>
-                      <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleDeleteBuilding}>
-                        Confirm
-                      </Button>
+                      <Button className={classes.button} onClick={this.handleCloseBuildingDeleteConfirm}>Cancel</Button>
+                      <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleDeleteBuilding}>Confirm</Button>
                     </div>
                   </DialogActions>
                 </Dialog>

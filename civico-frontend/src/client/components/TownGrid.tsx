@@ -57,7 +57,7 @@ interface State {
 
 class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {
-    width: 130 - 8 * this.props.grid.length,
+    width:  130 - 8 * this.props.grid.length,
     height: 130 - 8 * this.props.grid.length,
     margin: 5
   }
@@ -81,7 +81,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
       <div
         className={classes.root}
         style={{
-          width: (width + margin) * grid.length + margin,
+          width:  (width  + margin) * grid.length + margin,
           height: (height + margin) * grid.length + margin,
           top: '250px',
           left: '50%',
@@ -112,11 +112,11 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
                 key={`${i}${j}`}
                 className={grid[i][j].name === 'EMPTY' || newBuildingWidth > 0 ? classes.slot : classes.slotWithHover}
                 style={{
-                  width: bigWidth ? bigWidth : width,
+                  width:  bigWidth  ? bigWidth  : width,
                   height: bigHeight ? bigHeight : height,
                   margin,
-                  top: i * (height + margin),
-                  left: j * (width + margin),
+                  top:  i * (height + margin),
+                  left: j * (width  + margin),
                   backgroundColor: slot.name === 'EMPTY' ? 'white' : '#ebefec'
                 }}
                 onClick={() => onOpenBuildingMenu(slot.name, i, j)}
@@ -136,7 +136,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
             <Paper
               className={classes.slot}
               style={{
-                width: (width + margin) * newBuildingWidth - margin,
+                width:  (width  + margin) * newBuildingWidth  - margin,
                 height: (height + margin) * newBuildingHeight - margin,
                 margin,
                 backgroundColor: placeBuildingDisabled ? '#b14d6fcc' : '#70cc70cc',

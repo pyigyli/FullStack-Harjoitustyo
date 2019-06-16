@@ -76,11 +76,7 @@ interface State {
 }
 
 class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles<typeof styles>, State> {
-  public state = {
-    slotSelected: false,
-    row: 0,
-    column: 0
-  }
+  public state = {slotSelected: false, row: 0, column: 0}
 
   public handleOpen(row: number, column: number) {
     const {grid} = this.props
@@ -180,16 +176,12 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
           })
         })}
         {slotName && <Dialog open={slotSelected} onClose={this.handleClose}>
-          <DialogTitle>
-            {slotName}
-          </DialogTitle>
+          <DialogTitle>{slotName}</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              {fieldSlotData[slotName].upgradeText} {resourceRateGainLabel}
-            </DialogContentText>
+            <DialogContentText>{fieldSlotData[slotName].upgradeText} {resourceRateGainLabel}</DialogContentText>
             <div className={classes.upgradeCostsContainer}>
             <div className={classes.upgradeCostWrapper}>
-                <div className={classes.costLabel}>Cost:</div>
+              <div className={classes.costLabel}>Cost:</div>
               </div>
               <div className={classes.upgradeCostWrapper}>
                 <div>Lumber</div>
@@ -210,17 +202,15 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
             </div>
           </DialogContent>
           <DialogActions>
-            <Button className={classes.button} onClick={this.handleClose}>
-              Cancel
-            </Button>
+            <Button className={classes.button} onClick={this.handleClose}>Cancel</Button>
             <Button
               className={classes.button}
               onClick={() => this.handleSubmit(row, column, grid[row][column].level + 1)}
               disabled={
                 lumber < fieldSlotData[slotName][grid[row][column].level + 1].lumberCost ||
-                iron < fieldSlotData[slotName][grid[row][column].level + 1].ironCost ||
-                clay < fieldSlotData[slotName][grid[row][column].level + 1].clayCost ||
-                wheat < fieldSlotData[slotName][grid[row][column].level + 1].wheatCost
+                iron   < fieldSlotData[slotName][grid[row][column].level + 1].ironCost   ||
+                clay   < fieldSlotData[slotName][grid[row][column].level + 1].clayCost   ||
+                wheat  < fieldSlotData[slotName][grid[row][column].level + 1].wheatCost
               }
             >
               Upgrade

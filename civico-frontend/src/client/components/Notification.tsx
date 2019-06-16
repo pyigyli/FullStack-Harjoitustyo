@@ -22,17 +22,14 @@ interface Props {
 }
 
 class Notification extends React.Component<Props & WithStyles<typeof styles>> {
+  
   public render() {
     const {classes, message} = this.props
 
     return (
-      <div>
-        <Fade in={!!message}>
-          <Paper className={classes.root}>
-            {message}
-          </Paper>
-        </Fade>
-      </div>
+      <Fade in={!!message}>
+        <Paper className={classes.root}>{message}</Paper>
+      </Fade>
     )
   }
 }

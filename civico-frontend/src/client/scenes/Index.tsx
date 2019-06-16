@@ -45,6 +45,7 @@ const styles = () => createStyles({
 })
 
 class IndexScene extends React.Component<RouteComponentProps & WithStyles<typeof styles>> {
+  
   public render() {
     const {classes, history} = this.props
 
@@ -52,12 +53,8 @@ class IndexScene extends React.Component<RouteComponentProps & WithStyles<typeof
       <div className={classes.sceneContainer}>
         <div className={classes.sceneWrapper}>
           <div className={classes.title}>Civico</div>
-          <Button className={classes.button} onClick={() => history.push('/login')}>
-            Login
-          </Button>
-          <Button className={classes.button} onClick={() => history.push('/create-account')}>
-            Join
-          </Button>
+          <Button className={classes.button} onClick={() => history.push('/login')}>Login</Button>
+          <Button className={classes.button} onClick={() => history.push('/create-account')}>Join</Button>
         </div>
       </div>
     )

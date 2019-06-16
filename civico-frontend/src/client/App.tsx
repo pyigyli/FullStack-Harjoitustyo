@@ -362,15 +362,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           onGetUserData={this.handleGetUserData}
         />
         <Notification message={errorMessage}/>
-        <Route exact path='/' render={() =>
-          <IndexScene/>
-        }/>
-        <Route exact path='/login' render={() =>
-          <LoginScene onSubmit={this.handleLogin}/>
-        }/>
-        <Route exact path='/create-account' render={() =>
-          <CreateAccountScene onSubmit={this.handleCreateAccount}/>
-        }/>
+        <Route exact path='/'               render={() => <IndexScene/>}/>
+        <Route exact path='/login'          render={() => <LoginScene onSubmit={this.handleLogin}/>}/>
+        <Route exact path='/create-account' render={() => <CreateAccountScene onSubmit={this.handleCreateAccount}/>}/>
         <Route exact path={['/fields', '/town', '/map', '/inbox']} render={() => 
           token && <ProfileBar
             population={population}

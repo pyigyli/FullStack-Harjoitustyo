@@ -101,27 +101,19 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
       <div className={classes.sceneWrapper}>
         <Paper className={classes.resourceRatesContainer}>
           <div className={classes.resourceRateWrapper}>
-            <div className={classes.resourceRateValueWrapper}>
-              {lumberRate}
-            </div>
+            <div className={classes.resourceRateValueWrapper}>{lumberRate}</div>
             <div className={classes.resourceRateTextWrapper}>lumber / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
-            <div className={classes.resourceRateValueWrapper}>
-              {ironRate}
-            </div>
+            <div className={classes.resourceRateValueWrapper}>{ironRate}</div>
             <div className={classes.resourceRateTextWrapper}>iron / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
-            <div className={classes.resourceRateValueWrapper}>
-              {clayRate}
-            </div>
+            <div className={classes.resourceRateValueWrapper}>{clayRate}</div>
             <div className={classes.resourceRateTextWrapper}>clay / hour</div>
           </div>
           <div className={classes.resourceRateWrapper}>
-            <div className={classes.resourceRateValueWrapper}>
-              {wheatRate - population}
-            </div>
+            <div className={classes.resourceRateValueWrapper}>{wheatRate - population}</div>
             <div className={classes.resourceRateTextWrapper}>wheat / hour</div>
           </div>
         </Paper>
@@ -135,23 +127,17 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
           onOpenDiscoverMenu={this.handleOpenDiscoverMenu}
         />
         <Dialog open={openDiscoverMenu} onClose={this.handleCloseDiscoverMenu}>
-          <DialogTitle>
-            Discover a new field
-          </DialogTitle>
+          <DialogTitle>Discover a new field</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Send your troops to conquer uncharted land.
-            </DialogContentText>
+            <DialogContentText>Send your troops to conquer uncharted land.</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button className={classes.button} onClick={this.handleCloseDiscoverMenu}>
-              Cancel
-            </Button>
+            <Button className={classes.button} onClick={this.handleCloseDiscoverMenu}>Cancel</Button>
             <Button
               className={classes.button}
               onClick={this.handleCloseDiscoverMenu}
               disabled={false}
-              // TODO
+              // TODO send troops to discover
             >
               Send
             </Button>

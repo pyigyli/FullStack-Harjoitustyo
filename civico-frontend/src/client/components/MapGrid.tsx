@@ -100,14 +100,7 @@ interface State {
 }
 
 class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
-  public state = {
-    width: 80,
-    height: 80,
-    margin: 3,
-    mapMenuOpen: false,
-    selectedX: 0,
-    selectedY: 0
-  }
+  public state = {width: 80, height: 80, margin: 3, mapMenuOpen: false, selectedX: 0, selectedY: 0}
 
   public componentWillMount() {
     this.props.onGetMap()
@@ -165,7 +158,7 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
       <div
         className={classes.root}
         style={{
-          width: (width + margin) * grid.length + margin,
+          width:  (width  + margin) * grid.length + margin,
           height: (height + margin) * grid.length + margin
         }}
       >
@@ -190,48 +183,34 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
               <div className={classes.coordinateY}>{y + 3 > 499 ? y - 497 : y + 3}</div>
             </div>
             {grid.map((gridRow: string[], i: number) => {
-              return gridRow.map((slot: string, j: number) => {
-                return (
-                  <Paper
-                    key={`${i}${j}`}
-                    className={slot ? classes.slotWithHover : classes.slot}
-                    style={{
-                      width,
-                      height,
-                      margin,
-                      top: i * (height + margin),
-                      left: j * (width + margin),
-                      background: slot ? 'radial-gradient(100% 100%, #32143204, #32143232)' : '#dfffbadd'
-                    }}
-                    onClick={() => this.handleOpenMapSlot(x - 3 + i, y - 3 + j)}
-                  >
-                    {slot}
-                  </Paper>
-                )
-              })
+              return gridRow.map((slot: string, j: number) => 
+                <Paper
+                  key={`${i}${j}`}
+                  className={slot ? classes.slotWithHover : classes.slot}
+                  style={{
+                    width,
+                    height,
+                    margin,
+                    top: i * (height + margin),
+                    left: j * (width + margin),
+                    background: slot ? 'radial-gradient(100% 100%, #32143204, #32143232)' : '#dfffbadd'
+                  }}
+                  onClick={() => this.handleOpenMapSlot(x - 3 + i, y - 3 + j)}
+                >
+                  {slot}
+                </Paper>
+              )
             })}
           </div>
         </div>
         <Dialog open={mapMenuOpen} onClose={this.handleCloseMapSlot}>
-          <DialogTitle>
-            {map[selectedX][selectedY]}
-          </DialogTitle>
+          <DialogTitle>{map[selectedX][selectedY]}</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              Population: {selectedMapSlotData.population}
-            </DialogContentText>
+            <DialogContentText>Population: {selectedMapSlotData.population}</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button className={classes.button} onClick={this.handleCloseMapSlot}>
-              Cancel
-            </Button>
-            <Button
-              className={classes.button}
-              onClick={this.handleCloseMapSlot}
-              disabled={false}
-            >
-              Send
-            </Button>
+            <Button className={classes.button} onClick={this.handleCloseMapSlot}>Cancel</Button>
+            <Button className={classes.button} onClick={this.handleCloseMapSlot} disabled={false}>Send</Button>
           </DialogActions>
         </Dialog>
       </div>

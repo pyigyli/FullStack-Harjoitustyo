@@ -45,19 +45,9 @@ interface Props {
 }
 
 class ProfileBar extends React.Component<Props & WithStyles<typeof styles>> {
+
   public render() {
-    const {
-      classes,
-      population,
-      lumber,
-      iron,
-      clay,
-      wheat,
-      maxLumber,
-      maxIron,
-      maxClay,
-      maxWheat
-    } = this.props
+    const {classes, population, lumber, iron, clay, wheat, maxLumber, maxIron, maxClay, maxWheat} = this.props
 
     return (
       <div>

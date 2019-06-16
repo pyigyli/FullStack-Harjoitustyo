@@ -111,9 +111,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
             }}
           />
           <div style={{position: 'relative', top: '25px'}}>
-            <Button className={classes.button} onClick={() => onNewMapCoordinates(newX, newY)}>
-              Search
-            </Button>
+            <Button className={classes.button} onClick={() => onNewMapCoordinates(newX, newY)}>Search</Button>
           </div>
         </div>
         <MapGrid

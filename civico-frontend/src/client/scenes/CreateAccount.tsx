@@ -84,12 +84,7 @@ class CreateAccountScene extends React.Component<Props & WithStyles<typeof style
               InputProps={{classes: {notchedOutline: classes.textfield}}}
             />
           </div>
-          <Button
-            className={classes.createAccountButton}
-            onClick={() => onSubmit(username, password)}
-          >
-            Create Account
-          </Button>
+          <Button className={classes.createAccountButton} onClick={() => onSubmit(username, password)}>Create Account</Button>
         </div>
       </div>
     )

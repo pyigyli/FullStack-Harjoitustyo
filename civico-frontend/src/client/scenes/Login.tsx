@@ -59,7 +59,6 @@ class LoginScene extends React.Component<Props & RouteComponentProps & WithStyle
   }
 
   public handleUsernameChange = (value: string) => this.setState({username: value})
-  
   public handlePasswordChange = (value: string) => this.setState({password: value})
 
   public handleSubmit = (event: React.FormEvent) => {
@@ -97,9 +96,7 @@ class LoginScene extends React.Component<Props & RouteComponentProps & WithStyle
               InputProps={{classes: {notchedOutline: classes.textfield}}}
             />
           </div>
-          <Button className={classes.loginButton} type='submit'>
-            Login
-          </Button>
+          <Button className={classes.loginButton} type='submit'>Login</Button>
         </form>
       </div>
     )

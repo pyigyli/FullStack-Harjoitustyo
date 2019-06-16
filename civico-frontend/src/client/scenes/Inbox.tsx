@@ -86,6 +86,9 @@ const styles = () => createStyles({
     borderRightWidth: '1px',
     fontSize: '14px',
     cursor: 'pointer',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
     '&$header': {
       fontWeight: 'bold',
       fontSize: '16px',
@@ -173,14 +176,7 @@ const styles = () => createStyles({
     width: '500px',
     color: '#321432 !important',
     '&:after': {
-      borderColor: '#red !important'
-    }
-  },
-  textfieldError: {
-    width: '500px',
-    color: 'red !important',
-    '&:after': {
-      borderColor: 'red !important'
+      borderColor: '#321432 !important'
     }
   },
   input: {},
@@ -255,7 +251,6 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
   }
 
   public handleOpenDraftMessage = () => this.setState({messageDraftOpen: true})
-  
   public handleCloseDraftMessage = () => this.setState({title: '', receiver: '', messageDraft: '', messageDraftOpen: false})
 
   public toggleCheckbox = (index: number) => {
@@ -277,7 +272,6 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
   }
 
   public handleOpenDeleteMessages = () => this.setState({deleteMessagesOpen: true})
-
   public handleCloseDeleteMessages = () => this.setState({deleteMessagesOpen: false})
 
   public handleDeleteMessages = () => {
@@ -287,9 +281,7 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
   }
 
   public handleTitleChange = (value: string) => this.setState({title: value})
-
   public handleReceiverChange = (value: string) => this.setState({receiver: value})
-
   public handleMessageDraftChange = (value: string) => this.setState({messageDraft: value})
 
   public render() {
@@ -325,7 +317,7 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
           </div>
           <div className={classes.inboxWrapper}>
             <div className={classes.inboxMessageListContainer}>
-              {messages.length > 0 ? messages.map((message: InboxMessage, index: number) => (
+              {messages.length > 0 ? messages.map((message: InboxMessage, index: number) => 
                 <div key={index} className={`${classes.inboxMessageListItem} ${message.unread ? classes.unread : ''}`}>
                   <div className={classes.inboxMessageTitle} onClick={() => this.handleOpenReadMessage(message, index)}>{message.title}</div>
                   <div className={classes.inboxMessageSender} /*TODO open profile page */>{message.sender}</div>
@@ -341,24 +333,21 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
                   />
                   </div>
                 </div>
-              )) : <div className={classes.noMessagesLabel}>It's empty</div>}
+              ) : <div className={classes.noMessagesLabel}>It's empty</div>}
             </div>
           </div>
         </div>
           {messages.length > 0 && <Dialog open={readMessageOpen} onClose={this.handleCloseReadMessage}>
-          <DialogTitle style={{wordWrap: 'break-word'}}>{selectedMessage.title}, send by {selectedMessage.sender}</DialogTitle>
+          <DialogTitle style={{wordWrap: 'break-word'}}>
+            <div>Send by: {selectedMessage.sender}</div>
+            <div>{selectedMessage.title}</div>
+          </DialogTitle>
           <DialogContent>
             <DialogContentText style={{wordWrap: 'break-word'}}>{selectedMessage.message}</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseReadMessage}>Close</Button>
-            <Button
-              className={classes.button}
-              onClick={this.handleOpenReply}
-              disabled={false}
-            >
-              Reply
-            </Button>
+            <Button className={classes.button} onClick={this.handleOpenReply} disabled={false}>Reply</Button>
           </DialogActions>
         </Dialog>}
         <Dialog open={messageDraftOpen} onClose={this.handleCloseDraftMessage}>
@@ -368,12 +357,11 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
               <TextField
                 label='Title'
                 value={title}
-                error={title.length > 22}
                 onChange={({target}) => this.handleTitleChange(target.value)}
                 margin='normal'
                 variant='filled'
-                InputProps={{classes: {root: classes.textfield, error: classes.textfieldError}}}
-                InputLabelProps={{classes: {root: classes.textfield, error: classes.textfieldError}}}
+                InputProps={{classes: {root: classes.textfield, focused: classes.textfield}}}
+                InputLabelProps={{classes: {root: classes.textfield, focused: classes.textfield}}}
               />
             </div>
             <div>
@@ -401,13 +389,7 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseDraftMessage}>Cancel</Button>
-            <Button
-              className={classes.button}
-              disabled={title.length > 22}
-              onClick={() => onSendInboxMessage(title, receiver, messageDraft)}
-            >
-              Send
-            </Button>
+            <Button className={classes.button} onClick={() => onSendInboxMessage(title, receiver, messageDraft)}>Send</Button>
           </DialogActions>
         </Dialog>
         <Dialog open={deleteMessagesOpen} onClose={this.handleCloseDeleteMessages}>
