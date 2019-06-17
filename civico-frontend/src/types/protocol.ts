@@ -243,7 +243,7 @@ export interface DeleteInboxMessage {
 
 export const fieldSlotData = {
   FOREST: {
-    upgradeText: 'Everyone needs wood. Just remember to replant the trees so you do not run out. Increases lumber gain by',
+    levelText: 'Everyone needs wood. Just remember to replant the trees so you do not run out. Increases lumber gain by',
     1: {
       populationGain: 1,
       lumberRateGain: 8,
@@ -279,7 +279,7 @@ export const fieldSlotData = {
     }
   },
   CAVE: {
-    upgradeText: 'From the darkest of caves the richest of iron minerals can be found. Increases iron gain by',
+    levelText: 'From the darkest of caves the richest of iron minerals can be found. Increases iron gain by',
     1: {
       populationGain: 1,
       lumberRateGain: 0,
@@ -315,7 +315,7 @@ export const fieldSlotData = {
     }
   },
   CLAY: {
-    upgradeText: 'Flexible material. Good for making pots and other things made of clay. Increases clay gain by',
+    levelText: 'Flexible material. Good for making pots and other things made of clay. Increases clay gain by',
     1: {
       populationGain: 1,
       lumberRateGain: 0,
@@ -351,7 +351,7 @@ export const fieldSlotData = {
     }
   },
   WHEAT: {
-    upgradeText: 'Wheat is essential for keeping your people alive. Increases wheat gain by',
+    levelText: 'Wheat is essential for keeping your people alive. Increases wheat gain by',
     1: {
       populationGain: 1,
       lumberRateGain: 0,
@@ -389,107 +389,83 @@ export const fieldSlotData = {
 }
 
 export const buildingsData = {
-  'Test Building 1': {
-    info: 'This building is the first one to use in a testing.',
-    width: 1,
-    height: 1,
-    populationGain: 1,
-    lumberCost: 10,
-    ironCost: 10,
-    clayCost: 10,
-    wheatCost: 10,
-    upgrade: {
-      1: {
-        populationGain: 1,
-        lumberCost: 10,
-        ironCost: 10,
-        clayCost: 10,
-        wheatCost: 10
-      },
-      2: {
-        populationGain: 1,
-        lumberCost: 10,
-        ironCost: 10,
-        clayCost: 10,
-        wheatCost: 10
-      }
-    }
-  },
-  'Test Building 2': {
-    info: 'This building is the second one to use in a testing.',
-    width: 1,
-    height: 2,
-    populationGain: 1,
-    lumberCost: 10,
-    ironCost: 10,
-    clayCost: 10,
-    wheatCost: 10,
-    upgrade: {
-      1: {
-        populationGain: 1,
-        lumberCost: 10,
-        ironCost: 10,
-        clayCost: 10,
-        wheatCost: 10
-      },
-      2: {
-        populationGain: 1,
-        lumberCost: 10,
-        ironCost: 10,
-        clayCost: 10,
-        wheatCost: 10
-      }
-    }
-  },
-  'Test Building 3': {
-    info: 'This building is the third one to use in testing. It has extra long text. And oh boy, is it long! it is, indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something. indeed. Very much so! It really is quite something.',
+  'Test Building': {
+    info: 'This is a testbuilding.',
     width: 2,
-    height: 2,
-    populationGain: 1,
-    lumberCost: 10,
-    ironCost: 10,
-    clayCost: 10,
-    wheatCost: 10,
-    upgrade: {
-      1: {
-        populationGain: 1,
-        lumberCost: 10,
-        ironCost: 10,
-        clayCost: 10,
-        wheatCost: 10
-      },
-      2: {
-        populationGain: 1,
-        lumberCost: 10,
-        ironCost: 10,
-        clayCost: 10,
-        wheatCost: 10
-      }
-    }
+    height: 1,
+    level: {
+      0: {},
+      1: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 1'},
+      2: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 2'},
+      3: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 3'},
+      4: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 4'},
+      5: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 5'}
+    },
   },
-  'Test Building 4': {
-    info: 'And another one!',
-    width: 3,
-    height: 2,
-    populationGain: 1,
-    lumberCost: 10,
-    ironCost: 10,
-    clayCost: 10,
-    wheatCost: 10,
-    upgrade: {
+  'Warehouse': {
+    info: 'Increase the maximum capasity of your towns lumber, iron and clay.',
+    width: 2,
+    height: 1,
+    level: {
+      0: {
+        maxLumber: 500,
+        maxIron: 500,
+        maxClay: 500
+      },
       1: {
         populationGain: 1,
-        lumberCost: 10,
-        ironCost: 10,
-        clayCost: 10,
-        wheatCost: 10
+        lumberCost: 210,
+        ironCost: 180,
+        clayCost: 225,
+        wheatCost: 290,
+        info: 'Increases maximum capasity to 900',
+        maxLumber: 1200,
+        maxIron: 1200,
+        maxClay: 1200
       },
       2: {
         populationGain: 1,
-        lumberCost: 10,
-        ironCost: 10,
-        clayCost: 10,
-        wheatCost: 10
+        lumberCost: 450,
+        ironCost: 625,
+        clayCost: 580,
+        wheatCost: 450,
+        info: 'Increases maximum capasity to 1400',
+        maxLumber: 1200,
+        maxIron: 1200,
+        maxClay: 1200
+      },
+      3: {
+        populationGain: 1,
+        lumberCost: 900,
+        ironCost: 875,
+        clayCost: 1050,
+        wheatCost: 700,
+        info: 'Increases maximum capasity to 2000',
+        maxLumber: 2000,
+        maxIron: 2000,
+        maxClay: 2000
+      },
+      4: {
+        populationGain: 2,
+        lumberCost: 1480,
+        ironCost: 1800,
+        clayCost: 1675,
+        wheatCost: 1280,
+        info: 'Increases maximum capasity to 3000',
+        maxLumber: 3000,
+        maxIron: 3000,
+        maxClay: 3000
+      },
+      5: {
+        populationGain: 2,
+        lumberCost: 2725,
+        ironCost: 2550,
+        clayCost: 2700,
+        wheatCost: 1875,
+        info: 'Increases maximum capasity to 5000',
+        maxLumber: 5000,
+        maxIron: 5000,
+        maxClay: 5000
       }
     }
   }

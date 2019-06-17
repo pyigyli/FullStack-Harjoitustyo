@@ -7,7 +7,7 @@ export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], n
   try {
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user: UserData = userSnapshot.toJSON() as UserData
-    const building = buildingsData[newBuildingName]
+    const building = buildingsData[newBuildingName].level[1]
     const currentTime = new Date().getTime()
     const timePassed = currentTime - user.timestamp
     const currentLumber = Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber)
@@ -23,6 +23,9 @@ export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], n
       buildings,
       timestamp: currentTime
     })
+    if (!moving) {
+      await handlUniqueAttributesOfBuilding(conn, user, building)
+    }
     getUserData(conn)
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
@@ -34,7 +37,7 @@ export const levelUpBuilding = async (conn: Connection, row: number, column: num
   try {
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user: UserData = userSnapshot.toJSON() as UserData
-    const slot: BuildingSlot = buildingsData[user.buildings[row][column].name].upgrade[newLevel]
+    const slot: BuildingSlot = buildingsData[user.buildings[row][column].name].level[newLevel]
     const currentTime = new Date().getTime()
     const timePassed = currentTime - user.timestamp
     await db.ref(`users/${conn.id}`).update({
@@ -46,6 +49,7 @@ export const levelUpBuilding = async (conn: Connection, row: number, column: num
       timestamp: currentTime
     })
     await db.ref(`users/${conn.id}/buildings/${row}/${column}/level`).set(newLevel)
+    await handlUniqueAttributesOfBuilding(conn, user, slot)
     getUserData(conn)
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
@@ -58,14 +62,15 @@ export const deleteBuilding = async (conn: Connection, buildings: GridSlot[][], 
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user: UserData = userSnapshot.toJSON() as UserData
     const building = buildingsData[removedBuilding.name]
-    let buildingPopulationGain = building.populationGain
+    let buildingPopulationGain = 0
     for (let i = 1; i < removedBuilding.level; i++) {
-      buildingPopulationGain += building.upgrade[i].populationGain
+      buildingPopulationGain += building.level[i].populationGain
     }
     await db.ref(`users/${conn.id}`).update({
       population: user.population - buildingPopulationGain,
       buildings
     })
+    handlUniqueAttributesOfBuilding(conn, user, building.level[0])
     getUserData(conn)
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
@@ -105,6 +110,20 @@ export const expandTown = async (conn: Connection) => {
       timestamp: currentTime
     })
     getUserData(conn)
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+const handlUniqueAttributesOfBuilding = async (conn: Connection, user: UserData, newValues: any) => {
+  try {
+    await db.ref(`users/${conn.id}`).update({
+      maxLumber: newValues.maxLumber ? newValues.maxLumber : user.maxLumber,
+      maxIron:   newValues.maxIron   ? newValues.maxIron   : user.maxIron,
+      maxClay:   newValues.maxClay   ? newValues.maxClay   : user.maxClay,
+      maxWheat:  newValues.maxWheat  ? newValues.maxWheat  : user.maxWheat
+    })
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console

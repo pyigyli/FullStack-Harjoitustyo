@@ -27,4 +27,5 @@
 | 14.6.  | 6    | - Viestien lähettäminen toteutettu.<br> - Viestien poistaminen toteutettu. |
 | 15.6.  | 5    | - Viestinäkymän ulkoasu valmis.<br> - Lukemattomat ja luetut viestit toteutettu.<br> - Viestien lähettämiselle asetettu sopivia validointeja. |
 | 16.6.  | 1    | - Koodin tyyliä refaktoroitu. |
-| Yhteensä | 131    |
+| 17.6.  | 1    | - Varastorakennus toteutettu, joka lisää kolmen yleisresurssin maksimikapasiteettia. Myös rakennuksen poistaminen toteutettu. |
+| Yhteensä | 132    |

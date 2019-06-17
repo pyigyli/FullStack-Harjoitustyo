@@ -320,19 +320,19 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                     </div>
                     <div className={classes.buildingCostWrapper}>
                       <div>Lumber</div>
-                      <div>{buildingEntry[1].lumberCost}</div>
+                      <div>{buildingEntry[1].level[1].lumberCost}</div>
                     </div>
                     <div className={classes.buildingCostWrapper}>
                       <div>Iron</div>
-                      <div>{buildingEntry[1].ironCost}</div>
+                      <div>{buildingEntry[1].level[1].ironCost}</div>
                     </div>
                     <div className={classes.buildingCostWrapper}>
                       <div>Clay</div>
-                      <div>{buildingEntry[1].clayCost}</div>
+                      <div>{buildingEntry[1].level[1].clayCost}</div>
                     </div>
                     <div className={classes.buildingCostWrapper}>
                       <div>Wheat</div>
-                      <div>{buildingEntry[1].wheatCost}</div>
+                      <div>{buildingEntry[1].level[1].wheatCost}</div>
                     </div>
                   </div>
                 </DialogContent>
@@ -341,10 +341,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                     className={classes.button}
                     onClick={() => this.handleSubmitBuildingSelect(buildingEntry[0])}
                     disabled={
-                      lumber < buildingEntry[1].lumberCost ||
-                      iron < buildingEntry[1].ironCost ||
-                      clay < buildingEntry[1].clayCost ||
-                      wheat < buildingEntry[1].wheatCost
+                      lumber < buildingEntry[1].level[1].lumberCost ||
+                      iron < buildingEntry[1].level[1].ironCost ||
+                      clay < buildingEntry[1].level[1].clayCost ||
+                      wheat < buildingEntry[1].level[1].wheatCost
                     }
                   >
                     Select {buildingEntry[0]} for building
@@ -372,19 +372,19 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>
-                    <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost}</div>
+                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel].lumberCost}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Iron</div>
-                    <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost}</div>
+                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel].ironCost}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Clay</div>
-                    <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost}</div>
+                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel].clayCost}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Wheat</div>
-                    <div>{buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost}</div>
+                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel].wheatCost}</div>
                   </div>
                 </div>
                 <div className={classes.buildingCostsContainer}>
@@ -393,19 +393,19 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>
-                    <div>{Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost / 5)}</div>
+                    <div>{Math.floor(buildingsData[buildingMenuName].level[buildingMenuLevel].lumberCost / 5)}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Iron</div>
-                    <div>{Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost / 5)}</div>
+                    <div>{Math.floor(buildingsData[buildingMenuName].level[buildingMenuLevel].ironCost / 5)}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Clay</div>
-                    <div>{Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost / 5)}</div>
+                    <div>{Math.floor(buildingsData[buildingMenuName].level[buildingMenuLevel].clayCost / 5)}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Wheat</div>
-                    <div>{Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost / 5)}</div>
+                    <div>{Math.floor(buildingsData[buildingMenuName].level[buildingMenuLevel].wheatCost / 5)}</div>
                   </div>
                 </div>
               </DialogContent>
@@ -415,10 +415,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   className={classes.button}
                   onClick={this.handleMoveBuilding}
                   disabled={
-                    lumber < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost / 5) ||
-                    iron   < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost   / 5) ||
-                    clay   < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost   / 5) ||
-                    wheat  < Math.floor(buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost  / 5)
+                    lumber < Math.floor(buildingsData[buildingMenuName].level[buildingMenuLevel].lumberCost / 5) ||
+                    iron   < Math.floor(buildingsData[buildingMenuName].level[buildingMenuLevel].ironCost   / 5) ||
+                    clay   < Math.floor(buildingsData[buildingMenuName].level[buildingMenuLevel].clayCost   / 5) ||
+                    wheat  < Math.floor(buildingsData[buildingMenuName].level[buildingMenuLevel].wheatCost  / 5)
                   }
                 >
                   Move
@@ -427,10 +427,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   className={classes.button}
                   onClick={this.handleSubmitBuildingUpgrade}
                   disabled={
-                    lumber < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].lumberCost ||
-                    iron   < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].ironCost   ||
-                    clay   < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].clayCost   ||
-                    wheat  < buildingsData[buildingMenuName].upgrade[buildingMenuLevel].wheatCost
+                    lumber < buildingsData[buildingMenuName].level[buildingMenuLevel].lumberCost ||
+                    iron   < buildingsData[buildingMenuName].level[buildingMenuLevel].ironCost   ||
+                    clay   < buildingsData[buildingMenuName].level[buildingMenuLevel].clayCost   ||
+                    wheat  < buildingsData[buildingMenuName].level[buildingMenuLevel].wheatCost
                   }
                 >
                   Upgrade
