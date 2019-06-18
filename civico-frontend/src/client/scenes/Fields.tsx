@@ -54,8 +54,8 @@ const styles = () => createStyles({
   button: {
     backgroundColor: '#32143244',
     color: '#321432',
-    paddingLeft: '30px',
-    paddingRight: '30px',
+    paddingLeft: '25px',
+    paddingRight: '25px',
     margin: '30px'
   }
 })

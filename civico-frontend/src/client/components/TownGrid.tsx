@@ -2,7 +2,7 @@ import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
 import DragIcon from '@material-ui/icons/OpenWith'
 import Draggable from 'react-draggable'
-import {GridSlot} from '../../types/protocol'
+import {GridSlot, buildingsData} from '../../types/protocol'
 
 const styles = () => createStyles({
   root: {
@@ -117,7 +117,7 @@ class TownGrid extends React.Component<Props & WithStyles<typeof styles>, State>
                   margin,
                   top:  i * (height + margin),
                   left: j * (width  + margin),
-                  backgroundColor: slot.name === 'EMPTY' ? 'white' : '#ebefec'
+                  backgroundColor: slot.name === 'EMPTY' ? 'white' : buildingsData[slot.name].color
                 }}
                 onClick={() => onOpenBuildingMenu(slot.name, i, j)}
               >

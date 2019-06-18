@@ -28,4 +28,5 @@
 | 15.6.  | 5    | - Viestinäkymän ulkoasu valmis.<br> - Lukemattomat ja luetut viestit toteutettu.<br> - Viestien lähettämiselle asetettu sopivia validointeja. |
 | 16.6.  | 1    | - Koodin tyyliä refaktoroitu. |
 | 17.6.  | 1    | - Varastorakennus toteutettu, joka lisää kolmen yleisresurssin maksimikapasiteettia. Myös rakennuksen poistaminen toteutettu. |
-| Yhteensä | 132    |
+| 18.6.  | 2    | - Viljasiilo toteutettu.<br> - Jokaiselle rakennukselle oma ruudun taustaväri.<br> - Rakennuksiin liittyviä bugeja korjattu. |
+| Yhteensä | 134    |

@@ -157,10 +157,10 @@ const styles = () => createStyles({
   button: {
     backgroundColor: '#32143244',
     color: '#321432',
-    paddingLeft: '30px',
-    paddingRight: '30px',
-    marginLeft: '20px',
-    marginRight: '20px',
+    paddingLeft: '25px',
+    paddingRight: '25px',
+    marginLeft: '15px',
+    marginRight: '15px',
     marginBottom: '5px',
     '&$redButton': {
       background: '#aa2c2caa'

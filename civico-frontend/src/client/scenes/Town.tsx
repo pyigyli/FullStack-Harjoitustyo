@@ -62,10 +62,10 @@ const styles = () => createStyles({
   button: {
     backgroundColor: '#32143244',
     color: '#321432',
-    paddingLeft: '30px',
-    paddingRight: '30px',
-    marginLeft: '20px',
-    marginRight: '20px',
+    paddingLeft: '25px',
+    paddingRight: '25px',
+    marginLeft: '15px',
+    marginRight: '15px',
     marginBottom: '5px',
     '&$redButton': {
       background: '#aa2c2caa'
@@ -167,7 +167,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       for (let j = 0; j < this.state.newBuildingHeight; j++) {
         buildings[this.state.newBuildingColumn + j][this.state.newBuildingRow + i] = {
           name: this.state.newBuildingName,
-          level: this.state.buildingMenuLevel
+          level: this.state.buildingsOnMoving ? this.state.buildingMenuLevel : 1
         }
       }
     }
@@ -342,15 +342,15 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                     onClick={() => this.handleSubmitBuildingSelect(buildingEntry[0])}
                     disabled={
                       lumber < buildingEntry[1].level[1].lumberCost ||
-                      iron < buildingEntry[1].level[1].ironCost ||
-                      clay < buildingEntry[1].level[1].clayCost ||
-                      wheat < buildingEntry[1].level[1].wheatCost
+                      iron <   buildingEntry[1].level[1].ironCost   ||
+                      clay <   buildingEntry[1].level[1].clayCost   ||
+                      wheat <  buildingEntry[1].level[1].wheatCost
                     }
                   >
                     Select {buildingEntry[0]} for building
                   </Button>
                 </DialogActions>
-                <div className={classes.lineBreak}/>
+                {index !== Object.keys(buildingsData).length - 1 && <div className={classes.lineBreak}/>}
               </div>
             )}
           </ScrollArea>
@@ -372,19 +372,19 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>
-                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel].lumberCost}</div>
+                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].lumberCost}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Iron</div>
-                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel].ironCost}</div>
+                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].ironCost}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Clay</div>
-                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel].clayCost}</div>
+                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].clayCost}</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Wheat</div>
-                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel].wheatCost}</div>
+                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].wheatCost}</div>
                   </div>
                 </div>
                 <div className={classes.buildingCostsContainer}>
@@ -427,13 +427,14 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   className={classes.button}
                   onClick={this.handleSubmitBuildingUpgrade}
                   disabled={
-                    lumber < buildingsData[buildingMenuName].level[buildingMenuLevel].lumberCost ||
-                    iron   < buildingsData[buildingMenuName].level[buildingMenuLevel].ironCost   ||
-                    clay   < buildingsData[buildingMenuName].level[buildingMenuLevel].clayCost   ||
-                    wheat  < buildingsData[buildingMenuName].level[buildingMenuLevel].wheatCost
+                    buildingMenuLevel === 5 ||
+                    lumber < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].lumberCost ||
+                    iron   < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].ironCost   ||
+                    clay   < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].clayCost   ||
+                    wheat  < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].wheatCost
                   }
                 >
-                  Upgrade
+                  {buildingMenuLevel === 5 ? 'Max level' : 'Upgrade'}
                 </Button>
                 <Button
                   className={`${classes.button} ${classes.redButton}`}
