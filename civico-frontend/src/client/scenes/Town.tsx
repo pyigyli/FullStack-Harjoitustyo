@@ -56,7 +56,7 @@ const styles = () => createStyles({
     justifyContent: 'center',
     textAlign: 'center'
   },
-  costLabel: {
+  boldFont: {
     fontWeight: 'bold'
   },
   button: {
@@ -309,14 +309,29 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 }
               })
               return keepBuilding
-            }).map((buildingEntry, index) => 
-              <div key={index}>
+            }).map((buildingEntry, i: number) => {
+              const requirements = Object.entries(buildingEntry[1].requirements).filter(requirementEntry => {
+                let keepBuilding: boolean = true
+                grid.forEach((row: GridSlot[]) => {
+                  row.forEach((slot: GridSlot) => {
+                    if (slot.name === requirementEntry[0] && slot.level >= (requirementEntry[1] as number)) {
+                      keepBuilding = false
+                    }
+                  })
+                })
+                return keepBuilding
+              })
+              return <div key={i}>
                 <DialogTitle>{buildingEntry[0]}</DialogTitle>
                 <DialogContent>
                   <DialogContentText>{buildingEntry[1].info}</DialogContentText>
+                  <DialogContentText>
+                    <span className={classes.boldFont}>Size: </span>
+                    {buildingEntry[1].width}x{buildingEntry[1].height}
+                  </DialogContentText>
                   <div className={classes.buildingCostsContainer}>
-                  <div className={classes.buildingCostWrapper}>
-                    <div className={classes.costLabel}>Cost:</div>
+                    <div className={classes.buildingCostWrapper}>
+                      <div className={classes.boldFont}>Cost:</div>
                     </div>
                     <div className={classes.buildingCostWrapper}>
                       <div>Lumber</div>
@@ -335,6 +350,17 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                       <div>{buildingEntry[1].level[1].wheatCost}</div>
                     </div>
                   </div>
+                  {requirements.length > 0 && (
+                    <DialogContentText style={{marginTop: '20px'}}>
+                      <span className={classes.boldFont}>Requirements: </span>
+                      {requirements.map((requirementEntry, j: number) => 
+                        <span>
+                          {requirementEntry[0]} at level {requirementEntry[1]}
+                          {j !== Object.keys(buildingEntry[1].requirements).length - 1 ? ', ' : ''}
+                        </span>
+                      )}
+                    </DialogContentText>
+                  )}
                 </DialogContent>
                 <DialogActions>
                   <Button
@@ -342,17 +368,18 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                     onClick={() => this.handleSubmitBuildingSelect(buildingEntry[0])}
                     disabled={
                       lumber < buildingEntry[1].level[1].lumberCost ||
-                      iron <   buildingEntry[1].level[1].ironCost   ||
-                      clay <   buildingEntry[1].level[1].clayCost   ||
-                      wheat <  buildingEntry[1].level[1].wheatCost
+                      iron   < buildingEntry[1].level[1].ironCost   ||
+                      clay   < buildingEntry[1].level[1].clayCost   ||
+                      wheat  < buildingEntry[1].level[1].wheatCost  ||
+                      requirements.length > 0
                     }
                   >
                     Select {buildingEntry[0]} for building
                   </Button>
                 </DialogActions>
-                {index !== Object.keys(buildingsData).length - 1 && <div className={classes.lineBreak}/>}
+                {i !== Object.keys(buildingsData).length - 1 && <div className={classes.lineBreak}/>}
               </div>
-            )}
+            })}
           </ScrollArea>
         </Dialog>
         <Dialog open={buildingMenuName.length > 0} onClose={this.handleCloseBuildingSelect}>
@@ -365,10 +392,12 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 </div>
               </DialogTitle>
               <DialogContent>
-                <DialogContentText>{buildingsData[buildingMenuName].info}</DialogContentText>
+                <DialogContentText>
+                  {buildingsData[buildingMenuName].level[buildingMenuLevel].info || buildingsData[buildingMenuName].info}
+                </DialogContentText>
                 <div className={classes.buildingCostsContainer}>
                   <div className={classes.buildingCostWrapper}>
-                    <div className={classes.costLabel}>Upgrade cost:</div>
+                    <div className={classes.boldFont}>Upgrade cost:</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>
@@ -389,7 +418,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 </div>
                 <div className={classes.buildingCostsContainer}>
                   <div className={classes.buildingCostWrapper}>
-                    <div className={classes.costLabel}>Moving cost:</div>
+                    <div className={classes.boldFont}>Moving cost:</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>

@@ -274,6 +274,7 @@ export const buildingsData = {
     width: 2,
     height: 1,
     color: '#ebefec',
+    requirements: {},
     level: {
       0: {},
       1: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 1'},
@@ -283,37 +284,89 @@ export const buildingsData = {
       5: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 5'}
     }
   },
+  'Town Hall': {
+    info: 'Important decisions require important people. The mayor lives here, managing his town.',
+    width: 2,
+    height: 1,
+    color: '#2cc2c2cc',
+    requirements: {},
+    level: {
+      0: {},
+      1: {populationGain: 1, lumberCost: 190,  ironCost: 210,  clayCost: 175,  wheatCost: 130},
+      2: {populationGain: 2, lumberCost: 325,  ironCost: 300,  clayCost: 300,  wheatCost: 200},
+      3: {populationGain: 2, lumberCost: 630,  ironCost: 650,  clayCost: 625,  wheatCost: 470},
+      4: {populationGain: 3, lumberCost: 1500, ironCost: 1625, clayCost: 1540, wheatCost: 1350},
+      5: {populationGain: 4, lumberCost: 3225, ironCost: 3020, clayCost: 3200, wheatCost: 2500}
+    }
+  },
   Warehouse: {
-    info: 'Increase the maximum capasity of your towns lumber, iron and clay.',
+    info: 'Increase the maximum capasity of lumber, iron and clay.',
     width: 2,
     height: 1,
     color: '#8e6e63',
+    requirements: {},
     level: {
       0: {maxLumber: 500,  maxIron: 500,  maxClay: 500},
-      1: {populationGain: 1, lumberCost: 210,  ironCost: 180,  clayCost: 225,  wheatCost: 290,  info: 'Increases maximum capasity to 900',
-          maxLumber: 900,  maxIron: 900,  maxClay: 900},
-      2: {populationGain: 1, lumberCost: 450,  ironCost: 625,  clayCost: 580,  wheatCost: 450,  info: 'Increases maximum capasity to 1400',
-          maxLumber: 1400, maxIron: 1400, maxClay: 1400},
-      3: {populationGain: 2, lumberCost: 900,  ironCost: 875,  clayCost: 1050, wheatCost: 700,  info: 'Increases maximum capasity to 2000',
-          maxLumber: 2000, maxIron: 2000, maxClay: 2000},
-      4: {populationGain: 2, lumberCost: 1480, ironCost: 1800, clayCost: 1675, wheatCost: 1280, info: 'Increases maximum capasity to 3000',
-          maxLumber: 3000, maxIron: 3000, maxClay: 3000},
-      5: {populationGain: 2, lumberCost: 2725, ironCost: 2550, clayCost: 2700, wheatCost: 1875, info: 'Increases maximum capasity to 5000',
-          maxLumber: 5000, maxIron: 5000, maxClay: 5000}
+      1: {populationGain: 1, lumberCost: 210,  ironCost: 180,  clayCost: 225,  wheatCost: 290,
+          info: 'Increase the maximum capasity of lumber, iron and clay to 1400.', maxLumber: 900,  maxIron: 900,  maxClay: 900},
+      2: {populationGain: 1, lumberCost: 450,  ironCost: 625,  clayCost: 580,  wheatCost: 450,
+          info: 'Increase the maximum capasity of lumber, iron and clay to 2000.', maxLumber: 1400, maxIron: 1400, maxClay: 1400},
+      3: {populationGain: 2, lumberCost: 900,  ironCost: 875,  clayCost: 1050, wheatCost: 700,
+          info: 'Increase the maximum capasity of lumber, iron and clay to 3000.', maxLumber: 2000, maxIron: 2000, maxClay: 2000},
+      4: {populationGain: 2, lumberCost: 1480, ironCost: 1800, clayCost: 1675, wheatCost: 1280,
+          info: 'Increase the maximum capasity of lumber, iron and clay to 5000.', maxLumber: 3000, maxIron: 3000, maxClay: 3000},
+      5: {populationGain: 2, lumberCost: 2725, ironCost: 2550, clayCost: 2700, wheatCost: 1875,
+          info: 'Increase the maximum capasity of lumber, iron and clay.',         maxLumber: 5000, maxIron: 5000, maxClay: 5000}
     }
   },
   Granary: {
-    info: 'Increase the maximum capasity of your towns wheat.',
+    info: 'Increase the maximum capasity of wheat.',
     width: 1,
     height: 1,
     color: '#f7f788bb',
+    requirements: {},
     level: {
       0: {maxWheat: 500},
-      1: {populationGain: 1, lumberCost: 180,  ironCost: 195,  clayCost: 200,  wheatCost: 150,  info: 'Increases maximum capasity to 900',  maxWheat: 900},
-      2: {populationGain: 1, lumberCost: 460,  ironCost: 500,  clayCost: 500,  wheatCost: 520,  info: 'Increases maximum capasity to 1400', maxWheat: 1400},
-      3: {populationGain: 1, lumberCost: 850,  ironCost: 875,  clayCost: 925,  wheatCost: 640,  info: 'Increases maximum capasity to 2000', maxWheat: 2000},
-      4: {populationGain: 2, lumberCost: 1350, ironCost: 1275, clayCost: 1300, wheatCost: 1280, info: 'Increases maximum capasity to 3000', maxWheat: 3000},
-      5: {populationGain: 2, lumberCost: 2150, ironCost: 2225, clayCost: 2200, wheatCost: 1750, info: 'Increases maximum capasity to 5000', maxWheat: 5000}
+      1: {populationGain: 1, lumberCost: 180,  ironCost: 195,  clayCost: 200,  wheatCost: 150,  info: 'Increases maximum capasity of wheat to 1400.', maxWheat: 900},
+      2: {populationGain: 1, lumberCost: 460,  ironCost: 500,  clayCost: 500,  wheatCost: 520,  info: 'Increases maximum capasity of wheat to 2000.', maxWheat: 1400},
+      3: {populationGain: 1, lumberCost: 850,  ironCost: 875,  clayCost: 925,  wheatCost: 640,  info: 'Increases maximum capasity of wheat to 3000.', maxWheat: 2000},
+      4: {populationGain: 2, lumberCost: 1350, ironCost: 1275, clayCost: 1300, wheatCost: 1280, info: 'Increases maximum capasity of wheat to 5000.', maxWheat: 3000},
+      5: {populationGain: 2, lumberCost: 2150, ironCost: 2225, clayCost: 2200, wheatCost: 1750, info: 'Increases maximum capasity of wheat.',         maxWheat: 5000}
+    }
+  },
+  Embassy: {
+    info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members',
+    width: 1,
+    height: 1,
+    color: '#ff9030dd',
+    requirements: {'Town Hall': 1},
+    level: {
+      0: {},
+      1: {populationGain: 1, lumberCost: 110, ironCost: 95, clayCost: 125, wheatCost: 160,
+          info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members to 6'},
+      2: {populationGain: 1, lumberCost: 160, ironCost: 150, clayCost: 160, wheatCost: 200,
+          info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members to 9'},
+      3: {populationGain: 1, lumberCost: 230, ironCost: 250, clayCost: 225, wheatCost: 275,
+          info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members to 12'},
+      4: {populationGain: 1, lumberCost: 295, ironCost: 280, clayCost: 275, wheatCost: 300,
+          info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members to 15'},
+      5: {populationGain: 1, lumberCost: 425, ironCost: 390, clayCost: 400, wheatCost: 360,
+          info: 'Embassy allows you to join an alliance, or create your own. Your alliance can hold up to 15 members.'}
+    }
+  },
+  Barracks: {
+    info: 'Train your basic foot soldiers and improve your military strength.',
+    width: 2,
+    height: 2,
+    color: '#48561f',
+    requirements: {'Town Hall': 2, Embassy: 1},
+    level: {
+      0: {},
+      1: {populationGain: 2, lumberCost: 245, ironCost: 210, clayCost: 225, wheatCost: 170},
+      2: {populationGain: 2, lumberCost: 260, ironCost: 260, clayCost: 225, wheatCost: 200},
+      3: {populationGain: 2, lumberCost: 325, ironCost: 330, clayCost: 350, wheatCost: 275},
+      4: {populationGain: 3, lumberCost: 380, ironCost: 350, clayCost: 400, wheatCost: 325},
+      5: {populationGain: 3, lumberCost: 500, ironCost: 500, clayCost: 500, wheatCost: 400}
     }
   }
 }

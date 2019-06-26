@@ -29,4 +29,5 @@
 | 16.6.  | 1    | - Koodin tyyliä refaktoroitu. |
 | 17.6.  | 1    | - Varastorakennus toteutettu, joka lisää kolmen yleisresurssin maksimikapasiteettia. Myös rakennuksen poistaminen toteutettu. |
 | 18.6.  | 2    | - Viljasiilo toteutettu.<br> - Jokaiselle rakennukselle oma ruudun taustaväri.<br> - Rakennuksiin liittyviä bugeja korjattu. |
-| Yhteensä | 134    |
+| 26.6.  | 3    | - Kasarmi ja lähetystö alustettu.<br> - Kaupungintalo toteutettu.<br> - Rakennuksilla voi olla nyt vaatimuksia, jotka pitää rakentaa ennen kuin kyseinen rakennus voidaan rakentaa. |
+| Yhteensä | 137    |
