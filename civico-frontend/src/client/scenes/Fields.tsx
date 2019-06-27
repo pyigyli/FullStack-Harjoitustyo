@@ -123,6 +123,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
           clay={clay}
           wheat={wheat}
           grid={fields}
+          netWheatRate={wheatRate - population}
           onFieldLevelUp={onFieldLevelUp}
           onOpenDiscoverMenu={this.handleOpenDiscoverMenu}
         />

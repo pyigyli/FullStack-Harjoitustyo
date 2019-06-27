@@ -18,7 +18,8 @@ type MessageType =
   'SEND_INBOX' |
   'CONFIRM_INBOX' |
   'DELETE_INBOX' |
-  'ERROR'
+  'ERROR' |
+  'PACIFISM'
 
 export type Message =
   CreateAccountMessage |
@@ -40,7 +41,8 @@ export type Message =
   SendInboxMessage |
   InboxConfirmMessage |
   DeleteInboxMessage |
-  ErrorMessage
+  ErrorMessage |
+  TogglePacifismMessage
 
 export interface MessageBase {
   type: MessageType
@@ -95,6 +97,8 @@ export interface SendUserDataMessage extends MessageBase {
   mapCoordinates: number[]
   inbox: InboxMessage[]
   timestamp: number
+  pacifist: boolean
+  pacifismDisabledUntil: number
 }
 
 export interface FieldLevelUpMessage extends MessageBase {
@@ -176,6 +180,13 @@ export interface ErrorMessage extends MessageBase {
   message: string
 }
 
+export interface TogglePacifismMessage extends MessageBase {
+  type: 'PACIFISM'
+  token: string
+  pacifist: boolean
+  disabledDays: number
+}
+
 export interface UserData {
   population: number
   lumber: number
@@ -195,6 +206,8 @@ export interface UserData {
   mapCoordinates: number[]
   inbox: InboxMessage[]
   timestamp: number
+  pacifist: boolean
+  pacifismDisabledUntil: number
 }
 
 export interface GridSlot {
@@ -300,7 +313,7 @@ export const buildingsData = {
     }
   },
   Warehouse: {
-    info: 'Increase the maximum capasity of lumber, iron and clay.',
+    info: 'Increases the maximum capasity of lumber, iron and clay.',
     width: 2,
     height: 1,
     color: '#8e6e63',
@@ -308,34 +321,34 @@ export const buildingsData = {
     level: {
       0: {maxLumber: 500,  maxIron: 500,  maxClay: 500},
       1: {populationGain: 1, lumberCost: 210,  ironCost: 180,  clayCost: 225,  wheatCost: 290,
-          info: 'Increase the maximum capasity of lumber, iron and clay to 1400.', maxLumber: 900,  maxIron: 900,  maxClay: 900},
+          info: 'Increases the maximum capasity of lumber, iron and clay to 1400.', maxLumber: 900,  maxIron: 900,  maxClay: 900},
       2: {populationGain: 1, lumberCost: 450,  ironCost: 625,  clayCost: 580,  wheatCost: 450,
-          info: 'Increase the maximum capasity of lumber, iron and clay to 2000.', maxLumber: 1400, maxIron: 1400, maxClay: 1400},
+          info: 'Increases the maximum capasity of lumber, iron and clay to 2000.', maxLumber: 1400, maxIron: 1400, maxClay: 1400},
       3: {populationGain: 2, lumberCost: 900,  ironCost: 875,  clayCost: 1050, wheatCost: 700,
-          info: 'Increase the maximum capasity of lumber, iron and clay to 3000.', maxLumber: 2000, maxIron: 2000, maxClay: 2000},
+          info: 'Increases the maximum capasity of lumber, iron and clay to 3000.', maxLumber: 2000, maxIron: 2000, maxClay: 2000},
       4: {populationGain: 2, lumberCost: 1480, ironCost: 1800, clayCost: 1675, wheatCost: 1280,
-          info: 'Increase the maximum capasity of lumber, iron and clay to 5000.', maxLumber: 3000, maxIron: 3000, maxClay: 3000},
+          info: 'Increases the maximum capasity of lumber, iron and clay to 5000.', maxLumber: 3000, maxIron: 3000, maxClay: 3000},
       5: {populationGain: 2, lumberCost: 2725, ironCost: 2550, clayCost: 2700, wheatCost: 1875,
-          info: 'Increase the maximum capasity of lumber, iron and clay.',         maxLumber: 5000, maxIron: 5000, maxClay: 5000}
+          info: 'Increases the maximum capasity of lumber, iron and clay.',         maxLumber: 5000, maxIron: 5000, maxClay: 5000}
     }
   },
   Granary: {
-    info: 'Increase the maximum capasity of wheat.',
+    info: 'Increases the maximum capasity of wheat.',
     width: 1,
     height: 1,
     color: '#f7f788bb',
     requirements: {},
     level: {
       0: {maxWheat: 500},
-      1: {populationGain: 1, lumberCost: 180,  ironCost: 195,  clayCost: 200,  wheatCost: 150,  info: 'Increases maximum capasity of wheat to 1400.', maxWheat: 900},
-      2: {populationGain: 1, lumberCost: 460,  ironCost: 500,  clayCost: 500,  wheatCost: 520,  info: 'Increases maximum capasity of wheat to 2000.', maxWheat: 1400},
-      3: {populationGain: 1, lumberCost: 850,  ironCost: 875,  clayCost: 925,  wheatCost: 640,  info: 'Increases maximum capasity of wheat to 3000.', maxWheat: 2000},
-      4: {populationGain: 2, lumberCost: 1350, ironCost: 1275, clayCost: 1300, wheatCost: 1280, info: 'Increases maximum capasity of wheat to 5000.', maxWheat: 3000},
-      5: {populationGain: 2, lumberCost: 2150, ironCost: 2225, clayCost: 2200, wheatCost: 1750, info: 'Increases maximum capasity of wheat.',         maxWheat: 5000}
+      1: {populationGain: 1, lumberCost: 180,  ironCost: 195,  clayCost: 200,  wheatCost: 150,  info: 'Increases the maximum capasity of wheat to 1400.', maxWheat: 900},
+      2: {populationGain: 1, lumberCost: 460,  ironCost: 500,  clayCost: 500,  wheatCost: 520,  info: 'Increases the maximum capasity of wheat to 2000.', maxWheat: 1400},
+      3: {populationGain: 1, lumberCost: 850,  ironCost: 875,  clayCost: 925,  wheatCost: 640,  info: 'Increases the maximum capasity of wheat to 3000.', maxWheat: 2000},
+      4: {populationGain: 2, lumberCost: 1350, ironCost: 1275, clayCost: 1300, wheatCost: 1280, info: 'Increases the maximum capasity of wheat to 5000.', maxWheat: 3000},
+      5: {populationGain: 2, lumberCost: 2150, ironCost: 2225, clayCost: 2200, wheatCost: 1750, info: 'Increases the maximum capasity of wheat.',         maxWheat: 5000}
     }
   },
   Embassy: {
-    info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members',
+    info: 'State the military status of your town here. Are you a pacifist or do you wanna war with others?',
     width: 1,
     height: 1,
     color: '#ff9030dd',
@@ -343,15 +356,15 @@ export const buildingsData = {
     level: {
       0: {},
       1: {populationGain: 1, lumberCost: 110, ironCost: 95, clayCost: 125, wheatCost: 160,
-          info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members to 6'},
+          info: 'Lower the cooldown of restating your towns military status to 4 days.'},
       2: {populationGain: 1, lumberCost: 160, ironCost: 150, clayCost: 160, wheatCost: 200,
-          info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members to 9'},
+          info: 'Lower the cooldown of restating your towns military status to 3 days.'},
       3: {populationGain: 1, lumberCost: 230, ironCost: 250, clayCost: 225, wheatCost: 275,
-          info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members to 12'},
+          info: 'Lower the cooldown of restating your towns military status to 2 days.'},
       4: {populationGain: 1, lumberCost: 295, ironCost: 280, clayCost: 275, wheatCost: 300,
-          info: 'Embassy allows you to join an alliance, or create your own. Increases the max capasity of your alliance members to 15'},
+          info: 'Lower the cooldown of restating your towns military status to 1 days.'},
       5: {populationGain: 1, lumberCost: 425, ironCost: 390, clayCost: 400, wheatCost: 360,
-          info: 'Embassy allows you to join an alliance, or create your own. Your alliance can hold up to 15 members.'}
+          info: 'Lower the cooldown of restating your towns military status.'}
     }
   },
   Barracks: {

@@ -8,7 +8,7 @@ export const placeBuilding = async (conn: Connection, buildings: GridSlot[][], n
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user: UserData = userSnapshot.toJSON() as UserData
     const building = buildingsData[newBuildingName].level[1]
-    const currentTime = new Date().getTime()
+    const currentTime = Date.now()
     const timePassed = currentTime - user.timestamp
     const currentLumber = Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber)
     const currentIron   = Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron)
@@ -38,7 +38,7 @@ export const levelUpBuilding = async (conn: Connection, row: number, column: num
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user: UserData = userSnapshot.toJSON() as UserData
     const slot: BuildingSlot = buildingsData[user.buildings[row][column].name].level[newLevel]
-    const currentTime = new Date().getTime()
+    const currentTime = Date.now()
     const timePassed = currentTime - user.timestamp
     await db.ref(`users/${conn.id}`).update({
       population: user.population + slot.populationGain,
@@ -99,7 +99,7 @@ export const expandTown = async (conn: Connection) => {
     }
     newGrid.push(emptyRow)
     const expansion = user.buildings.length === 3 ? townExpansionData.first : townExpansionData.second
-    const currentTime = new Date().getTime()
+    const currentTime = Date.now()
     const timePassed = currentTime - user.timestamp
     await db.ref(`users/${conn.id}`).update({
       lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber) - expansion.lumberCost,

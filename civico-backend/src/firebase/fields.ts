@@ -8,7 +8,7 @@ export const levelUpField = async (conn: Connection, row: number, column: number
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user: UserData = userSnapshot.toJSON() as UserData
     const slot: FieldSlot = fieldSlotData[user.fields[row][column].name][newLevel]
-    const currentTime = new Date().getTime()
+    const currentTime = Date.now()
     const timePassed = currentTime - user.timestamp
     await db.ref(`users/${conn.id}`).update({
       population: user.population + slot.populationGain,

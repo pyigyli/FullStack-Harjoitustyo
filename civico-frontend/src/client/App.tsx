@@ -18,7 +18,8 @@ import {
   DeleteInboxMessage,
   GridSlot,
   MapSlot,
-  InboxMessage
+  InboxMessage,
+  TogglePacifismMessage
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -68,6 +69,8 @@ interface State {
   inbox: InboxMessage[]
   inboxMessageSent: boolean
   errorMessage: string
+  pacifist: boolean
+  pacifismDisabledUntil: number
 }
 
 const NULL_STATE: State = {
@@ -94,7 +97,9 @@ const NULL_STATE: State = {
   selectedMapSlotData: {population: 0},
   inbox: [],
   inboxMessageSent: false,
-  errorMessage: ''
+  errorMessage: '',
+  pacifist: true,
+  pacifismDisabledUntil: Date.now()
 }
 
 class App extends React.Component<RouteComponentProps & WithStyles<typeof styles>, State> {
@@ -153,7 +158,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             fields: message.fields,
             buildings: message.buildings,
             mapCoordinates: message.mapCoordinates,
-            inbox: message.inbox
+            inbox: message.inbox,
+            pacifist: message.pacifist,
+            pacifismDisabledUntil: new Date(message.pacifismDisabledUntil).getTime()
           })
           break
         case 'SEND_MAP':
@@ -325,6 +332,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleTogglePacifism = (disabledDays: number) => {
+    const {connection, token, pacifist} = this.state
+    if (connection && token) {
+      const message: TogglePacifismMessage = {type: 'PACIFISM', token, pacifist: !pacifist, disabledDays}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public render() {
     const {classes} = this.props
     const {
@@ -350,7 +365,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       selectedMapSlotData,
       inbox,
       inboxMessageSent,
-      errorMessage
+      errorMessage,
+      pacifist,
+      pacifismDisabledUntil
     } = this.state
 
     return (
@@ -400,10 +417,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             clay={clay}
             wheat={wheat}
             buildings={buildings}
+            netWheatRate={wheatRate - population}
+            pacifist={pacifist}
+            pacifismDisabledUntil={pacifismDisabledUntil}
             onPlaceBuilding={this.handlePlaceBuilding}
             onDeleteBuilding={this.handleDeleteBuilding}
             onBuildingLevelUp={this.handleBuildingLevelUp}
             onExpand={this.handleTownExpand}
+            onTogglePacifism={this.handleTogglePacifism}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/map' render={() =>

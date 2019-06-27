@@ -4,6 +4,7 @@ import ScrollArea from 'react-scrollbar'
 import {cloneDeep} from 'lodash'
 import {GridSlot, buildingsData} from '../../types/protocol'
 import TownGrid from '../components/TownGrid'
+import BuildingContent from '../components/BuildingContent'
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -87,15 +88,19 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  lumber: number,
-  iron: number,
-  clay: number,
-  wheat: number,
+  lumber: number
+  iron: number
+  clay: number
+  wheat: number
   buildings: GridSlot[][]
+  netWheatRate: number
+  pacifist: boolean
+  pacifismDisabledUntil: number
   onPlaceBuilding: (buildings: GridSlot[][], newBuildingName: string, moving: boolean) => void
   onBuildingLevelUp: (row: number, column: number, newLevel: number) => void
   onDeleteBuilding: (buildings: GridSlot[][], removedBuilding: GridSlot) => void
   onExpand: () => void
+  onTogglePacifism: (disabledDays: number) => void
 }
 
 interface State {
@@ -242,8 +247,13 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   public handleOpenBuildingDeleteConfirm = () => this.setState({buildingDeleteConfirmOpen: true})
   public handleCloseBuildingDeleteConfirm = () => this.setState({buildingDeleteConfirmOpen: false})
 
+  public handleTogglePacifism = (disabledDays: number) => {
+    this.props.onTogglePacifism(disabledDays)
+    this.handleCloseBuildingMenu()
+  }
+
   public render() {
-    const {classes, lumber, iron, clay, wheat, buildings, onExpand} = this.props
+    const {classes, lumber, iron, clay, wheat, buildings, netWheatRate, pacifist, pacifismDisabledUntil, onExpand} = this.props
     const {
       buildingsSelectOpen,
       newBuildingWidth,
@@ -326,6 +336,10 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 <DialogContent>
                   <DialogContentText>{buildingEntry[1].info}</DialogContentText>
                   <DialogContentText>
+                    <span className={classes.boldFont}>Population increase: </span>
+                    {buildingEntry[1].level[1].populationGain}
+                  </DialogContentText>
+                  <DialogContentText>
                     <span className={classes.boldFont}>Size: </span>
                     {buildingEntry[1].width}x{buildingEntry[1].height}
                   </DialogContentText>
@@ -354,7 +368,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                     <DialogContentText style={{marginTop: '20px'}}>
                       <span className={classes.boldFont}>Requirements: </span>
                       {requirements.map((requirementEntry, j: number) => 
-                        <span>
+                        <span key={j}>
                           {requirementEntry[0]} at level {requirementEntry[1]}
                           {j !== Object.keys(buildingEntry[1].requirements).length - 1 ? ', ' : ''}
                         </span>
@@ -371,7 +385,8 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                       iron   < buildingEntry[1].level[1].ironCost   ||
                       clay   < buildingEntry[1].level[1].clayCost   ||
                       wheat  < buildingEntry[1].level[1].wheatCost  ||
-                      requirements.length > 0
+                      requirements.length > 0 ||
+                      netWheatRate - buildingEntry[1].level[1].populationGain < 0
                     }
                   >
                     Select {buildingEntry[0]} for building
@@ -392,8 +407,21 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 </div>
               </DialogTitle>
               <DialogContent>
+                <BuildingContent
+                  buildingName={buildingMenuName}
+                  buildingLevel={buildingMenuLevel}
+                  pacifist={pacifist}
+                  onTogglePacifism={this.handleTogglePacifism}
+                  pacifismDisabledUntil={pacifismDisabledUntil}
+                />
+                <div className={classes.lineBreak}/>
+                <div style={{fontSize: '16px', marginTop: '25px', marginBottom: '25px'}}>Upgrade:</div>
                 <DialogContentText>
                   {buildingsData[buildingMenuName].level[buildingMenuLevel].info || buildingsData[buildingMenuName].info}
+                </DialogContentText>
+                <DialogContentText>
+                  <span className={classes.boldFont}>Population increase: </span>
+                  {buildingsData[buildingMenuName].level[buildingMenuLevel + 1].populationGain}
                 </DialogContentText>
                 <div className={classes.buildingCostsContainer}>
                   <div className={classes.buildingCostWrapper}>
@@ -460,7 +488,8 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                     lumber < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].lumberCost ||
                     iron   < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].ironCost   ||
                     clay   < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].clayCost   ||
-                    wheat  < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].wheatCost
+                    wheat  < buildingsData[buildingMenuName].level[buildingMenuLevel + 1].wheatCost  ||
+                    netWheatRate - buildingsData[buildingMenuName].level[buildingMenuLevel + 1].populationGain < 0
                   }
                 >
                   {buildingMenuLevel === 5 ? 'Max level' : 'Upgrade'}

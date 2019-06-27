@@ -89,7 +89,9 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       ],
       mapCoordinates: {x, y},
       inbox: [],
-      timestamp: new Date().getTime()
+      timestamp: Date.now(),
+      pacifist: true,
+      pacifismDisabledUntil: 0
     })
     const user = await ref.once('value')
     conn.id = user.key || ''
@@ -118,9 +120,9 @@ export const login = async (conn: Connection, username: string, password: string
   }
 }
 
-export const logout = (conn: Connection) => {
+export const logout = async (conn: Connection) => {
   try {
-    db.ref(`users/${conn.id}/token`).remove()
+    await db.ref(`users/${conn.id}/token`).remove()
     conn.id = ''
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
@@ -145,7 +147,7 @@ export const getUserData = async (conn: Connection) => {
         Object.values(row).forEach((slot: GridSlot) => rowToPush.push(slot))
         buildings.push(rowToPush)
       })
-      const timePassed = new Date().getTime() - user.timestamp
+      const timePassed = Date.now() - user.timestamp
       conn.sendMessage({
         type: 'SEND_DATA',
         ...user,
@@ -159,6 +161,19 @@ export const getUserData = async (conn: Connection) => {
         inbox: user.inbox ? Object.values(user.inbox) : []
       })
     }
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+export const togglePacifism = async (conn: Connection, pacifist: boolean, disabledDays: number) => {
+  try {
+    await db.ref(`users/${conn.id}`).update({
+      pacifist: pacifist,
+      pacifismDisabledUntil: Date.now() + disabledDays * 86400000
+    })
+    getUserData(conn)
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console

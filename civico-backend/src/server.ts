@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import Connection from './connection'
 import {Message} from './types/protocol'
-import {createNewAccount, login, logout, getUserData} from './firebase/users'
+import {createNewAccount, login, logout, getUserData, togglePacifism} from './firebase/users'
 import {levelUpField} from './firebase/fields'
 import {placeBuilding, levelUpBuilding, deleteBuilding, expandTown} from './firebase/town'
 import {getMap, getMapSlot} from './firebase/map'
@@ -47,6 +47,8 @@ class CivicoServer {
         return sendInboxMessage(conn, message.inboxMessage)
       case 'DELETE_INBOX':
         return deleteInboxMessage(conn, message.newMessageList)
+      case 'PACIFISM':
+        return togglePacifism(conn, message.pacifist, message.disabledDays)
       default:
         console.error('Client sent a message of unknown type.') // tslint:disable-line:no-console
         break

@@ -47,7 +47,7 @@ const styles = () => createStyles({
     justifyContent: 'center',
     textAlign: 'center'
   },
-  costLabel: {
+  boldFont: {
     fontWeight: 'bold'
   },
   button: {
@@ -65,6 +65,7 @@ interface Props {
   clay: number
   wheat: number
   grid: Array<Array<{name: string, level: number}>>
+  netWheatRate: number
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
   onOpenDiscoverMenu: (row: number, column: number) => void
 }
@@ -104,7 +105,7 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
   }
 
   public render() {
-    const {classes, grid, lumber, iron, clay, wheat} = this.props
+    const {classes, grid, lumber, iron, clay, wheat, netWheatRate} = this.props
     const {slotSelected, row, column} = this.state
     const width = 100
     const height = 100
@@ -179,9 +180,13 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
           <DialogTitle>{slotName}</DialogTitle>
           <DialogContent>
             <DialogContentText>{fieldSlotData[slotName].info} {resourceRateGainLabel}</DialogContentText>
+            <DialogContentText>
+              <span className={classes.boldFont}>Population increase: </span>
+              {fieldSlotData[slotName][grid[row][column].level + 1].populationGain}
+            </DialogContentText>
             <div className={classes.upgradeCostsContainer}>
             <div className={classes.upgradeCostWrapper}>
-              <div className={classes.costLabel}>Cost:</div>
+              <div className={classes.boldFont}>Cost:</div>
               </div>
               <div className={classes.upgradeCostWrapper}>
                 <div>Lumber</div>
@@ -210,7 +215,8 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
                 lumber < fieldSlotData[slotName][grid[row][column].level + 1].lumberCost ||
                 iron   < fieldSlotData[slotName][grid[row][column].level + 1].ironCost   ||
                 clay   < fieldSlotData[slotName][grid[row][column].level + 1].clayCost   ||
-                wheat  < fieldSlotData[slotName][grid[row][column].level + 1].wheatCost
+                wheat  < fieldSlotData[slotName][grid[row][column].level + 1].wheatCost  ||
+                (slotName !== 'WHEAT' && netWheatRate - fieldSlotData[slotName][grid[row][column].level + 1].populationGain < 0)
               }
             >
               Upgrade
