@@ -105,6 +105,7 @@ interface Props {
 
 interface State {
   buildingsSelectOpen: boolean
+  showAllBuildingsOnList: boolean
   newBuildingName: string
   newBuildingWidth: number
   newBuildingHeight: number
@@ -121,6 +122,7 @@ interface State {
 class TownScene extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {
     buildingsSelectOpen: false,
+    showAllBuildingsOnList: false,
     newBuildingName: '',
     newBuildingWidth: 0,
     newBuildingHeight: 0,
@@ -228,6 +230,8 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     this.setState({buildingMenuName: ''})
   }
 
+  public toggleShowMore = () => this.setState({showAllBuildingsOnList: !this.state.showAllBuildingsOnList})
+
   public handleDeleteBuilding = () => {
     const {buildings} = this.props
     const {buildingMenuName, buildingMenuLevel} = this.state
@@ -256,6 +260,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     const {classes, lumber, iron, clay, wheat, buildings, netWheatRate, pacifist, pacifismDisabledUntil, onExpand} = this.props
     const {
       buildingsSelectOpen,
+      showAllBuildingsOnList,
       newBuildingWidth,
       newBuildingHeight,
       newBuildingRow,
@@ -266,6 +271,23 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       buildingDeleteConfirmOpen
     } = this.state
     const grid: GridSlot[][] = buildingsOnMoving || buildings
+
+    const buildingEntryListExtended = Object.entries(buildingsData)
+    const buildingEntryListSuspended = buildingEntryListExtended.filter(buildingEntry => {
+      const requirements = Object.entries(buildingEntry[1].requirements).filter(requirementEntry => {
+        let keepBuilding: boolean = true
+        grid.forEach((row: GridSlot[]) => {
+          row.forEach((slot: GridSlot) => {
+            if (slot.name === requirementEntry[0] && slot.level >= (requirementEntry[1] as number)) {
+              keepBuilding = false
+            }
+          })
+        })
+        return keepBuilding
+      })
+      return requirements.length === 0
+    })
+    const buildingEntryList = showAllBuildingsOnList ? buildingEntryListExtended : buildingEntryListSuspended
 
     let placeBuildingDisabled: boolean = false
     for (let i = newBuildingColumn; i < newBuildingColumn + newBuildingHeight; i++) {
@@ -310,8 +332,8 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           <div className={classes.closeButtonWrapper}>
             <Button className={classes.button} onClick={this.handleCloseBuildingSelect}>Cancel</Button>
           </div>
-          <ScrollArea style={{minWidth: '500px', minHeight: '200px', maxHeight: '600px'}}>
-            {Object.entries(buildingsData).filter(buildingEntry => {
+          <ScrollArea style={{minWidth: '500px', height: window.innerHeight * 0.6}}>
+            {buildingEntryList.filter(buildingEntry => {
               let keepBuilding: boolean = true
               grid.forEach((row: GridSlot[]) => {
                 if (row.map((slot: GridSlot) => slot.name).includes(buildingEntry[0])) {
@@ -395,6 +417,14 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 {i !== Object.keys(buildingsData).length - 1 && <div className={classes.lineBreak}/>}
               </div>
             })}
+            {buildingEntryListExtended.length !== buildingEntryListSuspended.length &&
+              <Button
+                className={classes.button}
+                onClick={this.toggleShowMore}
+                style={{marginTop: '50px', marginBottom: '20px', left: '50%', transform: 'translate(-50%, 0%)'}}
+              >
+                {showAllBuildingsOnList ? 'show less' : 'show more'}
+              </Button>}
           </ScrollArea>
         </Dialog>
         <Dialog open={buildingMenuName.length > 0} onClose={this.handleCloseBuildingSelect}>
@@ -414,7 +444,6 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   onTogglePacifism={this.handleTogglePacifism}
                   pacifismDisabledUntil={pacifismDisabledUntil}
                 />
-                <div className={classes.lineBreak}/>
                 <div style={{fontSize: '16px', marginTop: '25px', marginBottom: '25px'}}>Upgrade:</div>
                 <DialogContentText>
                   {buildingsData[buildingMenuName].level[buildingMenuLevel].info || buildingsData[buildingMenuName].info}

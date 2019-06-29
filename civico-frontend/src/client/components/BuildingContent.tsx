@@ -9,6 +9,16 @@ const styles = () => createStyles({
     paddingLeft: '25px',
     paddingRight: '25px',
     margin: '5px'
+  },
+  lineBreak: {
+    position: 'relative',
+    width: '80%',
+    left: '10%',
+    marginTop: '20px',
+    marginBottom: '10px',
+    borderBottomColor: '#321432',
+    borderBottomStyle: 'dashed',
+    borderBottomWidth: '1px'
   }
 })
 
@@ -28,7 +38,7 @@ class BuildingContent extends React.Component<Props & WithStyles<typeof styles>,
   public state = {time: 0}
   public interval: NodeJS.Timeout
 
-  public componentDidMount() {
+  public componentWillMount() {
     this.interval = setInterval(() => this.setState({time: Date.now()}), 1000);
   }
 
@@ -47,18 +57,30 @@ class BuildingContent extends React.Component<Props & WithStyles<typeof styles>,
         const minutes = Math.floor((pasifismDisabledDuration - hours * 3600) / 60)
         const seconds = Math.floor(pasifismDisabledDuration - hours * 3600 - minutes * 60)
         return (
-          <DialogContentText>
-            <div>
-              Your town is currently {pacifist ? 'pacifist' : 'open for battles'}.
-              You can restate your military status, but you cannot change it back for {6 - buildingLevel} days.
-            </div>
-            <Button
-              className={classes.button}
-              onClick={() => onTogglePacifism(6 - buildingLevel)}
-              disabled={pasifismDisabledDuration > 0}
-            >Restate military status</Button>
-            Cannot toggle again until {hours}.{minutes}.{seconds}.
-          </DialogContentText>
+          <div>
+            <DialogContentText>
+              <div style={{marginBottom: '20px'}}>
+                Your town is currently {pacifist ? 'pacifist' : 'open for battles'}.
+                You can restate your military status, but you cannot change it back for {6 - buildingLevel} days.
+              </div>
+              <Button
+                className={classes.button}
+                onClick={() => onTogglePacifism(6 - buildingLevel)}
+                disabled={pasifismDisabledDuration >= 0}
+              >Restate military status</Button>
+              {pasifismDisabledDuration >= 0 && `Cannot toggle again until ${hours}.${minutes}.${seconds}`}.
+            </DialogContentText>
+            <div className={classes.lineBreak}/>
+          </div>
+        )
+      case 'Barracks':
+        return (
+          <div>
+            <DialogContentText>
+              
+            </DialogContentText>
+            <div className={classes.lineBreak}/>
+          </div>
         )
       default:
         return null

@@ -31,4 +31,5 @@
 | 18.6.  | 2    | - Viljasiilo toteutettu.<br> - Jokaiselle rakennukselle oma ruudun taustaväri.<br> - Rakennuksiin liittyviä bugeja korjattu. |
 | 26.6.  | 3    | - Kasarmi ja lähetystö alustettu.<br> - Kaupungintalo toteutettu.<br> - Rakennuksilla voi olla nyt vaatimuksia, jotka pitää rakentaa ennen kuin kyseinen rakennus voidaan rakentaa. |
 | 27.6.  | 5    | - Rakennusta tai peltoa ei voi enää rakentaa/kehittää, mikäli sen rakentaminen/päivittäminen laskisi viljan tuotanto-kulutus-nopeuden negatiiviseksi.<br> - Lähetystö toteutettu.<br> - Käyttäjä voi valita haluaako hän kylänsä pysyvän rauhassa hyökkääjiltä, jolloin hän ei voi itsekkään hyökätä muihin pelaajiin vai olevan valmiina taisteluihin. |
-| Yhteensä | 142    |
+| 29.6.  | 1    | - Rakennettavien rakennusten listaan lisätty filtteröintiä ja 'näytä lisää'/'näytä vähemmän' -nappi. |
+| Yhteensä | 143    |
