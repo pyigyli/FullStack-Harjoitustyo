@@ -57,9 +57,6 @@ const styles = () => createStyles({
     justifyContent: 'center',
     textAlign: 'center'
   },
-  boldFont: {
-    fontWeight: 'bold'
-  },
   button: {
     backgroundColor: '#32143244',
     color: '#321432',
@@ -93,6 +90,11 @@ interface Props {
   clay: number
   wheat: number
   buildings: GridSlot[][]
+  troops: {
+    knifeBoys: number
+    spearMen: number
+    swordsmen: number
+  }
   netWheatRate: number
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -137,7 +139,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public handleOpenBuildingSelect = () => this.setState({buildingsSelectOpen: true})
-  public handleCloseBuildingSelect = () => this.setState({buildingsSelectOpen: false})
+  public handleCloseBuildingSelect = () => this.setState({buildingsSelectOpen: false, showAllBuildingsOnList: false})
 
   public handleSubmitBuildingSelect = (key: string) => {
     this.setState({
@@ -257,7 +259,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public render() {
-    const {classes, lumber, iron, clay, wheat, buildings, netWheatRate, pacifist, pacifismDisabledUntil, onExpand} = this.props
+    const {classes, lumber, iron, clay, wheat, buildings, troops, netWheatRate, pacifist, pacifismDisabledUntil, onExpand} = this.props
     const {
       buildingsSelectOpen,
       showAllBuildingsOnList,
@@ -358,16 +360,16 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 <DialogContent>
                   <DialogContentText>{buildingEntry[1].info}</DialogContentText>
                   <DialogContentText>
-                    <span className={classes.boldFont}>Population increase: </span>
+                    <span style={{fontWeight: 'bold'}}>Population increase: </span>
                     {buildingEntry[1].level[1].populationGain}
                   </DialogContentText>
                   <DialogContentText>
-                    <span className={classes.boldFont}>Size: </span>
+                    <span style={{fontWeight: 'bold'}}>Size: </span>
                     {buildingEntry[1].width}x{buildingEntry[1].height}
                   </DialogContentText>
                   <div className={classes.buildingCostsContainer}>
                     <div className={classes.buildingCostWrapper}>
-                      <div className={classes.boldFont}>Cost:</div>
+                      <div style={{fontWeight: 'bold'}}>Cost:</div>
                     </div>
                     <div className={classes.buildingCostWrapper}>
                       <div>Lumber</div>
@@ -388,7 +390,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   </div>
                   {requirements.length > 0 && (
                     <DialogContentText style={{marginTop: '20px'}}>
-                      <span className={classes.boldFont}>Requirements: </span>
+                      <span style={{fontWeight: 'bold'}}>Requirements: </span>
                       {requirements.map((requirementEntry, j: number) => 
                         <span key={j}>
                           {requirementEntry[0]} at level {requirementEntry[1]}
@@ -441,20 +443,21 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   buildingName={buildingMenuName}
                   buildingLevel={buildingMenuLevel}
                   pacifist={pacifist}
-                  onTogglePacifism={this.handleTogglePacifism}
                   pacifismDisabledUntil={pacifismDisabledUntil}
+                  troops={troops}
+                  onTogglePacifism={this.handleTogglePacifism}
                 />
                 <div style={{fontSize: '16px', marginTop: '25px', marginBottom: '25px'}}>Upgrade:</div>
                 <DialogContentText>
                   {buildingsData[buildingMenuName].level[buildingMenuLevel].info || buildingsData[buildingMenuName].info}
                 </DialogContentText>
                 <DialogContentText>
-                  <span className={classes.boldFont}>Population increase: </span>
+                  <span style={{fontWeight: 'bold'}}>Population increase: </span>
                   {buildingsData[buildingMenuName].level[buildingMenuLevel + 1].populationGain}
                 </DialogContentText>
                 <div className={classes.buildingCostsContainer}>
                   <div className={classes.buildingCostWrapper}>
-                    <div className={classes.boldFont}>Upgrade cost:</div>
+                    <div style={{fontWeight: 'bold'}}>Upgrade cost:</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>
@@ -475,7 +478,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                 </div>
                 <div className={classes.buildingCostsContainer}>
                   <div className={classes.buildingCostWrapper}>
-                    <div className={classes.boldFont}>Moving cost:</div>
+                    <div style={{fontWeight: 'bold'}}>Moving cost:</div>
                   </div>
                   <div className={classes.buildingCostWrapper}>
                     <div>Lumber</div>

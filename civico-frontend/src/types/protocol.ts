@@ -96,6 +96,11 @@ export interface SendUserDataMessage extends MessageBase {
   buildings: Array<Array<{name: string, level: number}>>
   mapCoordinates: number[]
   inbox: InboxMessage[]
+  troops: {
+    knifeBoys: number
+    spearMen: number
+    swordsmen: number
+  }
   timestamp: number
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -205,6 +210,11 @@ export interface UserData {
   buildings: Array<Array<{name: string, level: number}>>
   mapCoordinates: number[]
   inbox: InboxMessage[]
+  troops: {
+    knifeBoys: number
+    spearMen: number
+    swordsmen: number
+  }
   timestamp: number
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -371,17 +381,23 @@ export const buildingsData = {
     info: 'Train your basic foot soldiers and improve your military strength.',
     width: 2,
     height: 2,
-    color: '#48561f',
+    color: '#48561fdd',
     requirements: {'Town Hall': 2, Embassy: 1},
     level: {
       0: {},
-      1: {populationGain: 2, lumberCost: 245, ironCost: 210, clayCost: 225, wheatCost: 170},
-      2: {populationGain: 2, lumberCost: 260, ironCost: 260, clayCost: 225, wheatCost: 200},
-      3: {populationGain: 2, lumberCost: 325, ironCost: 330, clayCost: 350, wheatCost: 275},
-      4: {populationGain: 3, lumberCost: 380, ironCost: 350, clayCost: 400, wheatCost: 325},
-      5: {populationGain: 3, lumberCost: 500, ironCost: 500, clayCost: 500, wheatCost: 400}
+      1: {populationGain: 2, lumberCost: 245, ironCost: 210, clayCost: 225, wheatCost: 170, info: 'Lower the cost of training to 95%.'},
+      2: {populationGain: 2, lumberCost: 260, ironCost: 260, clayCost: 225, wheatCost: 200, info: 'Lower the cost of training to 90%.'},
+      3: {populationGain: 2, lumberCost: 325, ironCost: 330, clayCost: 350, wheatCost: 275, info: 'Lower the cost of training to 85%.'},
+      4: {populationGain: 3, lumberCost: 380, ironCost: 350, clayCost: 400, wheatCost: 325, info: 'Lower the cost of training to 80%.'},
+      5: {populationGain: 3, lumberCost: 500, ironCost: 500, clayCost: 500, wheatCost: 400, info: 'Lower the cost of training.'}
     }
   }
+}
+
+export const troopsData = {
+  'Knife Boy': {attack: 5,  defence: 3,  speed: 6, capasity: 75,  lumberCost: 35, ironCost: 20,  clayCost: 25,  wheatCost: 20},
+  'Spearman':  {attack: 7,  defence: 10, speed: 7, capasity: 120, lumberCost: 50, ironCost: 50,  clayCost: 40,  wheatCost: 25},
+  'Swordsman': {attack: 15, defence: 6,  speed: 6, capasity: 110, lumberCost: 90, ironCost: 120, clayCost: 100, wheatCost: 50}
 }
 
 export const townExpansionData = {

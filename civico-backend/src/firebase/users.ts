@@ -89,6 +89,11 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       ],
       mapCoordinates: {x, y},
       inbox: [],
+      troops: {
+        knifeBoys: 0,
+        spearMen: 0,
+        swordsmen: 0
+      },
       timestamp: Date.now(),
       pacifist: true,
       pacifismDisabledUntil: 0

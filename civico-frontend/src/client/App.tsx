@@ -68,6 +68,11 @@ interface State {
   selectedMapSlotData: MapSlot
   inbox: InboxMessage[]
   inboxMessageSent: boolean
+  troops: {
+    knifeBoys: number
+    spearMen: number
+    swordsmen: number
+  }
   errorMessage: string
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -97,6 +102,11 @@ const NULL_STATE: State = {
   selectedMapSlotData: {population: 0},
   inbox: [],
   inboxMessageSent: false,
+  troops: {
+    knifeBoys: 0,
+    spearMen: 0,
+    swordsmen: 0
+  },
   errorMessage: '',
   pacifist: true,
   pacifismDisabledUntil: Date.now()
@@ -159,6 +169,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             buildings: message.buildings,
             mapCoordinates: message.mapCoordinates,
             inbox: message.inbox,
+            troops: message.troops,
             pacifist: message.pacifist,
             pacifismDisabledUntil: new Date(message.pacifismDisabledUntil).getTime()
           })
@@ -365,6 +376,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       selectedMapSlotData,
       inbox,
       inboxMessageSent,
+      troops,
       errorMessage,
       pacifist,
       pacifismDisabledUntil
@@ -417,6 +429,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             clay={clay}
             wheat={wheat}
             buildings={buildings}
+            troops={troops}
             netWheatRate={wheatRate - population}
             pacifist={pacifist}
             pacifismDisabledUntil={pacifismDisabledUntil}

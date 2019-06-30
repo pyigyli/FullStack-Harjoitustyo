@@ -47,9 +47,6 @@ const styles = () => createStyles({
     justifyContent: 'center',
     textAlign: 'center'
   },
-  boldFont: {
-    fontWeight: 'bold'
-  },
   button: {
     backgroundColor: '#32143244',
     color: '#321432',
@@ -181,12 +178,12 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
           <DialogContent>
             <DialogContentText>{fieldSlotData[slotName].info} {resourceRateGainLabel}</DialogContentText>
             <DialogContentText>
-              <span className={classes.boldFont}>Population increase: </span>
+              <span style={{fontWeight: 'bold'}}>Population increase: </span>
               {fieldSlotData[slotName][grid[row][column].level + 1].populationGain}
             </DialogContentText>
             <div className={classes.upgradeCostsContainer}>
             <div className={classes.upgradeCostWrapper}>
-              <div className={classes.boldFont}>Cost:</div>
+              <div style={{fontWeight: 'bold'}}>Cost:</div>
               </div>
               <div className={classes.upgradeCostWrapper}>
                 <div>Lumber</div>
