@@ -19,7 +19,8 @@ type MessageType =
   'CONFIRM_INBOX' |
   'DELETE_INBOX' |
   'ERROR' |
-  'PACIFISM'
+  'PACIFISM' |
+  'TRAIN'
 
 export type Message =
   CreateAccountMessage |
@@ -42,7 +43,8 @@ export type Message =
   InboxConfirmMessage |
   DeleteInboxMessage |
   ErrorMessage |
-  TogglePacifismMessage
+  TogglePacifismMessage |
+  TrainTroopsMessage
 
 export interface MessageBase {
   type: MessageType
@@ -97,9 +99,9 @@ export interface SendUserDataMessage extends MessageBase {
   mapCoordinates: number[]
   inbox: InboxMessage[]
   troops: {
-    knifeBoys: number
-    spearMen: number
-    swordsmen: number
+    'Knife boy': number
+    Spearman: number
+    Swordsman: number
   }
   timestamp: number
   pacifist: boolean
@@ -180,6 +182,12 @@ export interface InboxConfirmMessage extends MessageBase {
   successful: boolean
 }
 
+export interface DeleteInboxMessage {
+  type: 'DELETE_INBOX'
+  token: string
+  newMessageList: InboxMessage[]
+}
+
 export interface ErrorMessage extends MessageBase {
   type: 'ERROR'
   message: string
@@ -190,6 +198,13 @@ export interface TogglePacifismMessage extends MessageBase {
   token: string
   pacifist: boolean
   disabledDays: number
+}
+
+export interface TrainTroopsMessage extends MessageBase {
+  type: 'TRAIN'
+  token: string
+  troopType: string
+  amountToTrain: number
 }
 
 export interface UserData {
@@ -211,9 +226,9 @@ export interface UserData {
   mapCoordinates: number[]
   inbox: InboxMessage[]
   troops: {
-    knifeBoys: number
-    spearMen: number
-    swordsmen: number
+    'Knife boy': number
+    Spearman: number
+    Swordsman: number
   }
   timestamp: number
   pacifist: boolean
@@ -258,10 +273,10 @@ export interface InboxMessage {
   unread: boolean
 }
 
-export interface DeleteInboxMessage {
-  type: 'DELETE_INBOX'
-  token: string
-  newMessageList: InboxMessage[]
+export interface Troops {
+  'Knife boy': number
+  Spearman: number
+  Swordsman: number
 }
 
 export const fieldSlotData = {
@@ -396,8 +411,8 @@ export const buildingsData = {
 
 export const troopsData = {
   'Knife Boy': {attack: 5,  defence: 3,  speed: 6, capasity: 75,  lumberCost: 35, ironCost: 20,  clayCost: 25,  wheatCost: 20},
-  'Spearman':  {attack: 7,  defence: 10, speed: 7, capasity: 120, lumberCost: 50, ironCost: 50,  clayCost: 40,  wheatCost: 25},
-  'Swordsman': {attack: 15, defence: 6,  speed: 6, capasity: 110, lumberCost: 90, ironCost: 120, clayCost: 100, wheatCost: 50}
+  Spearman:  {attack: 7,  defence: 10, speed: 7, capasity: 120, lumberCost: 50, ironCost: 50,  clayCost: 40,  wheatCost: 25},
+  Swordsman: {attack: 15, defence: 6,  speed: 6, capasity: 110, lumberCost: 90, ironCost: 120, clayCost: 100, wheatCost: 50}
 }
 
 export const townExpansionData = {

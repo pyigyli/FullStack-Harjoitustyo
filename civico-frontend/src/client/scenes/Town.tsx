@@ -90,11 +90,6 @@ interface Props {
   clay: number
   wheat: number
   buildings: GridSlot[][]
-  troops: {
-    knifeBoys: number
-    spearMen: number
-    swordsmen: number
-  }
   netWheatRate: number
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -103,6 +98,7 @@ interface Props {
   onDeleteBuilding: (buildings: GridSlot[][], removedBuilding: GridSlot) => void
   onExpand: () => void
   onTogglePacifism: (disabledDays: number) => void
+  onTrainTroops: (troopType: string, amountToTrain: number) => void
 }
 
 interface State {
@@ -259,7 +255,19 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
   }
 
   public render() {
-    const {classes, lumber, iron, clay, wheat, buildings, troops, netWheatRate, pacifist, pacifismDisabledUntil, onExpand} = this.props
+    const {
+      classes,
+      lumber,
+      iron,
+      clay,
+      wheat,
+      buildings,
+      netWheatRate,
+      pacifist,
+      pacifismDisabledUntil,
+      onExpand,
+      onTrainTroops
+    } = this.props
     const {
       buildingsSelectOpen,
       showAllBuildingsOnList,
@@ -440,12 +448,17 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
               </DialogTitle>
               <DialogContent>
                 <BuildingContent
+                  lumber={lumber}
+                  iron={iron}
+                  clay={clay}
+                  wheat={wheat}
                   buildingName={buildingMenuName}
                   buildingLevel={buildingMenuLevel}
                   pacifist={pacifist}
                   pacifismDisabledUntil={pacifismDisabledUntil}
-                  troops={troops}
+                  onClose={this.handleCloseBuildingSelect}
                   onTogglePacifism={this.handleTogglePacifism}
+                  onTrainTroops={onTrainTroops}
                 />
                 <div style={{fontSize: '16px', marginTop: '25px', marginBottom: '25px'}}>Upgrade:</div>
                 <DialogContentText>

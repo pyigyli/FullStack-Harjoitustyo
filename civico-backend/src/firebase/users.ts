@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import db from './init'
-import {UserData, GridSlot} from '../types/protocol'
+import {UserData, GridSlot, troopsData} from '../types/protocol'
 import Connection from '../connection'
 
 export const createNewAccount = async (conn: Connection, username: string, password: string) => {
@@ -90,9 +90,9 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       mapCoordinates: {x, y},
       inbox: [],
       troops: {
-        knifeBoys: 0,
-        spearMen: 0,
-        swordsmen: 0
+        'Knife Boy': 0,
+        Spearman: 0,
+        Swordsman: 0
       },
       timestamp: Date.now(),
       pacifist: true,
@@ -175,9 +175,30 @@ export const getUserData = async (conn: Connection) => {
 export const togglePacifism = async (conn: Connection, pacifist: boolean, disabledDays: number) => {
   try {
     await db.ref(`users/${conn.id}`).update({
-      pacifist: pacifist,
+      pacifist,
       pacifismDisabledUntil: Date.now() + disabledDays * 86400000
     })
+    getUserData(conn)
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+export const trainTroops = async (conn: Connection, troopType: string, amountToTrain: number) => {
+  try {
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user: UserData = userSnapshot.toJSON() as UserData
+    const currentTime = Date.now()
+    const timePassed = currentTime - user.timestamp
+    await db.ref(`users/${conn.id}`).update({
+      lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber) - troopsData[troopType].lumberCost,
+      iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron) - troopsData[troopType].ironCost,
+      clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay) - troopsData[troopType].clayCost,
+      wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - troopsData[troopType].wheatCost,
+      timestamp: currentTime
+    })
+    await db.ref(`users/${conn.id}/troops`).update({[troopType]: user.troops[troopType] + amountToTrain})
     getUserData(conn)
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})

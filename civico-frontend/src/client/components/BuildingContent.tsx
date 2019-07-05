@@ -1,5 +1,5 @@
 import React from 'react'
-import {createStyles, withStyles, WithStyles, DialogContentText, DialogTitle, Button, TextField} from '@material-ui/core'
+import {createStyles, withStyles, WithStyles, Button, TextField, Select, MenuItem} from '@material-ui/core'
 import moment from 'moment'
 import {troopsData} from '../../types/protocol'
 
@@ -7,11 +7,6 @@ const styles = () => createStyles({
   trainTroopTypeSelectionContainer: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-between'
-  },
-  trainTroopTypeSelectionDataContainer: {
-    display: 'flex',
-    flexDirection: 'row',
     justifyContent: 'space-between'
   },
   costsContainer: {
@@ -50,63 +45,80 @@ const styles = () => createStyles({
 })
 
 interface Props {
+  lumber: number
+  iron: number
+  clay: number
+  wheat: number
   buildingName: string
   buildingLevel: number
   pacifist: boolean
   pacifismDisabledUntil: number
-  troops: {
-    knifeBoys: number
-    spearMen: number
-    swordsmen: number
-  }
+  onClose: () => void
   onTogglePacifism: (days: number) => void
+  onTrainTroops: (troopType: string, amountToTrain: number) => void
 }
 
 interface State {
   time: number
-  knifeBoysToTrain: number
-  spearMenToTrain: number
-  swordsmenToTrain: number
+  selectedTroopType: string
+  soldiersToTrainAmount: number
 }
 
 class BuildingContent extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {
     time: 0,
-    knifeBoysToTrain: 0,
-    spearMenToTrain: 0,
-    swordsmenToTrain: 0
+    selectedTroopType: '',
+    soldiersToTrainAmount: 0
   }
   public interval: NodeJS.Timeout
 
   public componentWillMount() {
-    this.interval = setInterval(() => this.setState({time: Date.now()}), 1000);
+    switch (this.props.buildingName) {
+      case 'Embassy':
+        this.interval = setInterval(() => this.setState({time: Date.now()}), 1000)
+        break
+      case 'Barracks':
+        this.setState({selectedTroopType: 'Knife Boy'})
+        break
+      default:
+        break
+    }
   }
 
   public componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  public handleKnifeBoysToTrainChange = (newValue: number) => {
-    if (newValue >= 0) {
-      this.setState({knifeBoysToTrain: newValue})
+    if (this.interval) {
+      clearInterval(this.interval)
     }
   }
 
-  public handleSpearMenToTrainChange  = (newValue: number) => {
+  public handleSelectedTroopTypeChange = (newValue: string) => this.setState({selectedTroopType: newValue})
+
+  public handleTrainAmountChange = (newValue: number) => {
     if (newValue >= 0) {
-      this.setState({spearMenToTrain: newValue})
+      this.setState({soldiersToTrainAmount: newValue})
     }
   }
 
-  public handleSwordsmenToTrainChange = (newValue: number) => {
-    if (newValue >= 0) {
-      this.setState({swordsmenToTrain: newValue})
+  public handleTrainSoldiers = () => {
+    if (this.state.soldiersToTrainAmount > 0) {
+      this.props.onTrainTroops(this.state.selectedTroopType, this.state.soldiersToTrainAmount)
     }
+    this.props.onClose()
   }
 
   public render() {
-    const {classes, buildingName, buildingLevel, pacifist, pacifismDisabledUntil, troops, onTogglePacifism} = this.props
-    const {time, knifeBoysToTrain, spearMenToTrain, swordsmenToTrain} = this.state
+    const {classes,
+      lumber,
+      iron,
+      clay,
+      wheat,
+      buildingName,
+      buildingLevel,
+      pacifist,
+      pacifismDisabledUntil,
+      onTogglePacifism
+    } = this.props
+    const {time, selectedTroopType, soldiersToTrainAmount} = this.state
 
     switch (buildingName) {
       case 'Embassy':
@@ -116,149 +128,125 @@ class BuildingContent extends React.Component<Props & WithStyles<typeof styles>,
         const seconds = Math.floor(pasifismDisabledDuration - hours * 3600 - minutes * 60)
         return (
           <div>
-            <DialogContentText>
-              <div style={{marginBottom: '20px'}}>
-                Your town is currently {pacifist ? 'pacifist' : 'open for battles'}.
-                You can restate your military status, but you cannot change it back for {6 - buildingLevel} days.
-              </div>
-              <Button
-                className={classes.button}
-                onClick={() => onTogglePacifism(6 - buildingLevel)}
-                disabled={pasifismDisabledDuration >= 0}
-              >Restate military status</Button>
-              {pasifismDisabledDuration >= 0 && `Cannot toggle again until ${hours}.${minutes}.${seconds}`}.
-            </DialogContentText>
+            <div style={{marginBottom: '20px'}}>
+              Your town is currently {pacifist ? 'pacifist' : 'open for battles'}.
+              You can restate your military status, but you cannot change it back for {6 - buildingLevel} days.
+            </div>
+            <Button
+              className={classes.button}
+              onClick={() => onTogglePacifism(6 - buildingLevel)}
+              disabled={pasifismDisabledDuration >= 0}
+            >
+              Restate military status
+            </Button>
+            <span>{pasifismDisabledDuration >= 0 && `Cannot toggle again until ${hours}.${minutes}.${seconds}`}.</span>
             <div className={classes.lineBreak}/>
           </div>
         )
       case 'Barracks':
         return (
           <div>
-            <DialogContentText>
+            <div style={{marginBottom: '20px'}}>
               <div style={{marginBottom: '10px'}}>
-                Here you can train basic foot soldiers to attack or raid other cities and empty fields or keep them defending your own city.
+                Here you can train basic foot soldiers to attack or raid other
+                cities and empty fields or keep them defending your own city.
               </div>
-              <DialogTitle style={{fontSize: '14px', padding: '20px'}}>
-                Knife Boy:
-                <span style={{marginLeft: '50px', marginRight: '50px', fontSize: '15px'}}>You have {troops.knifeBoys} knife Boys.</span>
-                <TextField
-                  type='number'
-                  value={knifeBoysToTrain}
-                  onChange={({target}) => this.handleKnifeBoysToTrainChange(parseInt(target.value))}
-                  style={{width: '100px', margin: '0px', marginRight: '50px'}}
-                />
-              </DialogTitle>
-              <div className={classes.trainTroopTypeSelectionContainer}>
-                <div className={classes.trainTroopTypeSelectionDataContainer}>
+              <span style={{marginRight: '20px'}}>Select unit type to be trained:</span>
+              <Select
+                value={selectedTroopType}
+                onChange={({target}) => this.handleSelectedTroopTypeChange(target.value as string)}
+              >
+                <MenuItem value={'Knife Boy'}>Knife Boy</MenuItem>
+                <MenuItem value={'Spearman'}>Spear Man</MenuItem>
+                <MenuItem value={'Swordsman'}>Swordsman</MenuItem>
+              </Select>
+            </div>
+            <div className={classes.trainTroopTypeSelectionContainer}>
+              <div className={classes.costsContainer}>
+                <div className={classes.costWrapper}>
                   <div style={{fontWeight: 'bold'}}>Statistics:</div>
-                  <div>Attack: {troopsData['Knife Boy'].attack}</div>
-                  <div>Defence: {troopsData['Knife Boy'].defence}</div>
-                  <div>Speed: {troopsData['Knife Boy'].speed}</div>
-                  <div>Capasity: {troopsData['Knife Boy'].capasity}</div>
                 </div>
-                <div className={classes.costsContainer}>
-                  <div className={classes.costWrapper}>
-                    <div style={{fontWeight: 'bold'}}>Cost:</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Lumber</div>
-                    <div>{troopsData['Knife Boy'].lumberCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Iron</div>
-                    <div>{troopsData['Knife Boy'].ironCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Clay</div>
-                    <div>{troopsData['Knife Boy'].clayCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Wheat</div>
-                    <div>{troopsData['Knife Boy'].wheatCost}</div>
-                  </div>
+                <div className={classes.costWrapper}>
+                  <div>Attack</div>
+                  <div>{troopsData[selectedTroopType].attack}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Defence</div>
+                  <div>{troopsData[selectedTroopType].defence}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Speed</div>
+                  <div>{troopsData[selectedTroopType].speed}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Capasity</div>
+                  <div>{troopsData[selectedTroopType].capasity}</div>
                 </div>
               </div>
-              <DialogTitle style={{fontSize: '14px', padding: '20px'}}>
-                Spear Man:
-                <span style={{marginLeft: '50px', marginRight: '50px', fontSize: '15px'}}>You have {troops.spearMen} knife Boys.</span>
-                <TextField
-                  type='number'
-                  value={spearMenToTrain}
-                  onChange={({target}) => this.handleSpearMenToTrainChange(parseInt(target.value))}
-                  style={{width: '100px', margin: '0px', marginRight: '50px'}}
-                />
-              </DialogTitle>
-              <div className={classes.trainTroopTypeSelectionContainer}>
-                <div className={classes.trainTroopTypeSelectionDataContainer}>
-                  <div style={{fontWeight: 'bold'}}>Statistics:</div>
-                  <div>Attack: {troopsData.Spearman.attack}</div>
-                  <div>Defence: {troopsData.Spearman.defence}</div>
-                  <div>Speed: {troopsData.Spearman.speed}</div>
-                  <div>Capasity: {troopsData.Spearman.capasity}</div>
+              <div className={classes.costsContainer}>
+                <div className={classes.costWrapper}>
+                  <div style={{fontWeight: 'bold'}}>Cost:</div>
                 </div>
-                <div className={classes.costsContainer}>
-                  <div className={classes.costWrapper}>
-                    <div style={{fontWeight: 'bold'}}>Cost:</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Lumber</div>
-                    <div>{troopsData.Spearman.lumberCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Iron</div>
-                    <div>{troopsData.Spearman.ironCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Clay</div>
-                    <div>{troopsData.Spearman.clayCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Wheat</div>
-                    <div>{troopsData.Spearman.wheatCost}</div>
-                  </div>
+                <div className={classes.costWrapper}>
+                  <div>Lumber</div>
+                  <div>{troopsData[selectedTroopType].lumberCost}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Iron</div>
+                  <div>{troopsData[selectedTroopType].ironCost}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Clay</div>
+                  <div>{troopsData[selectedTroopType].clayCost}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Wheat</div>
+                  <div>{troopsData[selectedTroopType].wheatCost}</div>
                 </div>
               </div>
-              <DialogTitle style={{fontSize: '14px', padding: '20px'}}>
-                Swordsman:
-                <span style={{marginLeft: '50px', marginRight: '50px', fontSize: '15px'}}>You have {troops.swordsmen} knife Boys.</span>
-                <TextField
-                  type='number'
-                  value={swordsmenToTrain}
-                  onChange={({target}) => this.handleSwordsmenToTrainChange(parseInt(target.value))}
-                  style={{width: '100px', margin: '0px', marginRight: '50px'}}
-                />
-              </DialogTitle>
-              <div className={classes.trainTroopTypeSelectionContainer}>
-                <div className={classes.trainTroopTypeSelectionDataContainer}>
-                  <div style={{fontWeight: 'bold'}}>Statistics:</div>
-                  <div>Attack: {troopsData.Swordsman.attack}</div>
-                  <div>Defence: {troopsData.Swordsman.defence}</div>
-                  <div>Speed: {troopsData.Swordsman.speed}</div>
-                  <div>Capasity: {troopsData.Swordsman.capasity}</div>
+            </div>
+            <div>
+              <span style={{marginLeft: '30px', marginRight: '10px'}}>Train more:</span>
+              <TextField
+                type='number'
+                value={soldiersToTrainAmount}
+                onChange={({target}) => this.handleTrainAmountChange(parseInt(target.value, 10))}
+                style={{width: '100px', top: '7px', marginRight: '20px'}}
+              />
+              <Button
+                className={classes.button}
+                onClick={this.handleTrainSoldiers}
+                disabled={
+                  lumber < soldiersToTrainAmount * troopsData[selectedTroopType].lumberCost ||
+                  iron   < soldiersToTrainAmount * troopsData[selectedTroopType].ironCost   ||
+                  clay   < soldiersToTrainAmount * troopsData[selectedTroopType].clayCost   ||
+                  wheat  < soldiersToTrainAmount * troopsData[selectedTroopType].wheatCost
+                }
+              >
+                Train
+              </Button>
+            </div>
+              <div className={classes.costsContainer}>
+                <div className={classes.costWrapper}>
+                  <div style={{fontWeight: 'bold'}}>Total cost:</div>
                 </div>
-                <div className={classes.costsContainer}>
-                  <div className={classes.costWrapper}>
-                    <div style={{fontWeight: 'bold'}}>Cost:</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Lumber</div>
-                    <div>{troopsData.Swordsman.lumberCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Iron</div>
-                    <div>{troopsData.Swordsman.ironCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Clay</div>
-                    <div>{troopsData.Swordsman.clayCost}</div>
-                  </div>
-                  <div className={classes.costWrapper}>
-                    <div>Wheat</div>
-                    <div>{troopsData.Swordsman.wheatCost}</div>
-                  </div>
+                <div className={classes.costWrapper}>
+                  <div>Lumber</div>
+                  <div>{soldiersToTrainAmount * troopsData[selectedTroopType].lumberCost}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Iron</div>
+                  <div>{soldiersToTrainAmount * troopsData[selectedTroopType].ironCost}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Clay</div>
+                  <div>{soldiersToTrainAmount * troopsData[selectedTroopType].clayCost}</div>
+                </div>
+                <div className={classes.costWrapper}>
+                  <div>Wheat</div>
+                  <div>{soldiersToTrainAmount * troopsData[selectedTroopType].wheatCost}</div>
                 </div>
               </div>
-            </DialogContentText>
             <div className={classes.lineBreak}/>
           </div>
         )

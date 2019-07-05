@@ -33,4 +33,5 @@
 | 27.6.  | 5    | - Rakennusta tai peltoa ei voi enää rakentaa/kehittää, mikäli sen rakentaminen/päivittäminen laskisi viljan tuotanto-kulutus-nopeuden negatiiviseksi.<br> - Lähetystö toteutettu.<br> - Käyttäjä voi valita haluaako hän kylänsä pysyvän rauhassa hyökkääjiltä, jolloin hän ei voi itsekkään hyökätä muihin pelaajiin vai olevan valmiina taisteluihin. |
 | 29.6.  | 1    | - Rakennettavien rakennusten listaan lisätty filtteröintiä ja 'näytä lisää'/'näytä vähemmän' -nappi. |
 | 30.6.  | 2    | - Kasarmi ja joukkojen kouluttaminen aloitettu. |
-| Yhteensä | 145    |
+| 5.7.   | 4    | - Kasarmi ja joukkojen kouluttaminen toteutettu.<br> - Kylässä olevien joukkojen määrä nähtävissä kenttänäkymässä. |
+| Yhteensä | 149    |

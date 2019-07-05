@@ -1,7 +1,7 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
 import FieldGrid from '../components/FieldGrid'
-import {GridSlot} from '../../types/protocol'
+import {GridSlot, Troops} from '../../types/protocol'
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -18,7 +18,7 @@ const styles = () => createStyles({
     borderLeftColor: '#321432aa',
     borderRightColor: '#321432aa'
   },
-  resourceRatesContainer: {
+  infoBoxContainer: {
     width: '170px',
     fontSize: '13px',
     fontWeight: 'bold',
@@ -28,9 +28,8 @@ const styles = () => createStyles({
     flexDirection: 'column',
     justifyContent: 'space-between',
     position: 'relative',
-    top: '150px',
     left: '50%',
-    transform: 'translate(-225%, 0%)',
+    transform: 'translate(-215%, 0%)',
     paddingTop: '10px',
     paddingBottom: '10px',
     borderStyle: 'solid',
@@ -38,7 +37,7 @@ const styles = () => createStyles({
     borderWidth: '1px',
     borderColor: '#32143277'
   },
-  resourceRateWrapper: {
+  infoBoxWrapper: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around'
@@ -50,6 +49,9 @@ const styles = () => createStyles({
   resourceRateTextWrapper: {
     width: '93px',
     textAlign: 'right'
+  },
+  troopsRateWrapper: {
+
   },
   button: {
     backgroundColor: '#32143244',
@@ -71,6 +73,7 @@ interface Props {
   clayRate: number
   wheatRate: number
   fields: GridSlot[][]
+  troops: Troops
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
 }
 
@@ -94,29 +97,55 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
   public handleCloseDiscoverMenu = () => this.setState({openDiscoverMenu: false})
 
   public render() {
-    const {classes, population, lumber, iron, clay, wheat, lumberRate, ironRate, clayRate, wheatRate, fields, onFieldLevelUp} = this.props
+    const {
+      classes,
+      population,
+      lumber,
+      iron,
+      clay,
+      wheat,
+      lumberRate,
+      ironRate,
+      clayRate,
+      wheatRate,
+      fields,
+      troops,
+      onFieldLevelUp
+    } = this.props
     const {openDiscoverMenu} = this.state
 
     return (
       <div className={classes.sceneWrapper}>
-        <Paper className={classes.resourceRatesContainer}>
-          <div className={classes.resourceRateWrapper}>
+        <Paper className={classes.infoBoxContainer} style={{top: '150px'}}>
+          <span style={{marginBottom: '5px'}}>Resource rates</span>
+          <div className={classes.infoBoxWrapper}>
             <div className={classes.resourceRateValueWrapper}>{lumberRate}</div>
             <div className={classes.resourceRateTextWrapper}>lumber / hour</div>
           </div>
-          <div className={classes.resourceRateWrapper}>
+          <div className={classes.infoBoxWrapper}>
             <div className={classes.resourceRateValueWrapper}>{ironRate}</div>
             <div className={classes.resourceRateTextWrapper}>iron / hour</div>
           </div>
-          <div className={classes.resourceRateWrapper}>
+          <div className={classes.infoBoxWrapper}>
             <div className={classes.resourceRateValueWrapper}>{clayRate}</div>
             <div className={classes.resourceRateTextWrapper}>clay / hour</div>
           </div>
-          <div className={classes.resourceRateWrapper}>
+          <div className={classes.infoBoxWrapper}>
             <div className={classes.resourceRateValueWrapper}>{wheatRate - population}</div>
             <div className={classes.resourceRateTextWrapper}>wheat / hour</div>
           </div>
         </Paper>
+        {Object.values(troops).filter((value: number) => value !== 0).length > 0 &&
+          <Paper className={classes.infoBoxContainer} style={{top: '175px'}}>
+            <span style={{marginBottom: '5px'}}>Troops in town</span>
+            {Object.entries(troops).map(entry => 
+              <div className={classes.infoBoxWrapper} style={{justifyContent: 'space-between', marginLeft: '15px', marginRight: '15px'}}>
+                <div>{entry[0]}</div>
+                <div>{entry[1]}</div>
+              </div>
+            )}
+          </Paper>
+        }
         <FieldGrid
           lumber={lumber}
           iron={iron}

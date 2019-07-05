@@ -16,10 +16,12 @@ import {
   SetInboxMessagesToReadMessage,
   SendInboxMessage,
   DeleteInboxMessage,
+  TogglePacifismMessage,
+  TrainTroopsMessage,
   GridSlot,
   MapSlot,
   InboxMessage,
-  TogglePacifismMessage
+  Troops
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -68,11 +70,7 @@ interface State {
   selectedMapSlotData: MapSlot
   inbox: InboxMessage[]
   inboxMessageSent: boolean
-  troops: {
-    knifeBoys: number
-    spearMen: number
-    swordsmen: number
-  }
+  troops: Troops
   errorMessage: string
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -103,9 +101,9 @@ const NULL_STATE: State = {
   inbox: [],
   inboxMessageSent: false,
   troops: {
-    knifeBoys: 0,
-    spearMen: 0,
-    swordsmen: 0
+    'Knife boy': 0,
+    Spearman: 0,
+    Swordsman: 0
   },
   errorMessage: '',
   pacifist: true,
@@ -351,6 +349,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleTrainTroops = (troopType: string, amountToTrain: number) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message: TrainTroopsMessage = {type: 'TRAIN', token, troopType, amountToTrain}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public render() {
     const {classes} = this.props
     const {
@@ -419,6 +425,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             clayRate={clayRate}
             wheatRate={wheatRate}
             fields={fields}
+            troops={troops}
             onFieldLevelUp={this.handleFieldLevelUp}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
@@ -428,9 +435,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             iron={iron}
             clay={clay}
             wheat={wheat}
-            buildings={buildings}
-            troops={troops}
             netWheatRate={wheatRate - population}
+            buildings={buildings}
             pacifist={pacifist}
             pacifismDisabledUntil={pacifismDisabledUntil}
             onPlaceBuilding={this.handlePlaceBuilding}
@@ -438,6 +444,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             onBuildingLevelUp={this.handleBuildingLevelUp}
             onExpand={this.handleTownExpand}
             onTogglePacifism={this.handleTogglePacifism}
+            onTrainTroops={this.handleTrainTroops}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/map' render={() =>
