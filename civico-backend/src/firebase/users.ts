@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import db from './init'
-import {UserData, GridSlot, troopsData} from '../types/protocol'
+import {UserData, GridSlot, troopsData, Troops} from '../types/protocol'
 import Connection from '../connection'
 
 export const createNewAccount = async (conn: Connection, username: string, password: string) => {
@@ -15,12 +15,12 @@ export const createNewAccount = async (conn: Connection, username: string, passw
     let x: number = Math.floor(Math.random() * 500)
     let y: number = Math.floor(Math.random() * 500)
     let mapSlotSnapshot = await db.ref(`map/${x}/${y}`).once('value')
-    let mapSlot = mapSlotSnapshot.toJSON() as string
+    let mapSlot = mapSlotSnapshot.toJSON()
     while (mapSlot !== null) {
       x = Math.floor(Math.random() * 500)
       y = Math.floor(Math.random() * 500)
       mapSlotSnapshot = await db.ref(`map/${x}/${y}`).once('value')
-      mapSlot = mapSlotSnapshot.toJSON() as string
+      mapSlot = mapSlotSnapshot.toJSON()
     }
     await db.ref(`map/${x}/${y}`).set(username)
     const ref = db.ref(`users`).push({
@@ -92,7 +92,10 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       troops: {
         'Knife Boy': 0,
         Spearman: 0,
-        Swordsman: 0
+        Swordsman: 0,
+        'Donkey Rider': 0,
+        Jouster: 0,
+        'Dark Knight': 0
       },
       timestamp: Date.now(),
       pacifist: true,
@@ -200,6 +203,15 @@ export const trainTroops = async (conn: Connection, troopType: string, amountToT
     })
     await db.ref(`users/${conn.id}/troops`).update({[troopType]: user.troops[troopType] + amountToTrain})
     getUserData(conn)
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+export const sendTroops = async (conn: Connection, troops: Troops, travelTime: number) => {
+  try {
+    // TODO
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console

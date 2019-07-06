@@ -360,8 +360,8 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
                 onChange={({target}) => this.handleTitleChange(target.value)}
                 margin='normal'
                 variant='filled'
-                InputProps={{classes: {root: classes.textfield, focused: classes.textfield}}}
-                InputLabelProps={{classes: {root: classes.textfield, focused: classes.textfield}}}
+                InputProps={{classes: {root: classes.textfield}}}
+                InputLabelProps={{classes: {root: classes.textfield}}}
               />
             </div>
             <div>

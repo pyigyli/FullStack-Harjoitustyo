@@ -20,7 +20,8 @@ type MessageType =
   'DELETE_INBOX' |
   'ERROR' |
   'PACIFISM' |
-  'TRAIN'
+  'TRAIN_TROOPS' |
+  'SEND_TROOPS'
 
 export type Message =
   CreateAccountMessage |
@@ -44,7 +45,8 @@ export type Message =
   DeleteInboxMessage |
   ErrorMessage |
   TogglePacifismMessage |
-  TrainTroopsMessage
+  TrainTroopsMessage |
+  SendTroopsMessage
 
 export interface MessageBase {
   type: MessageType
@@ -98,11 +100,7 @@ export interface SendUserDataMessage extends MessageBase {
   buildings: Array<Array<{name: string, level: number}>>
   mapCoordinates: number[]
   inbox: InboxMessage[]
-  troops: {
-    'Knife boy': number
-    Spearman: number
-    Swordsman: number
-  }
+  troops: Troops
   timestamp: number
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -201,10 +199,17 @@ export interface TogglePacifismMessage extends MessageBase {
 }
 
 export interface TrainTroopsMessage extends MessageBase {
-  type: 'TRAIN'
+  type: 'TRAIN_TROOPS'
   token: string
   troopType: string
   amountToTrain: number
+}
+
+export interface SendTroopsMessage extends MessageBase {
+  type: 'SEND_TROOPS'
+  token: string
+  troops: Troops
+  travelTime: number
 }
 
 export interface UserData {
@@ -225,11 +230,7 @@ export interface UserData {
   buildings: Array<Array<{name: string, level: number}>>
   mapCoordinates: number[]
   inbox: InboxMessage[]
-  troops: {
-    'Knife boy': number
-    Spearman: number
-    Swordsman: number
-  }
+  troops: Troops
   timestamp: number
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -274,9 +275,12 @@ export interface InboxMessage {
 }
 
 export interface Troops {
-  'Knife boy': number
+  'Knife Boy': number
   Spearman: number
   Swordsman: number
+  'Donkey Rider': number
+  Jouster: number
+  'Dark Knight': number
 }
 
 export const fieldSlotData = {
@@ -284,25 +288,33 @@ export const fieldSlotData = {
     info: 'Everyone needs wood. Just remember to replant the trees so you do not run out. Increases lumber gain by',
     1: {populationGain: 1, lumberRateGain: 8,  ironRateGain: 0, clayRateGain: 0, wheatRateGain: 0, lumberCost: 35,  ironCost: 60,  clayCost: 55,  wheatCost: 20},
     2: {populationGain: 1, lumberRateGain: 16, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 0, lumberCost: 100, ironCost: 120, clayCost: 100, wheatCost: 85},
-    3: {populationGain: 2, lumberRateGain: 23, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 0, lumberCost: 170, ironCost: 210, clayCost: 220, wheatCost: 150}
+    3: {populationGain: 2, lumberRateGain: 23, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 0, lumberCost: 170, ironCost: 210, clayCost: 220, wheatCost: 150},
+    4: {populationGain: 2, lumberRateGain: 35, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 0, lumberCost: 350, ironCost: 410, clayCost: 450, wheatCost: 230},
+    5: {populationGain: 3, lumberRateGain: 50, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 0, lumberCost: 620, ironCost: 700, clayCost: 685, wheatCost: 350}
   },
   CAVE: {
     info: 'From the darkest of caves the richest of iron minerals can be found. Increases iron gain by',
     1: {populationGain: 1, lumberRateGain: 0, ironRateGain: 8,  clayRateGain: 0, wheatRateGain: 0, lumberCost: 50,  ironCost: 30,  clayCost: 50,  wheatCost: 25},
     2: {populationGain: 1, lumberRateGain: 0, ironRateGain: 16, clayRateGain: 0, wheatRateGain: 0, lumberCost: 100, ironCost: 95,  clayCost: 120, wheatCost: 75},
-    3: {populationGain: 2, lumberRateGain: 0, ironRateGain: 23, clayRateGain: 0, wheatRateGain: 0, lumberCost: 220, ironCost: 180, clayCost: 225, wheatCost: 145}
+    3: {populationGain: 2, lumberRateGain: 0, ironRateGain: 23, clayRateGain: 0, wheatRateGain: 0, lumberCost: 220, ironCost: 180, clayCost: 225, wheatCost: 145},
+    4: {populationGain: 2, lumberRateGain: 0, ironRateGain: 35, clayRateGain: 0, wheatRateGain: 0, lumberCost: 425, ironCost: 325, clayCost: 400, wheatCost: 230},
+    5: {populationGain: 3, lumberRateGain: 0, ironRateGain: 50, clayRateGain: 0, wheatRateGain: 0, lumberCost: 675, ironCost: 625, clayCost: 690, wheatCost: 350}
   },
   CLAY: {
     info: 'Flexible material. Good for making pots and other things made of clay. Increases clay gain by',
     1: {populationGain: 1, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 8,  wheatRateGain: 0, lumberCost: 50,  ironCost: 45,  clayCost: 25,  wheatCost: 35},
     2: {populationGain: 1, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 16, wheatRateGain: 0, lumberCost: 105, ironCost: 100, clayCost: 80,  wheatCost: 75},
-    3: {populationGain: 2, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 23, wheatRateGain: 0, lumberCost: 200, ironCost: 200, clayCost: 175, wheatCost: 130}
+    3: {populationGain: 2, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 23, wheatRateGain: 0, lumberCost: 200, ironCost: 200, clayCost: 175, wheatCost: 130},
+    4: {populationGain: 2, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 35, wheatRateGain: 0, lumberCost: 430, ironCost: 400, clayCost: 340, wheatCost: 230},
+    5: {populationGain: 2, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 50, wheatRateGain: 0, lumberCost: 680, ironCost: 700, clayCost: 620, wheatCost: 350}
   },
   WHEAT: {
     info: 'Wheat is essential for keeping your people alive. Increases wheat gain by',
     1: {populationGain: 1, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 10, lumberCost: 45,  ironCost: 45,  clayCost: 50,  wheatCost: 35},
     2: {populationGain: 1, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 20, lumberCost: 95,  ironCost: 100, clayCost: 95,  wheatCost: 45},
-    3: {populationGain: 2, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 25, lumberCost: 200, ironCost: 210, clayCost: 205, wheatCost: 70}
+    3: {populationGain: 2, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 25, lumberCost: 200, ironCost: 210, clayCost: 205, wheatCost: 70},
+    4: {populationGain: 2, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 40, lumberCost: 410, ironCost: 400, clayCost: 425, wheatCost: 180},
+    5: {populationGain: 3, lumberRateGain: 0, ironRateGain: 0, clayRateGain: 0, wheatRateGain: 60, lumberCost: 625, ironCost: 600, clayCost: 650, wheatCost: 325}
   }
 }
 
@@ -396,7 +408,7 @@ export const buildingsData = {
     info: 'Train your basic foot soldiers and improve your military strength.',
     width: 2,
     height: 2,
-    color: '#48561fdd',
+    color: '#48561fcc',
     requirements: {'Town Hall': 2, Embassy: 1},
     level: {
       0: {},
@@ -406,13 +418,31 @@ export const buildingsData = {
       4: {populationGain: 3, lumberCost: 380, ironCost: 350, clayCost: 400, wheatCost: 325, info: 'Lower the cost of training to 80%.'},
       5: {populationGain: 3, lumberCost: 500, ironCost: 500, clayCost: 500, wheatCost: 400, info: 'Lower the cost of training.'}
     }
+  },
+  Stable: {
+    info: 'Horses give significant advantage in everything compared to basic foot soldiers. Train your horses and their riders in here.',
+    width: 3,
+    height: 2,
+    color: '#8c6c3cee',
+    requirements: {'Town Hall': 3, Barracks: 3},
+    level: {
+      0: {},
+      1: {populationGain: 3, lumberCost: 575, ironCost: 510, clayCost: 550, wheatCost: 600, info: 'Lower the cost of training to 95%.'},
+      2: {populationGain: 2, lumberCost: 600, ironCost: 575, clayCost: 580, wheatCost: 630, info: 'Lower the cost of training to 90%.'},
+      3: {populationGain: 2, lumberCost: 650, ironCost: 650, clayCost: 650, wheatCost: 650, info: 'Lower the cost of training to 85%.'},
+      4: {populationGain: 3, lumberCost: 680, ironCost: 700, clayCost: 660, wheatCost: 690, info: 'Lower the cost of training to 80%.'},
+      5: {populationGain: 3, lumberCost: 700, ironCost: 740, clayCost: 700, wheatCost: 720, info: 'Lower the cost of training.'}
+    }
   }
 }
 
 export const troopsData = {
-  'Knife Boy': {attack: 5,  defence: 3,  speed: 6, capasity: 75,  lumberCost: 35, ironCost: 20,  clayCost: 25,  wheatCost: 20},
-  Spearman:  {attack: 7,  defence: 10, speed: 7, capasity: 120, lumberCost: 50, ironCost: 50,  clayCost: 40,  wheatCost: 25},
-  Swordsman: {attack: 15, defence: 6,  speed: 6, capasity: 110, lumberCost: 90, ironCost: 120, clayCost: 100, wheatCost: 50}
+  'Knife Boy':    {attack: 5,  defence: 3,  speed: 6,  capasity: 75,  lumberCost: 35,  ironCost: 20,  clayCost: 25,  wheatCost: 20},
+  Spearman:       {attack: 7,  defence: 10, speed: 7,  capasity: 120, lumberCost: 50,  ironCost: 50,  clayCost: 40,  wheatCost: 25},
+  Swordsman:      {attack: 15, defence: 6,  speed: 6,  capasity: 110, lumberCost: 90,  ironCost: 120, clayCost: 100, wheatCost: 50},
+  'Donkey Rider': {attack: 10, defence: 12, speed: 12, capasity: 140, lumberCost: 130, ironCost: 145, clayCost: 150, wheatCost: 140},
+  Jouster:        {attack: 15, defence: 15, speed: 16, capasity: 150, lumberCost: 165, ironCost: 180, clayCost: 165, wheatCost: 175},
+  'Dark Knight':  {attack: 20, defence: 18, speed: 15, capasity: 175, lumberCost: 200, ironCost: 250, clayCost: 225, wheatCost: 200}
 }
 
 export const townExpansionData = {

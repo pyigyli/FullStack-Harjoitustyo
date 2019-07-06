@@ -1,5 +1,6 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
+import {Troops} from '../../types/protocol'
 
 const styles = () => createStyles({
   root: {
@@ -86,6 +87,7 @@ interface Props {
   x: number
   y: number
   selectedMapSlotData: {population: number}
+  troops: Troops
   onGetMap: () => void
   onGetMapSlot: (username: string) => void
 }
@@ -107,15 +109,17 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
   }
 
   public handleOpenMapSlot = (selectedX: number, selectedY: number) => {
-    this.props.onGetMapSlot(this.props.map[selectedX][selectedY])
-    this.setState({mapMenuOpen: true, selectedX, selectedY})
+    if (this.props.map[selectedX][selectedY]) {
+      this.props.onGetMapSlot(this.props.map[selectedX][selectedY])
+      this.setState({mapMenuOpen: true, selectedX, selectedY})
+    }
   }
 
   public handleCloseMapSlot = () => this.setState({mapMenuOpen: false})
 
   public render() {
 
-    const {classes, map, x, y, selectedMapSlotData} = this.props
+    const {classes, map, x, y, selectedMapSlotData, troops} = this.props
     const {width, height, margin, mapMenuOpen, selectedX, selectedY} = this.state
 
     if (map.length < 500) {
@@ -204,13 +208,22 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
           </div>
         </div>
         <Dialog open={mapMenuOpen} onClose={this.handleCloseMapSlot}>
-          <DialogTitle>{map[selectedX][selectedY]}</DialogTitle>
+          <DialogTitle>
+            <span>Town of {map[selectedX][selectedY]}</span>
+            <span style={{fontSize: '16px', marginLeft: '20px'}}>Population: {selectedMapSlotData.population}</span>
+          </DialogTitle>
           <DialogContent>
-            <DialogContentText>Population: {selectedMapSlotData.population}</DialogContentText>
+            <DialogContentText>Send your troops to visit this town?</DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseMapSlot}>Cancel</Button>
-            <Button className={classes.button} onClick={this.handleCloseMapSlot} disabled={false}>Send</Button>
+            <Button
+              className={classes.button}
+              onClick={this.handleCloseMapSlot}
+              disabled={Object.values(troops).filter((value: number) => value === 0).length > 0}
+            >
+              Send
+            </Button>
           </DialogActions>
         </Dialog>
       </div>

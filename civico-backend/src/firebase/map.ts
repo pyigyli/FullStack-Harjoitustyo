@@ -26,10 +26,10 @@ export const getMap = async (conn: Connection) => {
 export const getMapSlot = async (conn: Connection, username: string) => {
   try {
     const townDataSnapshot = await db.ref('users').orderByChild('username').equalTo(username).once('value')
-    const townData = townDataSnapshot.toJSON() as Object
+    const townData = Object.values(townDataSnapshot.toJSON() as Object)[0]
     conn.sendMessage({
       type: 'SEND_MAPSLOT',
-      population: Object.values(townData)[0].population
+      population: townData.population
     })
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})

@@ -110,14 +110,26 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
     const slotName = grid[row][column].name.startsWith('?') ? grid[row][column].name.substr(1) : grid[row][column].name
     let resourceRateGainLabel: string = ''
     if (slotName) {
-      if (fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain > 0) {
-        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain} lumber / hour.`
-      } else if (fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain > 0) {
-        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain} iron / hour.`
-      } else if (fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain > 0) {
-        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain} clay / hour.`
-      } else if (fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain > 0) {
-        resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain} wheat / hour.`
+      if (grid[row][column].level === 5) {
+        if (fieldSlotData[slotName][grid[row][column].level].lumberRateGain > 0) {
+          resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level].lumberRateGain} lumber / hour.`
+        } else if (fieldSlotData[slotName][grid[row][column].level].ironRateGain > 0) {
+          resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level].ironRateGain} iron / hour.`
+        } else if (fieldSlotData[slotName][grid[row][column].level].clayRateGain > 0) {
+          resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level].clayRateGain} clay / hour.`
+        } else if (fieldSlotData[slotName][grid[row][column].level].wheatRateGain > 0) {
+          resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level].wheatRateGain} wheat / hour.`
+        }
+      } else {
+        if (fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain > 0) {
+          resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].lumberRateGain} lumber / hour.`
+        } else if (fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain > 0) {
+          resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].ironRateGain} iron / hour.`
+        } else if (fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain > 0) {
+          resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].clayRateGain} clay / hour.`
+        } else if (fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain > 0) {
+          resourceRateGainLabel = `${fieldSlotData[slotName][grid[row][column].level + 1].wheatRateGain} wheat / hour.`
+        }
       }
     }
 
@@ -177,31 +189,33 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
           <DialogTitle>{slotName}</DialogTitle>
           <DialogContent>
             <DialogContentText>{fieldSlotData[slotName].info} {resourceRateGainLabel}</DialogContentText>
-            <DialogContentText>
-              <span style={{fontWeight: 'bold'}}>Population increase: </span>
-              {fieldSlotData[slotName][grid[row][column].level + 1].populationGain}
-            </DialogContentText>
-            <div className={classes.upgradeCostsContainer}>
-            <div className={classes.upgradeCostWrapper}>
-              <div style={{fontWeight: 'bold'}}>Cost:</div>
+            {grid[row][column].level < 5 && <div>
+              <DialogContentText>
+                <span style={{fontWeight: 'bold'}}>Population increase: </span>
+                {fieldSlotData[slotName][grid[row][column].level + 1].populationGain}
+              </DialogContentText>
+              <div className={classes.upgradeCostsContainer}>
+                <div className={classes.upgradeCostWrapper}>
+                  <div style={{fontWeight: 'bold'}}>Cost:</div>
+                </div>
+                <div className={classes.upgradeCostWrapper}>
+                  <div>Lumber</div>
+                  <div>{fieldSlotData[slotName][grid[row][column].level + 1].lumberCost}</div>
+                </div>
+                <div className={classes.upgradeCostWrapper}>
+                  <div>Iron</div>
+                  <div>{fieldSlotData[slotName][grid[row][column].level + 1].ironCost}</div>
+                </div>
+                <div className={classes.upgradeCostWrapper}>
+                  <div>Clay</div>
+                  <div>{fieldSlotData[slotName][grid[row][column].level + 1].clayCost}</div>
+                </div>
+                <div className={classes.upgradeCostWrapper}>
+                  <div>Wheat</div>
+                  <div>{fieldSlotData[slotName][grid[row][column].level + 1].wheatCost}</div>
+                </div>
               </div>
-              <div className={classes.upgradeCostWrapper}>
-                <div>Lumber</div>
-                <div>{fieldSlotData[slotName][grid[row][column].level + 1].lumberCost}</div>
-              </div>
-              <div className={classes.upgradeCostWrapper}>
-                <div>Iron</div>
-                <div>{fieldSlotData[slotName][grid[row][column].level + 1].ironCost}</div>
-              </div>
-              <div className={classes.upgradeCostWrapper}>
-                <div>Clay</div>
-                <div>{fieldSlotData[slotName][grid[row][column].level + 1].clayCost}</div>
-              </div>
-              <div className={classes.upgradeCostWrapper}>
-                <div>Wheat</div>
-                <div>{fieldSlotData[slotName][grid[row][column].level + 1].wheatCost}</div>
-              </div>
-            </div>
+            </div>}
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleClose}>Cancel</Button>
@@ -209,6 +223,7 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
               className={classes.button}
               onClick={() => this.handleSubmit(row, column, grid[row][column].level + 1)}
               disabled={
+                grid[row][column].level === 5 ||
                 lumber < fieldSlotData[slotName][grid[row][column].level + 1].lumberCost ||
                 iron   < fieldSlotData[slotName][grid[row][column].level + 1].ironCost   ||
                 clay   < fieldSlotData[slotName][grid[row][column].level + 1].clayCost   ||
@@ -216,7 +231,7 @@ class FieldGrid extends React.Component<Props & RouteComponentProps & WithStyles
                 (slotName !== 'WHEAT' && netWheatRate - fieldSlotData[slotName][grid[row][column].level + 1].populationGain < 0)
               }
             >
-              Upgrade
+              {grid[row][column].level === 5 ? 'Max Level' : 'Upgrade'}
             </Button>
           </DialogActions>
         </Dialog>}

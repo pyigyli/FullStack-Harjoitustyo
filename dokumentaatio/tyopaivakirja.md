@@ -22,3 +22,6 @@ Työpäiväkirjan tarkoituksena on dokumentoida mietteitä ja huomioita, sekä s
 - Minulla ei myöskään ole mitään hajua, kuinka pahasti esimerkiksi 1000x1000 kokoisen kartan hakeminen ja lähettäminen tukkii serveriä, joka joutuu pahimmassa tapauksessa käsittelemään satoja pyyntöjä sekunnissa. *(olettaen että peli olisi oikeasti suosittu MMOG)* Saatan ehkä suorittaa kartan toteutuksen huolella ja ladata karttaa sitä mukaan, kun kartan näkymää liikutetaan.
 
 - Loppujen lopuksi päädyin 500*500 kokoiseen karttaan, johon siis mahtuisi yhteensä 250000 pelaajaa. Itsestään kasvava kartta olisi ollut turhan monimutkainen toteuttaa, joten en halunnut enää myöhemmin edes yrittää.
+
+#### 6.7.2019
+- Olen ainakin tämän projektin aikana oppinut, miten asioita kannattaa heti alusta asti jakaa selkeisiin moduuleihin. Tämä projekti ei onneksi käytä hirveästi laskukaavoja pelilogiikassaan ja tässä vaiheessa en enää jaksa alkaa refaktoroimaan koodiani tämän parantamiseksi, mutta tulevaisuuden projekteissa kaikki matemaattiset kaavat olisi erittäin kätevä pitää yhdessä paikassa, josta ne voidaan importata ja niiden eri muuttujia on helppo muuttaa.

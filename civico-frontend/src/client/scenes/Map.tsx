@@ -1,6 +1,7 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, TextField, Button, InputAdornment} from '@material-ui/core'
 import MapGrid from '../components/MapGrid'
+import {Troops} from '../../types/protocol'
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -48,6 +49,7 @@ interface Props {
   selfCoordinates: number[]
   mapCoordinates: number[]
   selectedMapSlotData: {population: number}
+  troops: Troops
   onGetMap: () => void
   onGetMapSlot: (username: string) => void
   onNewMapCoordinates: (newX: number, newY: number) => void
@@ -80,7 +82,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
   }
 
   public render() {
-    const {classes, map, selfCoordinates, mapCoordinates, selectedMapSlotData, onGetMap, onGetMapSlot, onNewMapCoordinates} = this.props
+    const {classes, map, selfCoordinates, mapCoordinates, selectedMapSlotData, troops, onGetMap, onGetMapSlot, onNewMapCoordinates} = this.props
     const {newX, newY} = this.state
 
     return (
@@ -120,6 +122,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
           x={mapCoordinates[0]}
           y={mapCoordinates[1]}
           selectedMapSlotData={selectedMapSlotData}
+          troops={troops}
           onGetMap={onGetMap}
           onGetMapSlot={onGetMapSlot}
         />

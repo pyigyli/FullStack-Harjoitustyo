@@ -456,39 +456,41 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
                   buildingLevel={buildingMenuLevel}
                   pacifist={pacifist}
                   pacifismDisabledUntil={pacifismDisabledUntil}
-                  onClose={this.handleCloseBuildingSelect}
+                  onClose={this.handleCloseBuildingMenu}
                   onTogglePacifism={this.handleTogglePacifism}
                   onTrainTroops={onTrainTroops}
                 />
-                <div style={{fontSize: '16px', marginTop: '25px', marginBottom: '25px'}}>Upgrade:</div>
+                {buildingMenuLevel < 5 && <div style={{fontSize: '16px', marginTop: '25px', marginBottom: '25px'}}>Upgrade:</div>}
                 <DialogContentText>
                   {buildingsData[buildingMenuName].level[buildingMenuLevel].info || buildingsData[buildingMenuName].info}
                 </DialogContentText>
-                <DialogContentText>
-                  <span style={{fontWeight: 'bold'}}>Population increase: </span>
-                  {buildingsData[buildingMenuName].level[buildingMenuLevel + 1].populationGain}
-                </DialogContentText>
-                <div className={classes.buildingCostsContainer}>
-                  <div className={classes.buildingCostWrapper}>
-                    <div style={{fontWeight: 'bold'}}>Upgrade cost:</div>
+                {buildingMenuLevel < 5 && <div>
+                  <DialogContentText>
+                    <span style={{fontWeight: 'bold'}}>Population increase: </span>
+                    {buildingsData[buildingMenuName].level[buildingMenuLevel + 1].populationGain}
+                  </DialogContentText>
+                  <div className={classes.buildingCostsContainer}>
+                    <div className={classes.buildingCostWrapper}>
+                      <div style={{fontWeight: 'bold'}}>Upgrade cost:</div>
+                    </div>
+                    <div className={classes.buildingCostWrapper}>
+                      <div>Lumber</div>
+                      <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].lumberCost}</div>
+                    </div>
+                    <div className={classes.buildingCostWrapper}>
+                      <div>Iron</div>
+                      <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].ironCost}</div>
+                    </div>
+                    <div className={classes.buildingCostWrapper}>
+                      <div>Clay</div>
+                      <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].clayCost}</div>
+                    </div>
+                    <div className={classes.buildingCostWrapper}>
+                      <div>Wheat</div>
+                      <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].wheatCost}</div>
+                    </div>
                   </div>
-                  <div className={classes.buildingCostWrapper}>
-                    <div>Lumber</div>
-                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].lumberCost}</div>
-                  </div>
-                  <div className={classes.buildingCostWrapper}>
-                    <div>Iron</div>
-                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].ironCost}</div>
-                  </div>
-                  <div className={classes.buildingCostWrapper}>
-                    <div>Clay</div>
-                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].clayCost}</div>
-                  </div>
-                  <div className={classes.buildingCostWrapper}>
-                    <div>Wheat</div>
-                    <div>{buildingsData[buildingMenuName].level[buildingMenuLevel + 1].wheatCost}</div>
-                  </div>
-                </div>
+                </div>}
                 <div className={classes.buildingCostsContainer}>
                   <div className={classes.buildingCostWrapper}>
                     <div style={{fontWeight: 'bold'}}>Moving cost:</div>

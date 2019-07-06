@@ -21,7 +21,9 @@ import {
   GridSlot,
   MapSlot,
   InboxMessage,
-  Troops
+  Troops,
+  SendTroopsMessage,
+  troopsData
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -101,9 +103,12 @@ const NULL_STATE: State = {
   inbox: [],
   inboxMessageSent: false,
   troops: {
-    'Knife boy': 0,
+    'Knife Boy': 0,
     Spearman: 0,
-    Swordsman: 0
+    Swordsman: 0,
+    'Donkey Rider': 0,
+    Jouster: 0,
+    'Dark Knight': 0
   },
   errorMessage: '',
   pacifist: true,
@@ -352,7 +357,24 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public handleTrainTroops = (troopType: string, amountToTrain: number) => {
     const {connection, token} = this.state
     if (connection && token) {
-      const message: TrainTroopsMessage = {type: 'TRAIN', token, troopType, amountToTrain}
+      const message: TrainTroopsMessage = {type: 'TRAIN_TROOPS', token, troopType, amountToTrain}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
+  public handleSendTroops = (targetX: number, targetY: number, troopsToSend: Troops) => {
+    const {connection, token, mapCoordinates} = this.state
+    if (connection && token) {
+      const distanceOfTowns = Math.sqrt(((mapCoordinates[0] - targetX) % 250) ** 2 + ((mapCoordinates[1] - targetY) % 250) ** 2)
+      const travelSpeed = Object.entries(troopsToSend).reduce((value, next) => 
+        next[1] > 0 && troopsData[next[0]].speed < troopsData[value[0]].speed ? next : value
+      )[1].speed
+      const message: SendTroopsMessage = {
+        type: 'SEND_TROOPS',
+        token,
+        troops: troopsToSend,
+        travelTime: distanceOfTowns / travelSpeed
+      }
       connection.send(JSON.stringify(message))
     }
   }
@@ -427,6 +449,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             fields={fields}
             troops={troops}
             onFieldLevelUp={this.handleFieldLevelUp}
+            onSendTroops={this.handleSendTroops}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/town' render={() =>
@@ -453,6 +476,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           mapCoordinates={mapCoordinates}
           selfCoordinates={mapCoordinates}
           selectedMapSlotData={selectedMapSlotData}
+          troops={troops}
           onGetMap={this.handleGetMap}
           onGetMapSlot={this.handleGetMapSlot}
           onNewMapCoordinates={this.setNewMapCoordinates}

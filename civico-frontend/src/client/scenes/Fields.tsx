@@ -1,5 +1,17 @@
 import React from 'react'
-import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
+import {
+  createStyles,
+  withStyles,
+  WithStyles,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+  Button,
+  TextField
+} from '@material-ui/core'
 import FieldGrid from '../components/FieldGrid'
 import {GridSlot, Troops} from '../../types/protocol'
 
@@ -59,6 +71,13 @@ const styles = () => createStyles({
     paddingLeft: '25px',
     paddingRight: '25px',
     margin: '30px'
+  },
+  textfield: {
+    borderColor: '#321432 !important',
+    color: '#321432 !important',
+    '&:after': {
+      borderColor: '#321432 !important'
+    }
   }
 })
 
@@ -75,19 +94,22 @@ interface Props {
   fields: GridSlot[][]
   troops: Troops
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
+  onSendTroops: (targetX: number, targetY: number, troopsToSend: Troops) => void
 }
 
 interface State {
   openDiscoverMenu: boolean
   selectedRow: number
   selectedColumn: number
+  troopsToSendValues: Troops
 }
 
 class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {
     openDiscoverMenu: false,
     selectedRow: 0,
-    selectedColumn: 0
+    selectedColumn: 0,
+    troopsToSendValues: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0}
   }
 
   public handleOpenDiscoverMenu = (row: number, column: number) => {
@@ -95,6 +117,16 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
   }
 
   public handleCloseDiscoverMenu = () => this.setState({openDiscoverMenu: false})
+
+  public handleTroopsToSendAmountChange = (troopType: string, newValue: number) => {
+    if (newValue >= 0 && newValue <= this.props.troops[troopType]) {
+      this.setState({troopsToSendValues: {...this.state.troopsToSendValues, [troopType]: newValue}})
+    }
+  }
+
+  public handleSendTroops = () => {
+    this.props.onSendTroops(this.state.selectedRow, this.state.selectedColumn, this.state.troopsToSendValues)
+  }
 
   public render() {
     const {
@@ -109,10 +141,10 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
       clayRate,
       wheatRate,
       fields,
-      troops,
       onFieldLevelUp
     } = this.props
-    const {openDiscoverMenu} = this.state
+    const {openDiscoverMenu, troopsToSendValues} = this.state
+    const troops = Object.entries(this.props.troops).filter(entry => entry[1] !== 0)
 
     return (
       <div className={classes.sceneWrapper}>
@@ -135,17 +167,15 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
             <div className={classes.resourceRateTextWrapper}>wheat / hour</div>
           </div>
         </Paper>
-        {Object.values(troops).filter((value: number) => value !== 0).length > 0 &&
-          <Paper className={classes.infoBoxContainer} style={{top: '175px'}}>
-            <span style={{marginBottom: '5px'}}>Troops in town</span>
-            {Object.entries(troops).map(entry => 
-              <div className={classes.infoBoxWrapper} style={{justifyContent: 'space-between', marginLeft: '15px', marginRight: '15px'}}>
-                <div>{entry[0]}</div>
-                <div>{entry[1]}</div>
-              </div>
-            )}
-          </Paper>
-        }
+        {troops.length > 0 && <Paper className={classes.infoBoxContainer} style={{top: '175px'}}>
+          <span style={{marginBottom: '5px'}}>Troops in town</span>
+          {troops.map((entry, index: number) => 
+            <div key={index} className={classes.infoBoxWrapper} style={{justifyContent: 'space-between', marginLeft: '15px', marginRight: '15px'}}>
+              <div>{entry[0]}</div>
+              <div>{entry[1]}</div>
+            </div>
+          )}
+        </Paper>}
         <FieldGrid
           lumber={lumber}
           iron={iron}
@@ -159,15 +189,29 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
         <Dialog open={openDiscoverMenu} onClose={this.handleCloseDiscoverMenu}>
           <DialogTitle>Discover a new field</DialogTitle>
           <DialogContent>
-            <DialogContentText>Send your troops to conquer uncharted land.</DialogContentText>
+            <DialogContentText>Send your troops to conquer uncharted land. What lies there is uncertain, so prepare well.</DialogContentText>
+            {troops.map((entry, index: number) => 
+              <div key={index} className={classes.infoBoxWrapper}>
+                <div style={{fontWeight: 'bold', width: '130px'}}>{entry[0]}:</div>
+                <div style={{marginRight: '10px'}}>{entry[1]} unit{entry[1] === 1 ? '' : 's'} available.</div>
+                <div style={{marginRight: '10px'}}>Select for sending:</div>
+                <TextField
+                  type='number'
+                  value={troopsToSendValues[index]}
+                  onChange={({target}) => this.handleTroopsToSendAmountChange(entry[0], parseInt(target.value, 10))}
+                  style={{width: '100px', bottom: '5px'}}
+                  InputProps={{classes: {root: classes.textfield}}}
+                  InputLabelProps={{classes: {root: classes.textfield}}}
+                />
+              </div>
+            )}
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseDiscoverMenu}>Cancel</Button>
             <Button
               className={classes.button}
-              onClick={this.handleCloseDiscoverMenu}
-              disabled={false}
-              // TODO send troops to discover
+              onClick={this.handleSendTroops}
+              disabled={troops.length === 0 && Object.values(troopsToSendValues).filter((value: number) => value !== 0).length > 0}
             >
               Send
             </Button>
