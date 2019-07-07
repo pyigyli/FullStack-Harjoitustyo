@@ -86,9 +86,8 @@ interface Props {
   selfCoordinates: number[]
   x: number
   y: number
-  selectedMapSlotData: {population: number}
+  selectedMapSlotData: {username: string, population: number}
   troops: Troops
-  onGetMap: () => void
   onGetMapSlot: (username: string) => void
 }
 
@@ -103,10 +102,6 @@ interface State {
 
 class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {width: 80, height: 80, margin: 3, mapMenuOpen: false, selectedX: 0, selectedY: 0}
-
-  public componentWillMount() {
-    this.props.onGetMap()
-  }
 
   public handleOpenMapSlot = (selectedX: number, selectedY: number) => {
     if (this.props.map[selectedX][selectedY]) {
@@ -220,7 +215,7 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
             <Button
               className={classes.button}
               onClick={this.handleCloseMapSlot}
-              disabled={Object.values(troops).filter((value: number) => value === 0).length > 0}
+              disabled={Object.values(troops).filter((value: number) => value !== 0).length === 0}
             >
               Send
             </Button>

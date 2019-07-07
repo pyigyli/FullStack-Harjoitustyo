@@ -1,7 +1,7 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, TextField, Button, InputAdornment} from '@material-ui/core'
 import MapGrid from '../components/MapGrid'
-import {Troops} from '../../types/protocol'
+import {Troops, troopsData} from '../../types/protocol'
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -47,43 +47,60 @@ const styles = () => createStyles({
 interface Props {
   map: string[][]
   selfCoordinates: number[]
-  mapCoordinates: number[]
-  selectedMapSlotData: {population: number}
+  selectedMapSlotData: {username: string, population: number}
   troops: Troops
   onGetMap: () => void
   onGetMapSlot: (username: string) => void
-  onNewMapCoordinates: (newX: number, newY: number) => void
+  onSendTroops: (target: string, troopsToSend: Troops, travelTime: number) => void
 }
 
 interface State {
+  mapCoordinates: number[]
   newX: number
   newY: number
+  troopsToSendValues: Troops
 }
 
 class MapScene extends React.Component<Props & WithStyles<typeof styles>, State> {
-  public state = {newX: 0, newY: 0}
+  public state = {
+    mapCoordinates: this.props.selfCoordinates,
+    newX: this.props.selfCoordinates[0],
+    newY: this.props.selfCoordinates[1],
+    troopsToSendValues: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0}
+  }
+
+  public componentWillMount() {
+    this.props.onGetMap()
+  }
 
   public handleNewXChange = (newX: number) => {
-    if (newX < 0) {
-      newX = 0
-    } else if (newX > 499) {
-      newX = 499
-    }
+    newX = newX < 0   ? 0   : newX
+    newX = newX > 499 ? 499 : newX
     this.setState({newX})
   }
 
   public handleNewYChange = (newY: number) => {
-    if (newY < 0) {
-      newY = 0
-    } else if (newY > 499) {
-      newY = 499
-    }
+    newY = newY < 0   ? 0   : newY
+    newY = newY > 499 ? 499 : newY
     this.setState({newY})
   }
 
+  public setNewMapCoordinates = () => this.setState({mapCoordinates: [this.state.newX, this.state.newY]})
+
+  public handleSendTroops = () => {
+    const distanceOfTowns = Math.sqrt(
+      ((this.props.selfCoordinates[0] - this.state.mapCoordinates[0]) % 250) ** 2 +
+      ((this.props.selfCoordinates[1] - this.state.mapCoordinates[1]) % 250) ** 2
+    )
+    const travelSpeed = troopsData[Object.entries(this.state.troopsToSendValues).reduce((value, next) => 
+      next[1] > 0 && troopsData[next[0]].speed < troopsData[value[0]].speed ? next : value
+    )[0]].speed
+    this.props.onSendTroops(this.props.selectedMapSlotData.username, this.state.troopsToSendValues, travelSpeed / distanceOfTowns * 3600000)
+  }
+
   public render() {
-    const {classes, map, selfCoordinates, mapCoordinates, selectedMapSlotData, troops, onGetMap, onGetMapSlot, onNewMapCoordinates} = this.props
-    const {newX, newY} = this.state
+    const {classes, map, selfCoordinates, selectedMapSlotData, troops, onGetMapSlot} = this.props
+    const {mapCoordinates, newX, newY} = this.state
 
     return (
       <div className={classes.sceneWrapper}>
@@ -113,7 +130,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
             }}
           />
           <div style={{position: 'relative', top: '25px'}}>
-            <Button className={classes.button} onClick={() => onNewMapCoordinates(newX, newY)}>Search</Button>
+            <Button className={classes.button} onClick={this.setNewMapCoordinates}>Search</Button>
           </div>
         </div>
         <MapGrid
@@ -123,7 +140,6 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
           y={mapCoordinates[1]}
           selectedMapSlotData={selectedMapSlotData}
           troops={troops}
-          onGetMap={onGetMap}
           onGetMapSlot={onGetMapSlot}
         />
       </div>

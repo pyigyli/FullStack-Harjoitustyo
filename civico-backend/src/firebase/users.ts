@@ -40,63 +40,19 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       clayRate: 5,
       wheatRate: 5,
       fields: [
-        [
-          {name: '?CAVE',  level: 0},
-          {name: '?WHEAT', level: 0},
-          {name: '?CLAY',  level: 0}, 
-          {name: '?CAVE',  level: 0},
-          {name: '?WHEAT', level: 0}
-        ], [
-          {name: '?WHEAT', level: 0},
-          {name: '?CLAY',  level: 0},
-          {name: 'FOREST', level: 0},
-          {name: '?CAVE',  level: 0},
-          {name: '?WHEAT', level: 0}
-        ], [
-          {name: '?FOREST', level: 0},
-          {name: 'CLAY',    level: 0},
-          {name: 'TOWN',    level: 0},
-          {name: 'CAVE',    level: 0},
-          {name: '?CLAY',   level: 0}
-        ], [
-          {name: '?CLAY',   level: 0},
-          {name: '?WHEAT',  level: 0},
-          {name: 'WHEAT',   level: 0},
-          {name: '?CAVE',   level: 0},
-          {name: '?FOREST', level: 0}
-        ], [
-          {name: '?FOREST', level: 0},
-          {name: '?CAVE',   level: 0},
-          {name: '?FOREST', level: 0},
-          {name: '?CLAY',   level: 0},
-          {name: '?FOREST', level: 0}
-        ]
+        [{name: '?CAVE',   level: 0}, {name: '?WHEAT', level: 0}, {name: '?CLAY',   level: 0}, {name: '?CAVE', level: 0}, {name: '?WHEAT',  level: 0}],
+        [{name: '?WHEAT',  level: 0}, {name: '?CLAY',  level: 0}, {name: 'FOREST',  level: 0}, {name: '?CAVE', level: 0}, {name: '?WHEAT',  level: 0}],
+        [{name: '?FOREST', level: 0}, {name: 'CLAY',   level: 0}, {name: 'TOWN',    level: 0}, {name: 'CAVE',  level: 0}, {name: '?CLAY',   level: 0}],
+        [{name: '?CLAY',   level: 0}, {name: '?WHEAT', level: 0}, {name: 'WHEAT',   level: 0}, {name: '?CAVE', level: 0}, {name: '?FOREST', level: 0}],
+        [{name: '?FOREST', level: 0}, {name: '?CAVE',  level: 0}, {name: '?FOREST', level: 0}, {name: '?CLAY', level: 0}, {name: '?FOREST', level: 0}]
       ],
       buildings: [
-        [
-          {name: 'EMPTY', level: 0},
-          {name: 'EMPTY', level: 0},
-          {name: 'EMPTY', level: 0}
-        ], [
-          {name: 'EMPTY', level: 0},
-          {name: 'EMPTY', level: 0},
-          {name: 'EMPTY', level: 0}
-        ], [
-          {name: 'EMPTY', level: 0},
-          {name: 'EMPTY', level: 0},
-          {name: 'EMPTY', level: 0}
-        ]
+        [{name: 'EMPTY', level: 0}, {name: 'EMPTY', level: 0}, {name: 'EMPTY', level: 0}],
+        [{name: 'EMPTY', level: 0}, {name: 'EMPTY', level: 0}, {name: 'EMPTY', level: 0}],
+        [{name: 'EMPTY', level: 0}, {name: 'EMPTY', level: 0}, {name: 'EMPTY', level: 0}]
       ],
       mapCoordinates: {x, y},
-      inbox: [],
-      troops: {
-        'Knife Boy': 0,
-        Spearman: 0,
-        Swordsman: 0,
-        'Donkey Rider': 0,
-        Jouster: 0,
-        'Dark Knight': 0
-      },
+      troops: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0},
       timestamp: Date.now(),
       pacifist: true,
       pacifismDisabledUntil: 0
@@ -166,7 +122,8 @@ export const getUserData = async (conn: Connection) => {
         fields,
         buildings,
         mapCoordinates: Object.values(user.mapCoordinates),
-        inbox: user.inbox ? Object.values(user.inbox) : []
+        inbox: user.inbox ? Object.values(user.inbox) : [],
+        troopsOnMove: user.troopsOnMove ? Object.values(user.troopsOnMove) : []
       })
     }
   } catch (err) {
@@ -191,7 +148,7 @@ export const togglePacifism = async (conn: Connection, pacifist: boolean, disabl
 export const trainTroops = async (conn: Connection, troopType: string, amountToTrain: number) => {
   try {
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
-    const user: UserData = userSnapshot.toJSON() as UserData
+    const user = userSnapshot.toJSON() as UserData
     const currentTime = Date.now()
     const timePassed = currentTime - user.timestamp
     await db.ref(`users/${conn.id}`).update({
@@ -209,9 +166,33 @@ export const trainTroops = async (conn: Connection, troopType: string, amountToT
   }
 }
 
-export const sendTroops = async (conn: Connection, troops: Troops, travelTime: number) => {
+export const sendTroops = async (conn: Connection, target: string | null, troopsToSend: Troops, travelTime: number) => {
   try {
-    // TODO
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user = userSnapshot.toJSON() as UserData
+    let troopsLeftInTown: Troops = user.troops
+    for (const troopType in troopsLeftInTown) {
+      troopsLeftInTown[troopType] -= troopsToSend[troopType]
+    }
+    const currentTime = Date.now()
+    const timePassed = currentTime - user.timestamp
+    const troopsOnMove = user.troopsOnMove ? Object.values(user.troopsOnMove) : []
+    troopsOnMove.push({
+      headingBack: false,
+      target,
+      troops: troopsToSend,
+      travelTime,
+      arrivalTime: currentTime + travelTime
+    })
+    await db.ref(`users/${conn.id}`).update({
+      lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber),
+      iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron),
+      clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay),
+      wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat),
+      troops: troopsLeftInTown,
+      troopsOnMove: troopsOnMove,
+      timestamp: currentTime
+    })
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console

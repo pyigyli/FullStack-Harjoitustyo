@@ -101,9 +101,10 @@ export interface SendUserDataMessage extends MessageBase {
   mapCoordinates: number[]
   inbox: InboxMessage[]
   troops: Troops
-  timestamp: number
+  troopsOnMove: Array<{headingBack: boolean, target: string | null, troops: Troops, travelTime: number, arrivalTime: number}>
   pacifist: boolean
   pacifismDisabledUntil: number
+  timestamp: number
 }
 
 export interface FieldLevelUpMessage extends MessageBase {
@@ -160,6 +161,7 @@ export interface GetMapSlotMessage extends MessageBase {
 
 export interface SendMapSlotMessage extends MessageBase {
   type: 'SEND_MAPSLOT'
+  username: string
   population: number
 }
 
@@ -208,7 +210,8 @@ export interface TrainTroopsMessage extends MessageBase {
 export interface SendTroopsMessage extends MessageBase {
   type: 'SEND_TROOPS'
   token: string
-  troops: Troops
+  target: string | null
+  troopsToSend: Troops
   travelTime: number
 }
 
@@ -231,9 +234,10 @@ export interface UserData {
   mapCoordinates: number[]
   inbox: InboxMessage[]
   troops: Troops
-  timestamp: number
+  troopsOnMove: Array<{headingBack: boolean, target: string | null, troops: Troops, travelTime: number, arrivalTime: number}>
   pacifist: boolean
   pacifismDisabledUntil: number
+  timestamp: number
 }
 
 export interface GridSlot {
@@ -262,6 +266,7 @@ export interface BuildingSlot {
 }
 
 export interface MapSlot {
+  username: string
   population: number
 }
 

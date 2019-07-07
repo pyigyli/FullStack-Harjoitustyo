@@ -29,6 +29,7 @@ export const getMapSlot = async (conn: Connection, username: string) => {
     const townData = Object.values(townDataSnapshot.toJSON() as Object)[0]
     conn.sendMessage({
       type: 'SEND_MAPSLOT',
+      username: username,
       population: townData.population
     })
   } catch (err) {

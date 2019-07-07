@@ -22,8 +22,7 @@ import {
   MapSlot,
   InboxMessage,
   Troops,
-  SendTroopsMessage,
-  troopsData
+  SendTroopsMessage
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -73,6 +72,13 @@ interface State {
   inbox: InboxMessage[]
   inboxMessageSent: boolean
   troops: Troops
+  troopsOnMove: Array<{
+    headingBack: boolean
+    target: string | null
+    troops: Troops
+    travelTime: number
+    arrivalTime: number
+  }>
   errorMessage: string
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -99,17 +105,11 @@ const NULL_STATE: State = {
   buildings: [[{name: '', level: 0}]],
   mapCoordinates: [0, 0],
   map: [['']],
-  selectedMapSlotData: {population: 0},
+  selectedMapSlotData: {username: '', population: 0},
   inbox: [],
   inboxMessageSent: false,
-  troops: {
-    'Knife Boy': 0,
-    Spearman: 0,
-    Swordsman: 0,
-    'Donkey Rider': 0,
-    Jouster: 0,
-    'Dark Knight': 0
-  },
+  troops: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0},
+  troopsOnMove: [],
   errorMessage: '',
   pacifist: true,
   pacifismDisabledUntil: Date.now()
@@ -173,6 +173,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             mapCoordinates: message.mapCoordinates,
             inbox: message.inbox,
             troops: message.troops,
+            troopsOnMove: message.troopsOnMove,
             pacifist: message.pacifist,
             pacifismDisabledUntil: new Date(message.pacifismDisabledUntil).getTime()
           })
@@ -182,6 +183,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           break
         case 'SEND_MAPSLOT':
           this.setState({selectedMapSlotData: {
+            username: message.username,
             population: message.population
           }})
           break
@@ -310,8 +312,6 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public setNewMapCoordinates = (newX: number, newY: number) => this.setState({mapCoordinates: [newX, newY]})
-
   public handleSetMessagesToRead = (inboxIndexes: number[]) => {
     const {connection, token} = this.state
     if (connection && token) {
@@ -362,19 +362,10 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public handleSendTroops = (targetX: number, targetY: number, troopsToSend: Troops) => {
-    const {connection, token, mapCoordinates} = this.state
+  public handleSendTroops = (target: string | null, troopsToSend: Troops, travelTime: number) => {
+    const {connection, token} = this.state
     if (connection && token) {
-      const distanceOfTowns = Math.sqrt(((mapCoordinates[0] - targetX) % 250) ** 2 + ((mapCoordinates[1] - targetY) % 250) ** 2)
-      const travelSpeed = Object.entries(troopsToSend).reduce((value, next) => 
-        next[1] > 0 && troopsData[next[0]].speed < troopsData[value[0]].speed ? next : value
-      )[1].speed
-      const message: SendTroopsMessage = {
-        type: 'SEND_TROOPS',
-        token,
-        troops: troopsToSend,
-        travelTime: distanceOfTowns / travelSpeed
-      }
+      const message: SendTroopsMessage = {type: 'SEND_TROOPS', token, target, troopsToSend, travelTime}
       connection.send(JSON.stringify(message))
     }
   }
@@ -405,6 +396,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       inbox,
       inboxMessageSent,
       troops,
+      troopsOnMove,
       errorMessage,
       pacifist,
       pacifismDisabledUntil
@@ -419,8 +411,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           onGetUserData={this.handleGetUserData}
         />
         <Notification message={errorMessage}/>
-        <Route exact path='/'               render={() => <IndexScene/>}/>
-        <Route exact path='/login'          render={() => <LoginScene onSubmit={this.handleLogin}/>}/>
+        <Route exact path='/' render={() => <IndexScene/>}/>
+        <Route exact path='/login' render={() => <LoginScene onSubmit={this.handleLogin}/>}/>
         <Route exact path='/create-account' render={() => <CreateAccountScene onSubmit={this.handleCreateAccount}/>}/>
         <Route exact path={['/fields', '/town', '/map', '/inbox']} render={() => 
           token && <ProfileBar
@@ -448,6 +440,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             wheatRate={wheatRate}
             fields={fields}
             troops={troops}
+            troopsOnMove={troopsOnMove}
             onFieldLevelUp={this.handleFieldLevelUp}
             onSendTroops={this.handleSendTroops}
           /> : <LoginScene onSubmit={this.handleLogin}/>
@@ -473,13 +466,12 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         <Route exact path='/map' render={() =>
           token ? <MapScene
           map={map}
-          mapCoordinates={mapCoordinates}
           selfCoordinates={mapCoordinates}
           selectedMapSlotData={selectedMapSlotData}
           troops={troops}
           onGetMap={this.handleGetMap}
           onGetMapSlot={this.handleGetMapSlot}
-          onNewMapCoordinates={this.setNewMapCoordinates}
+          onSendTroops={this.handleSendTroops}
         /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/inbox' render={() =>

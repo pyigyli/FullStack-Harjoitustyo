@@ -12,8 +12,9 @@ import {
   Button,
   TextField
 } from '@material-ui/core'
-import FieldGrid from '../components/FieldGrid'
 import {GridSlot, Troops} from '../../types/protocol'
+import FieldGrid from '../components/FieldGrid'
+import TroopsOnMove from '../components/TroopsOnMove'
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -62,9 +63,6 @@ const styles = () => createStyles({
     width: '93px',
     textAlign: 'right'
   },
-  troopsRateWrapper: {
-
-  },
   button: {
     backgroundColor: '#32143244',
     color: '#321432',
@@ -93,8 +91,15 @@ interface Props {
   wheatRate: number
   fields: GridSlot[][]
   troops: Troops
+  troopsOnMove: Array<{
+    headingBack: boolean
+    target: string | null
+    troops: Troops
+    travelTime: number
+    arrivalTime: number
+  }>
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
-  onSendTroops: (targetX: number, targetY: number, troopsToSend: Troops) => void
+  onSendTroops: (target: null, troopsToSend: Troops, travelTime: number) => void
 }
 
 interface State {
@@ -119,13 +124,14 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
   public handleCloseDiscoverMenu = () => this.setState({openDiscoverMenu: false})
 
   public handleTroopsToSendAmountChange = (troopType: string, newValue: number) => {
-    if (newValue >= 0 && newValue <= this.props.troops[troopType]) {
-      this.setState({troopsToSendValues: {...this.state.troopsToSendValues, [troopType]: newValue}})
-    }
+    newValue = newValue >= 0 ? newValue : 0
+    newValue = newValue <= this.props.troops[troopType] ? newValue : this.props.troops[troopType]
+    this.setState({troopsToSendValues: {...this.state.troopsToSendValues, [troopType]: newValue}})
   }
 
   public handleSendTroops = () => {
-    this.props.onSendTroops(this.state.selectedRow, this.state.selectedColumn, this.state.troopsToSendValues)
+    this.props.onSendTroops(null, this.state.troopsToSendValues, 600000)
+    this.setState({openDiscoverMenu: false})
   }
 
   public render() {
@@ -141,6 +147,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
       clayRate,
       wheatRate,
       fields,
+      troopsOnMove,
       onFieldLevelUp
     } = this.props
     const {openDiscoverMenu, troopsToSendValues} = this.state
@@ -176,6 +183,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
             </div>
           )}
         </Paper>}
+        {troopsOnMove.length > 0 && <TroopsOnMove troopsOnMove={troopsOnMove}/>}
         <FieldGrid
           lumber={lumber}
           iron={iron}
@@ -197,7 +205,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
                 <div style={{marginRight: '10px'}}>Select for sending:</div>
                 <TextField
                   type='number'
-                  value={troopsToSendValues[index]}
+                  value={troopsToSendValues[entry[0]]}
                   onChange={({target}) => this.handleTroopsToSendAmountChange(entry[0], parseInt(target.value, 10))}
                   style={{width: '100px', bottom: '5px'}}
                   InputProps={{classes: {root: classes.textfield}}}

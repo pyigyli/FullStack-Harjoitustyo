@@ -52,7 +52,7 @@ class CivicoServer {
       case 'TRAIN_TROOPS':
         return trainTroops(conn, message.troopType, message.amountToTrain)
       case 'SEND_TROOPS':
-        return sendTroops(conn, message.troops, message.travelTime)
+        return sendTroops(conn, message.target, message.troopsToSend, message.travelTime)
       default:
         console.error('Client sent a message of unknown type.') // tslint:disable-line:no-console
         break
