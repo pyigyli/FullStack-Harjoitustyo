@@ -36,4 +36,5 @@
 | 5.7.   | 4    | - Kasarmi ja joukkojen kouluttaminen toteutettu.<br> - Kylässä olevien joukkojen määrä nähtävissä kenttänäkymässä. |
 | 6.7.   | 9    | - Hevostalli ja hesvosjoukkojen kouluttaminen toteutettu.<br> - Rakennusten sisältöjen esittämistä refaktoroitu.<br> - Uusien resurssipeltojen tutkiminen ja Joukkojen lähettäminen sotaretkelle muihin kyliin aloitettu. |
 | 7.7.   | 5    | - Joukkojen lähettäminen toteutettu.<br> - Joukkojen takaisin kääntyminen perille pääsemisen jälkeen osittain toteutettu.<br> - Matkalla olevat joukot nähtävillä kenttänäkymässä. |
-| Yhteensä | 163    |
+| 8.7.   | 3    | - Lähetetyt joukot osaavat voiton jälkeen kääntyä takaisin kotikylään.<br> - Lähetetyt joukot osaavat häviön jälkeen kuolla. |
+| Yhteensä | 166    |

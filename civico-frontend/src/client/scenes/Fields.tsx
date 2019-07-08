@@ -12,7 +12,7 @@ import {
   Button,
   TextField
 } from '@material-ui/core'
-import {GridSlot, Troops} from '../../types/protocol'
+import {GridSlot, Troops, DispatchedTroops} from '../../types/protocol'
 import FieldGrid from '../components/FieldGrid'
 import TroopsOnMove from '../components/TroopsOnMove'
 
@@ -91,15 +91,9 @@ interface Props {
   wheatRate: number
   fields: GridSlot[][]
   troops: Troops
-  troopsOnMove: Array<{
-    headingBack: boolean
-    target: string | null
-    troops: Troops
-    travelTime: number
-    arrivalTime: number
-  }>
+  troopsOnMove: DispatchedTroops[]
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
-  onSendTroops: (target: null, troopsToSend: Troops, travelTime: number) => void
+  onSendTroops: (target: boolean, troopsToSend: Troops, travelTime: number) => void
 }
 
 interface State {
@@ -130,7 +124,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
   }
 
   public handleSendTroops = () => {
-    this.props.onSendTroops(null, this.state.troopsToSendValues, 600000)
+    this.props.onSendTroops(false, this.state.troopsToSendValues, 600000)
     this.setState({openDiscoverMenu: false})
   }
 

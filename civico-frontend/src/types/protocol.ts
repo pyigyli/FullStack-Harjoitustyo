@@ -101,7 +101,7 @@ export interface SendUserDataMessage extends MessageBase {
   mapCoordinates: number[]
   inbox: InboxMessage[]
   troops: Troops
-  troopsOnMove: Array<{headingBack: boolean, target: string | null, troops: Troops, travelTime: number, arrivalTime: number}>
+  troopsOnMove: DispatchedTroops[]
   pacifist: boolean
   pacifismDisabledUntil: number
   timestamp: number
@@ -210,7 +210,7 @@ export interface TrainTroopsMessage extends MessageBase {
 export interface SendTroopsMessage extends MessageBase {
   type: 'SEND_TROOPS'
   token: string
-  target: string | null
+  target: string | boolean
   troopsToSend: Troops
   travelTime: number
 }
@@ -234,7 +234,7 @@ export interface UserData {
   mapCoordinates: number[]
   inbox: InboxMessage[]
   troops: Troops
-  troopsOnMove: Array<{headingBack: boolean, target: string | null, troops: Troops, travelTime: number, arrivalTime: number}>
+  troopsOnMove: DispatchedTroops[]
   pacifist: boolean
   pacifismDisabledUntil: number
   timestamp: number
@@ -286,6 +286,14 @@ export interface Troops {
   'Donkey Rider': number
   Jouster: number
   'Dark Knight': number
+}
+
+export interface DispatchedTroops {
+  headingBack: boolean
+  target: string | boolean
+  troops: Troops
+  travelTime: number
+  arrivalTime: number
 }
 
 export const fieldSlotData = {

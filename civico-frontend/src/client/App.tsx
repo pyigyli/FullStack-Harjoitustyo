@@ -22,7 +22,8 @@ import {
   MapSlot,
   InboxMessage,
   Troops,
-  SendTroopsMessage
+  SendTroopsMessage,
+  DispatchedTroops
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -72,13 +73,7 @@ interface State {
   inbox: InboxMessage[]
   inboxMessageSent: boolean
   troops: Troops
-  troopsOnMove: Array<{
-    headingBack: boolean
-    target: string | null
-    troops: Troops
-    travelTime: number
-    arrivalTime: number
-  }>
+  troopsOnMove: DispatchedTroops[]
   errorMessage: string
   pacifist: boolean
   pacifismDisabledUntil: number
@@ -362,7 +357,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public handleSendTroops = (target: string | null, troopsToSend: Troops, travelTime: number) => {
+  public handleSendTroops = (target: string | boolean, troopsToSend: Troops, travelTime: number) => {
     const {connection, token} = this.state
     if (connection && token) {
       const message: SendTroopsMessage = {type: 'SEND_TROOPS', token, target, troopsToSend, travelTime}

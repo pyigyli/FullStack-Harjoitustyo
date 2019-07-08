@@ -1,7 +1,7 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, Paper} from '@material-ui/core'
 import moment from 'moment'
-import {Troops} from '../../types/protocol'
+import {DispatchedTroops} from '../../types/protocol'
 
 const styles = () => createStyles({
   infoBoxContainer: {
@@ -31,13 +31,7 @@ const styles = () => createStyles({
 })
 
 interface Props {
-  troopsOnMove: Array<{
-    headingBack: boolean
-    target: string | null
-    troops: Troops
-    travelTime: number
-    arrivalTime: number
-  }>
+  troopsOnMove: DispatchedTroops[]
 }
 
 interface State {
@@ -82,7 +76,7 @@ class TroopsOnMove extends React.Component<Props & WithStyles<typeof styles>, St
           })}
         </div>}
         {arrivingTroops.length > 0 && <div>
-          <div style={{marginBottom: '5px'}}>Incoming troops</div>
+          <div style={{marginBottom: '5px', marginTop: '10px'}}>Incoming troops</div>
           {arrivingTroops.map((group, index: number) => {
             const timeUntilArrival = moment.duration(group.arrivalTime - this.state.time).asSeconds()
             const hours = Math.floor(timeUntilArrival / 3600)

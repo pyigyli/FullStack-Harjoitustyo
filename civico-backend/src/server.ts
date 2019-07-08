@@ -1,11 +1,12 @@
 import jwt from 'jsonwebtoken'
 import Connection from './connection'
 import {Message} from './types/protocol'
-import {createNewAccount, login, logout, getUserData, togglePacifism, trainTroops, sendTroops} from './firebase/users'
+import {createNewAccount, login, logout, getUserData} from './firebase/users'
 import {levelUpField} from './firebase/fields'
 import {placeBuilding, levelUpBuilding, deleteBuilding, expandTown} from './firebase/town'
 import {getMap, getMapSlot} from './firebase/map'
 import {setInboxMessagesToRead, sendInboxMessage, deleteInboxMessage} from './firebase/inbox'
+import {togglePacifism, trainTroops, sendTroops} from './firebase/military'
 
 class CivicoServer {
   private connections: Connection[] = []

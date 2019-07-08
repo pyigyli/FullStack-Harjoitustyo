@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import db from './init'
-import {UserData, GridSlot, troopsData, Troops} from '../types/protocol'
+import {UserData, GridSlot, DispatchedTroops} from '../types/protocol'
 import Connection from '../connection'
+import {resultBattle} from './military'
 
 export const createNewAccount = async (conn: Connection, username: string, password: string) => {
   try {
@@ -111,6 +112,22 @@ export const getUserData = async (conn: Connection) => {
         Object.values(row).forEach((slot: GridSlot) => rowToPush.push(slot))
         buildings.push(rowToPush)
       })
+      let troopsOnMove: DispatchedTroops[] = Object.values(user.troopsOnMove)
+      await troopsOnMove.forEach(async (group: DispatchedTroops, index: number) => {
+        if (group.arrivalTime - Date.now() < 0) {
+          if (group.headingBack) {
+
+          } else {
+            const returningGroup = await resultBattle(conn, group)
+            if (returningGroup === 'LOST') {
+              troopsOnMove = troopsOnMove.filter((matchGroup: DispatchedTroops) => matchGroup !== group)
+            } else if (returningGroup) {
+              troopsOnMove[index] = returningGroup
+            }
+          }
+        }
+      })
+      await db.ref(`users/${conn.id}/troopsOnMove`).set(troopsOnMove)
       const timePassed = Date.now() - user.timestamp
       conn.sendMessage({
         type: 'SEND_DATA',
@@ -123,7 +140,7 @@ export const getUserData = async (conn: Connection) => {
         buildings,
         mapCoordinates: Object.values(user.mapCoordinates),
         inbox: user.inbox ? Object.values(user.inbox) : [],
-        troopsOnMove: user.troopsOnMove ? Object.values(user.troopsOnMove) : []
+        troopsOnMove: user.troopsOnMove ? troopsOnMove : []
       })
     }
   } catch (err) {
@@ -132,69 +149,3 @@ export const getUserData = async (conn: Connection) => {
   }
 }
 
-export const togglePacifism = async (conn: Connection, pacifist: boolean, disabledDays: number) => {
-  try {
-    await db.ref(`users/${conn.id}`).update({
-      pacifist,
-      pacifismDisabledUntil: Date.now() + disabledDays * 86400000
-    })
-    getUserData(conn)
-  } catch (err) {
-    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
-    console.error(err) // tslint:disable-line:no-console
-  }
-}
-
-export const trainTroops = async (conn: Connection, troopType: string, amountToTrain: number) => {
-  try {
-    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
-    const user = userSnapshot.toJSON() as UserData
-    const currentTime = Date.now()
-    const timePassed = currentTime - user.timestamp
-    await db.ref(`users/${conn.id}`).update({
-      lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber) - troopsData[troopType].lumberCost,
-      iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron) - troopsData[troopType].ironCost,
-      clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay) - troopsData[troopType].clayCost,
-      wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) - troopsData[troopType].wheatCost,
-      timestamp: currentTime
-    })
-    await db.ref(`users/${conn.id}/troops`).update({[troopType]: user.troops[troopType] + amountToTrain})
-    getUserData(conn)
-  } catch (err) {
-    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
-    console.error(err) // tslint:disable-line:no-console
-  }
-}
-
-export const sendTroops = async (conn: Connection, target: string | null, troopsToSend: Troops, travelTime: number) => {
-  try {
-    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
-    const user = userSnapshot.toJSON() as UserData
-    let troopsLeftInTown: Troops = user.troops
-    for (const troopType in troopsLeftInTown) {
-      troopsLeftInTown[troopType] -= troopsToSend[troopType]
-    }
-    const currentTime = Date.now()
-    const timePassed = currentTime - user.timestamp
-    const troopsOnMove = user.troopsOnMove ? Object.values(user.troopsOnMove) : []
-    troopsOnMove.push({
-      headingBack: false,
-      target,
-      troops: troopsToSend,
-      travelTime,
-      arrivalTime: currentTime + travelTime
-    })
-    await db.ref(`users/${conn.id}`).update({
-      lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate, user.maxLumber),
-      iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron),
-      clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay),
-      wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat),
-      troops: troopsLeftInTown,
-      troopsOnMove: troopsOnMove,
-      timestamp: currentTime
-    })
-  } catch (err) {
-    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
-    console.error(err) // tslint:disable-line:no-console
-  }
-}
