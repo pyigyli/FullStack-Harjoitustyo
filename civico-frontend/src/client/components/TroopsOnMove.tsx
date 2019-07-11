@@ -32,6 +32,7 @@ const styles = () => createStyles({
 
 interface Props {
   troopsOnMove: DispatchedTroops[]
+  updatePage: () => void
 }
 
 interface State {
@@ -40,7 +41,14 @@ interface State {
 
 class TroopsOnMove extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {time: Date.now()}
-  public interval: NodeJS.Timeout = setInterval(() => this.setState({time: Date.now()}), 1000)
+  public interval: NodeJS.Timeout = setInterval(() => {
+    this.setState({time: Date.now()})
+    for (const index in this.props.troopsOnMove) {
+      if (this.props.troopsOnMove[index].arrivalTime - this.state.time <= 0) {
+        this.props.updatePage()
+      }
+    }
+  }, 1000)
 
   public componentWillUnmount() {
     clearInterval(this.interval)
@@ -57,43 +65,47 @@ class TroopsOnMove extends React.Component<Props & WithStyles<typeof styles>, St
           <div style={{marginBottom: '5px'}}>Dispatched troops</div>
           {attackingTroops.map((group, index: number) => {
             const timeUntilArrival = moment.duration(group.arrivalTime - this.state.time).asSeconds()
-            const hours = Math.floor(timeUntilArrival / 3600)
-            const minutes = Math.floor((timeUntilArrival - hours * 3600) / 60)
-            const seconds = Math.floor(timeUntilArrival - hours * 3600 - minutes * 60)
-            const hString = `${`${hours}`.length === 1 ? `0${hours}` : hours}`
-            const mString = `${`${minutes}`.length === 1 ? `0${minutes}` : minutes}`
-            const sString = `${`${seconds}`.length === 1 ? `0${seconds}` : seconds}`
-            return (
-              <div
-                key={index}
-                className={classes.infoBoxWrapper}
-                style={{justifyContent: 'space-between', flexDirection: 'column', marginLeft: '15px', marginRight: '15px', marginBottom: '10px'}}
-              >
-                <div style={{textAlign: 'left'}}>{group.target ? `Raiding ${group.target}` : 'Discovering field'}</div>
-                <div style={{textAlign: 'right'}}>{hString}.{mString}.{sString}</div>
-              </div>
-            )
+            if (timeUntilArrival >= 0) {
+              const hours = Math.floor(timeUntilArrival / 3600)
+              const minutes = Math.floor((timeUntilArrival - hours * 3600) / 60)
+              const seconds = Math.floor(timeUntilArrival - hours * 3600 - minutes * 60)
+              const hString = `${`${hours}`.length === 1 ? `0${hours}` : hours}`
+              const mString = `${`${minutes}`.length === 1 ? `0${minutes}` : minutes}`
+              const sString = `${`${seconds}`.length === 1 ? `0${seconds}` : seconds}`
+              return (
+                <div
+                  key={index}
+                  className={classes.infoBoxWrapper}
+                  style={{justifyContent: 'space-between', flexDirection: 'column', marginLeft: '15px', marginRight: '15px', marginBottom: '10px'}}
+                >
+                  <div style={{textAlign: 'left'}}>{group.target ? `Raiding ${group.target}` : 'Discovering field'}</div>
+                  <div style={{textAlign: 'right'}}>{hString}.{mString}.{sString}</div>
+                </div>
+              )
+            }
           })}
         </div>}
         {arrivingTroops.length > 0 && <div>
-          <div style={{marginBottom: '5px', marginTop: '10px'}}>Incoming troops</div>
+          <div style={{marginBottom: '5px', marginTop: attackingTroops.length > 0 ? '10px' : '0px'}}>Incoming troops</div>
           {arrivingTroops.map((group, index: number) => {
             const timeUntilArrival = moment.duration(group.arrivalTime - this.state.time).asSeconds()
-            const hours = Math.floor(timeUntilArrival / 3600)
-            const minutes = Math.floor((timeUntilArrival - hours * 3600) / 60)
-            const seconds = Math.floor(timeUntilArrival - hours * 3600 - minutes * 60)
-            const hString = `${`${hours}`.length === 1 ? `0${hours}` : hours}`
-            const mString = `${`${minutes}`.length === 1 ? `0${minutes}` : minutes}`
-            const sString = `${`${seconds}`.length === 1 ? `0${seconds}` : seconds}`
-            return (
-              <div
-                key={index}
-                className={classes.infoBoxWrapper}
-                style={{marginLeft: '15px', marginRight: '15px'}}
-              >
-                <span>Arriving in {hString}.{mString}.{sString}</span>
-              </div>
-            )
+            if (timeUntilArrival >= 0) {
+              const hours = Math.floor(timeUntilArrival / 3600)
+              const minutes = Math.floor((timeUntilArrival - hours * 3600) / 60)
+              const seconds = Math.floor(timeUntilArrival - hours * 3600 - minutes * 60)
+              const hString = `${`${hours}`.length === 1 ? `0${hours}` : hours}`
+              const mString = `${`${minutes}`.length === 1 ? `0${minutes}` : minutes}`
+              const sString = `${`${seconds}`.length === 1 ? `0${seconds}` : seconds}`
+              return (
+                <div
+                  key={index}
+                  className={classes.infoBoxWrapper}
+                  style={{marginLeft: '15px', marginRight: '15px'}}
+                >
+                  <span>Arriving in {hString}.{mString}.{sString}</span>
+                </div>
+              )
+            }
           })}
         </div>}
     </Paper>

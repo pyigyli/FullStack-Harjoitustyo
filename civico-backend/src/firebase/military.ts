@@ -2,6 +2,7 @@ import db from './init'
 import {UserData, troopsData, Troops, DispatchedTroops} from "../types/protocol"
 import Connection from "../connection"
 import {getUserData} from "./users"
+import {sendInboxMessage} from './inbox'
 
 export const togglePacifism = async (conn: Connection, pacifist: boolean, disabledDays: number) => {
   try {
@@ -64,36 +65,71 @@ export const sendTroops = async (conn: Connection, target: string | boolean, tro
       troopsOnMove: troopsOnMove,
       timestamp: currentTime
     })
+    getUserData(conn)
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console
   }
 }
 
-export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTroops) => {
+export const resultBattle = async (conn: Connection, username: string, troopsOnMove: DispatchedTroops) => {
   try {
-    let defencePower: number = Math.round(Math.random() * 100) + 100
+    const attackingTroops = {...troopsOnMove.troops}
+    let defendingTroops: Troops = {...troopsOnMove.troops}
     if (troopsOnMove.target) {
       const targetUserSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.target).once('value')
       const targetUser = targetUserSnapshot.toJSON() as UserData
-      const targetTroops = targetUser.troops
-      defencePower = Object.entries(targetTroops).reduce((value: number, entry) => value + troopsData[entry[0]].attack * entry[1], 0)
+      defendingTroops = targetUser.troops
+    } else {
+      let index: number = 0
+      for (const troopType in troopsOnMove.troops) {
+        const randomTroopTypeAmount = 10 - index * 2 + Math.floor(Math.random() * 50) - index * 5
+        defendingTroops[troopType] = randomTroopTypeAmount > 0 ? randomTroopTypeAmount : 0
+        index++
+      }
     }
-    const attackPower = Object.entries(troopsOnMove.troops).reduce((value: number, entry) => value + troopsData[entry[0]].attack * entry[1], 0)
-    const emptyTroops = troopsOnMove.troops
-    for (const troopType in emptyTroops) {
-      emptyTroops[troopType] = 0
+    const survivingAttackers = {...troopsOnMove.troops}
+    const survivingDefenders = {...troopsOnMove.troops}
+    for (const troopType in troopsOnMove.troops) {
+      survivingAttackers[troopType] = 0
+      survivingDefenders[troopType] = 0
     }
-    if (attackPower > defencePower) {
+    let filteredAttackers: [string, number][] = Object.entries(attackingTroops).filter(entry => entry[1] > 0)
+    let filteredDefenders: [string, number][] = Object.entries(defendingTroops).filter(entry => entry[1] > 0)
+    const attackPower  = filteredAttackers.reduce((value: number, entry) => value + troopsData[entry[0]].attack  * entry[1], 0)
+    const defencePower = filteredDefenders.reduce((value: number, entry) => value + troopsData[entry[0]].defence * entry[1], 0)
+    while (filteredAttackers.length > 0 && filteredDefenders.length > 0) {
+      let randomAttackSoldier = Math.ceil(Math.random() * (filteredAttackers.length - 1))
+      let randomDefendSoldier = Math.ceil(Math.random() * (filteredDefenders.length - 1))
+      defendingTroops[filteredDefenders[randomDefendSoldier][0]]--
+      attackingTroops[filteredAttackers[randomAttackSoldier][0]]--
+      const soldiersAttack  = attackPower  / Math.random() * troopsData[filteredAttackers[randomAttackSoldier][0]].attack
+      const soldiersDefence = defencePower / Math.random() * troopsData[filteredDefenders[randomDefendSoldier][0]].defence
+      if (soldiersAttack > soldiersDefence) {
+        survivingAttackers[filteredAttackers[randomAttackSoldier][0]]++
+      } else if (soldiersAttack < soldiersDefence) {
+        survivingDefenders[filteredDefenders[randomDefendSoldier][0]]++
+      }
+      filteredAttackers = Object.entries(attackingTroops).filter(entry => entry[1] > 0)
+      filteredDefenders = Object.entries(defendingTroops).filter(entry => entry[1] > 0)
+    }
+    sendInboxMessage(conn, {
+      sender: 'Battle report',
+      title: `Your troops fought against ${troopsOnMove.target || 'the forces of nature'}`,
+      receiver: username,
+      message: Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} send, ${entry[1]} returned.`),
+      date: Date.now(),
+      unread: false
+    })
+    if (Object.values(survivingAttackers).filter(soldierAmount => soldierAmount > 0).length > 0) {
       return {
         headingBack: true,
         target: troopsOnMove.target || false,
-        troops: emptyTroops,
+        troops: survivingAttackers,
         travelTime: troopsOnMove.travelTime,
-        arrivalTime: Date.now() + troopsOnMove.travelTime
+        arrivalTime: troopsOnMove.arrivalTime + troopsOnMove.travelTime
       }
     }
-    return 'LOST'
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console

@@ -322,8 +322,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         sender: username,
         title,
         receiver,
-        message: messageContent,
-        date: new Date(),
+        message: messageContent.split('\n'),
+        date: Date.now(),
         unread: true
       }
       const message: SendInboxMessage = {type: 'SEND_INBOX', token, inboxMessage}
@@ -436,6 +436,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             fields={fields}
             troops={troops}
             troopsOnMove={troopsOnMove}
+            updatePage={this.handleGetUserData}
             onFieldLevelUp={this.handleFieldLevelUp}
             onSendTroops={this.handleSendTroops}
           /> : <LoginScene onSubmit={this.handleLogin}/>

@@ -216,6 +216,7 @@ export interface SendTroopsMessage extends MessageBase {
 }
 
 export interface UserData {
+  username: string
   population: number
   lumber: number
   iron: number
@@ -274,8 +275,8 @@ export interface InboxMessage {
   sender: string
   title: string
   receiver: string
-  message: string
-  date: Date
+  message: string[]
+  date: number
   unread: boolean
 }
 
@@ -459,16 +460,6 @@ export const troopsData = {
 }
 
 export const townExpansionData = {
-  first: {
-    lumberCost: 10,
-    ironCost: 10,
-    clayCost: 10,
-    wheatCost: 10
-  },
-  second: {
-    lumberCost: 10,
-    ironCost: 10,
-    clayCost: 10,
-    wheatCost: 10
-  }
+  first:  {lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10},
+  second: {lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10}
 }

@@ -112,22 +112,26 @@ export const getUserData = async (conn: Connection) => {
         Object.values(row).forEach((slot: GridSlot) => rowToPush.push(slot))
         buildings.push(rowToPush)
       })
-      let troopsOnMove: DispatchedTroops[] = Object.values(user.troopsOnMove)
-      await troopsOnMove.forEach(async (group: DispatchedTroops, index: number) => {
-        if (group.arrivalTime - Date.now() < 0) {
-          if (group.headingBack) {
-
-          } else {
-            const returningGroup = await resultBattle(conn, group)
-            if (returningGroup === 'LOST') {
-              troopsOnMove = troopsOnMove.filter((matchGroup: DispatchedTroops) => matchGroup !== group)
-            } else if (returningGroup) {
-              troopsOnMove[index] = returningGroup
+      const troops = {...user.troops}
+      let troopsOnMove: DispatchedTroops[] = []
+      if (user.troopsOnMove) {
+        await Object.values(user.troopsOnMove).forEach(async (group: DispatchedTroops) => {
+          if (group.arrivalTime - Date.now() < 0 && !group.headingBack) {
+            const returningGroup = await resultBattle(conn, user.username, group)
+            if (returningGroup) {
+              troopsOnMove.push(returningGroup)
+            }
+          } else if (group.arrivalTime - Date.now() > 0) (
+            troopsOnMove.push(group)
+          )
+          if (group.arrivalTime - Date.now() < 0 && group.headingBack) {
+            for (const troopType in group.troops) {
+              troops[troopType] += group.troops[troopType] as number
             }
           }
-        }
-      })
-      await db.ref(`users/${conn.id}/troopsOnMove`).set(troopsOnMove)
+        })
+        db.ref(`users/${conn.id}`).update({troops, troopsOnMove})
+      }
       const timePassed = Date.now() - user.timestamp
       conn.sendMessage({
         type: 'SEND_DATA',
@@ -140,7 +144,8 @@ export const getUserData = async (conn: Connection) => {
         buildings,
         mapCoordinates: Object.values(user.mapCoordinates),
         inbox: user.inbox ? Object.values(user.inbox) : [],
-        troopsOnMove: user.troopsOnMove ? troopsOnMove : []
+        troops,
+        troopsOnMove
       })
     }
   } catch (err) {

@@ -211,7 +211,7 @@ interface State {
 class InboxScene extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {
     readMessageOpen: false,
-    selectedMessage: {sender: '', title: '', receiver: '', message: '', date: new Date(), unread: false},
+    selectedMessage: {sender: '', title: '', receiver: '', message: [''], date: Date.now(), unread: false},
     title: '',
     receiver: '',
     messageDraft: '',
@@ -236,14 +236,14 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
   public handleCloseReadMessage = () => {
     this.setState({
       readMessageOpen: false,
-      selectedMessage: {sender: '', title: '', receiver: '', message: '', date: new Date(), unread: false}
+      selectedMessage: {sender: '', title: '', receiver: '', message: [''], date: Date.now(), unread: false}
     })
   }
 
   public handleOpenReply = () => {
     this.setState({
       readMessageOpen: false,
-      selectedMessage: {sender: '', title: '', receiver: '', message: '', date: new Date(), unread: false},
+      selectedMessage: {sender: '', title: '', receiver: '', message: [''], date: Date.now(), unread: false},
       messageDraftOpen: true,
       title: `Re: ${this.state.selectedMessage.title}`,
       receiver: this.state.selectedMessage.sender
@@ -343,7 +343,9 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
             <div>{selectedMessage.title}</div>
           </DialogTitle>
           <DialogContent>
-            <DialogContentText style={{wordWrap: 'break-word'}}>{selectedMessage.message}</DialogContentText>
+            <DialogContentText style={{wordWrap: 'break-word'}}>
+              {Object.values(selectedMessage.message).map((line: string, index: number) => <p key={index}>{line}</p> )}
+            </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseReadMessage}>Close</Button>

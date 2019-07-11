@@ -92,6 +92,7 @@ interface Props {
   fields: GridSlot[][]
   troops: Troops
   troopsOnMove: DispatchedTroops[]
+  updatePage: () => void
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
   onSendTroops: (target: boolean, troopsToSend: Troops, travelTime: number) => void
 }
@@ -124,8 +125,11 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
   }
 
   public handleSendTroops = () => {
-    this.props.onSendTroops(false, this.state.troopsToSendValues, 600000)
-    this.setState({openDiscoverMenu: false})
+    this.props.onSendTroops(false, this.state.troopsToSendValues, 5000)
+    this.setState({
+      openDiscoverMenu: false,
+      troopsToSendValues: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0}
+    })
   }
 
   public render() {
@@ -142,6 +146,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
       wheatRate,
       fields,
       troopsOnMove,
+      updatePage,
       onFieldLevelUp
     } = this.props
     const {openDiscoverMenu, troopsToSendValues} = this.state
@@ -177,7 +182,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
             </div>
           )}
         </Paper>}
-        {troopsOnMove.length > 0 && <TroopsOnMove troopsOnMove={troopsOnMove}/>}
+        {troopsOnMove.length > 0 && <TroopsOnMove troopsOnMove={troopsOnMove} updatePage={updatePage}/>}
         <FieldGrid
           lumber={lumber}
           iron={iron}
