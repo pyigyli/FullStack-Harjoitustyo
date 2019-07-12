@@ -37,6 +37,7 @@ const styles = () => createStyles({
 interface Props {
   token: string
   username: string
+  unreadMessages: boolean
   onLogout: () => void
   onGetUserData: () => void
 }
@@ -48,7 +49,7 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
   }
 
   public render() {
-    const {classes, history, location, token, username, onLogout} = this.props
+    const {classes, history, location, token, username, unreadMessages, onLogout} = this.props
     let tabValue: number | boolean = false
     switch (location.pathname) {
       case '/login':
@@ -78,7 +79,10 @@ class Header extends React.Component<Props & RouteComponentProps & WithStyles<ty
             <Tab icon={<FieldsIcon/>} label='FIELDS' onClick={() => this.props.history.push('/fields')}/>
             <Tab icon={<TownIcon/>}   label='TOWN'   onClick={() => this.props.history.push('/town')}/>
             <Tab icon={<MapIcon/>}    label='MAP'    onClick={() => this.props.history.push('/map')}/>
-            <Tab icon={<InboxIcon/>}  label='INBOX'  onClick={() => this.props.history.push('/inbox')}/>
+            <Tab
+              icon={<InboxIcon color={unreadMessages ? 'secondary' : undefined}/>}
+              label='INBOX'
+              onClick={() => this.props.history.push('/inbox')}/>
             <Tab
               icon={<div className={classes.logoutIcon}>{username}</div>}
               label='LOGOUT'

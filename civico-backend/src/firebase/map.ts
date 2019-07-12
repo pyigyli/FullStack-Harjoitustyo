@@ -13,8 +13,8 @@ export const getMap = async (conn: Connection) => {
     }
     const mapSnapshot = await db.ref('map').once('value')
     const slots = mapSnapshot.toJSON() as Object
-    Object.entries(slots).forEach((entry: any[]) => {
-      map[entry[0]][Object.keys(entry[1])[0]] = Object.values(entry[1])[0] as string
+    Object.entries(slots).forEach(entry => {
+      map[entry[0]][Object.keys(entry[1])[0]] = Object.values(entry[1])[0]
     })
     conn.sendMessage({type: 'SEND_MAP', map})
   } catch (err) {

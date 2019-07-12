@@ -357,7 +357,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public handleSendTroops = (target: string | boolean, troopsToSend: Troops, travelTime: number) => {
+  public handleSendTroops = (target: string | false, troopsToSend: Troops, travelTime: number) => {
     const {connection, token} = this.state
     if (connection && token) {
       const message: SendTroopsMessage = {type: 'SEND_TROOPS', token, target, troopsToSend, travelTime}
@@ -402,6 +402,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         <Header
           token={token}
           username={username}
+          unreadMessages={Object.values(inbox).filter((message: InboxMessage) => message.unread).length > 0}
           onLogout={this.handleLogout}
           onGetUserData={this.handleGetUserData}
         />

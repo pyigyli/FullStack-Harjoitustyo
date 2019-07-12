@@ -94,7 +94,7 @@ interface Props {
   troopsOnMove: DispatchedTroops[]
   updatePage: () => void
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
-  onSendTroops: (target: boolean, troopsToSend: Troops, travelTime: number) => void
+  onSendTroops: (target: false, troopsToSend: Troops, travelTime: number) => void
 }
 
 interface State {

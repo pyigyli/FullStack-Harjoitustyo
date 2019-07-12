@@ -1,5 +1,5 @@
 import React from 'react'
-import {createStyles, withStyles, WithStyles, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Checkbox, TextField} from '@material-ui/core'
+import {createStyles, withStyles, WithStyles, Dialog, DialogTitle, DialogContent, DialogActions, Button, Checkbox, TextField} from '@material-ui/core'
 import {InboxMessage} from '../../types/protocol'
 import moment from 'moment'
 
@@ -275,7 +275,7 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
   public handleCloseDeleteMessages = () => this.setState({deleteMessagesOpen: false})
 
   public handleDeleteMessages = () => {
-    const newMessageList = this.props.messages.filter((message, index: number) => !this.state.checkboxes.includes(index))
+    const newMessageList = this.props.messages.filter((_, index: number) => !this.state.checkboxes.includes(index))
     this.props.onDeleteMessages(newMessageList)
     this.setState({checkboxes: [], deleteMessagesOpen: false})
   }
@@ -292,7 +292,9 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
       <div className={classes.sceneWrapper}>
         <div className={classes.mapButtonsContainer}>
           <Button className={`${classes.button} ${classes.container}`} onClick={this.handleOpenDraftMessage}>New Message</Button>
-          <Button className={`${classes.button} ${classes.container}`} onClick={this.handleSelectAll}>Select all</Button>
+          <Button className={`${classes.button} ${classes.container}`} onClick={this.handleSelectAll}>
+            {checkboxes.length === messages.length ? 'Unselect all' : 'Select all'}
+          </Button>
           <Button
             className={`${classes.button} ${classes.container}`}
             onClick={() => onSetMessagesToRead(checkboxes)}
@@ -342,14 +344,12 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
             <div>Send by: {selectedMessage.sender}</div>
             <div>{selectedMessage.title}</div>
           </DialogTitle>
-          <DialogContent>
-            <DialogContentText style={{wordWrap: 'break-word'}}>
-              {Object.values(selectedMessage.message).map((line: string, index: number) => <p key={index}>{line}</p> )}
-            </DialogContentText>
+          <DialogContent style={{wordWrap: 'break-word'}}>
+            {Object.values(selectedMessage.message).map((line: string, index: number) => <p key={index}>{line}<br/></p>)}
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseReadMessage}>Close</Button>
-            <Button className={classes.button} onClick={this.handleOpenReply} disabled={false}>Reply</Button>
+            <Button className={classes.button} onClick={this.handleOpenReply} disabled={selectedMessage.sender === '-'}>Reply</Button>
           </DialogActions>
         </Dialog>}
         <Dialog open={messageDraftOpen} onClose={this.handleCloseDraftMessage}>

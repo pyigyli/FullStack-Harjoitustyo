@@ -38,4 +38,5 @@
 | 7.7.   | 5    | - Joukkojen lähettäminen toteutettu.<br> - Joukkojen takaisin kääntyminen perille pääsemisen jälkeen osittain toteutettu.<br> - Matkalla olevat joukot nähtävillä kenttänäkymässä. |
 | 8.7.   | 3    | - Lähetetyt joukot osaavat voiton jälkeen kääntyä takaisin kotikylään.<br> - Lähetetyt joukot osaavat häviön jälkeen kuolla.<br> - Kahden eri kylän joukkojen sotiminen toteutettu. |
 | 11.7.  | 7    | - Lähetetyt joukot osaavat taistelusta selvittyään saapua takaisin kotikylään.<br> - Taistelun pelilogiikkaa toteutettu.<br> - Hyökkääjän viestilaatikkoon lähetetään raportti taistelusta, kun taistelu on tapahtunut. |
-| Yhteensä | 173    |
+| 12.7.  | 5    | - Lukemattomat viestit näkyvät yläpalkissa.<br> - Rivinvaihto viesteissä korjattu.<br> - Toisen pelaajan kylään hyökkääminen toteutettu. |
+| Yhteensä | 178    |

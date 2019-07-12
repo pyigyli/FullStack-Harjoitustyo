@@ -1,6 +1,6 @@
 import React from 'react'
-import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
-import {Troops} from '../../types/protocol'
+import {createStyles, withStyles, WithStyles, Paper, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, TextField} from '@material-ui/core'
+import {Troops, troopsData} from '../../types/protocol'
 
 const styles = () => createStyles({
   root: {
@@ -78,6 +78,18 @@ const styles = () => createStyles({
     marginLeft: '15px',
     marginRight: '15px',
     marginBottom: '5px'
+  },
+  infoBoxWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around'
+  },
+  textfield: {
+    borderColor: '#321432 !important',
+    color: '#321432 !important',
+    '&:after': {
+      borderColor: '#321432 !important'
+    }
   }
 })
 
@@ -89,6 +101,7 @@ interface Props {
   selectedMapSlotData: {username: string, population: number}
   troops: Troops
   onGetMapSlot: (username: string) => void
+  onSendTroops: (target: string, troopsToSend: Troops, travelTime: number) => void
 }
 
 interface State {
@@ -98,10 +111,21 @@ interface State {
   mapMenuOpen: boolean
   selectedX: number
   selectedY: number
+  openSendTroopsMenu: boolean
+  troopsToSendValues: Troops
 }
 
 class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
-  public state = {width: 80, height: 80, margin: 3, mapMenuOpen: false, selectedX: 0, selectedY: 0}
+  public state = {
+    width: 80,
+    height: 80,
+    margin: 3,
+    mapMenuOpen: false,
+    selectedX: 0,
+    selectedY: 0,
+    openSendTroopsMenu: false,
+    troopsToSendValues: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0}
+  }
 
   public handleOpenMapSlot = (selectedX: number, selectedY: number) => {
     if (this.props.map[selectedX][selectedY]) {
@@ -112,10 +136,37 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
 
   public handleCloseMapSlot = () => this.setState({mapMenuOpen: false})
 
-  public render() {
+  public handleOpenSendTroopsMenu = () => this.setState({mapMenuOpen: false, openSendTroopsMenu: true})
 
-    const {classes, map, x, y, selectedMapSlotData, troops} = this.props
-    const {width, height, margin, mapMenuOpen, selectedX, selectedY} = this.state
+  public handleCloseSendTroopsMenu = () => this.setState({mapMenuOpen: true, openSendTroopsMenu: false})
+
+  public handleTroopsToSendAmountChange = (troopType: string, newValue: number) => {
+    newValue = newValue >= 0 ? newValue : 0
+    newValue = newValue <= this.props.troops[troopType] ? newValue : this.props.troops[troopType]
+    this.setState({troopsToSendValues: {...this.state.troopsToSendValues, [troopType]: newValue}})
+  }
+
+  public handleSendTroops = () => {
+    const distanceX = Math.abs(this.props.selfCoordinates[0] - this.props.x)
+    const distanceY = Math.abs(this.props.selfCoordinates[1] - this.props.y)
+    const distanceOfTowns = Math.sqrt(
+      (distanceX > 250 ? 500 - distanceX : distanceX) ** 2 +
+      (distanceY > 250 ? 500 - distanceY : distanceY) ** 2
+    )
+    const travelSpeed = troopsData[Object.entries(this.state.troopsToSendValues).reduce((value, next) => 
+      next[1] > 0 && troopsData[next[0]].speed < troopsData[value[0]].speed ? next : value
+    )[0]].speed
+    this.props.onSendTroops(this.props.selectedMapSlotData.username, this.state.troopsToSendValues, travelSpeed / distanceOfTowns * 3600000)
+    this.setState({
+      openSendTroopsMenu: false,
+      troopsToSendValues: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0}
+    })
+  }
+
+  public render() {
+    const {classes, map, x, y, selectedMapSlotData} = this.props
+    const {width, height, margin, mapMenuOpen, selectedX, selectedY, openSendTroopsMenu, troopsToSendValues} = this.state
+    const troops = Object.entries(this.props.troops).filter(entry => entry[1] !== 0)
 
     if (map.length < 500) {
       return (
@@ -214,8 +265,39 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
             <Button className={classes.button} onClick={this.handleCloseMapSlot}>Cancel</Button>
             <Button
               className={classes.button}
-              onClick={this.handleCloseMapSlot}
-              disabled={Object.values(troops).filter((value: number) => value !== 0).length === 0}
+              onClick={this.handleOpenSendTroopsMenu}
+              disabled={troops.length === 0}
+            >
+              Send
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog open={openSendTroopsMenu} onClose={this.handleCloseSendTroopsMenu}>
+          <DialogTitle>Send your troops to raid the town of {selectedMapSlotData.username}</DialogTitle>
+          <DialogContent>
+            <DialogContentText>Send your troops to fight and steal resources from other player's town.</DialogContentText>
+            {troops.map((entry, index: number) => 
+              <div key={index} className={classes.infoBoxWrapper}>
+                <div style={{fontWeight: 'bold', width: '130px'}}>{entry[0]}:</div>
+                <div style={{marginRight: '10px'}}>{entry[1]} unit{entry[1] === 1 ? '' : 's'} available.</div>
+                <div style={{marginRight: '10px'}}>Select for sending:</div>
+                <TextField
+                  type='number'
+                  value={troopsToSendValues[entry[0]]}
+                  onChange={({target}) => this.handleTroopsToSendAmountChange(entry[0], parseInt(target.value, 10))}
+                  style={{width: '100px', bottom: '5px'}}
+                  InputProps={{classes: {root: classes.textfield}}}
+                  InputLabelProps={{classes: {root: classes.textfield}}}
+                />
+              </div>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button className={classes.button} onClick={this.handleCloseSendTroopsMenu}>Cancel</Button>
+            <Button
+              className={classes.button}
+              onClick={this.handleSendTroops}
+              disabled={troops.length === 0 && Object.values(troopsToSendValues).filter((value: number) => value !== 0).length > 0}
             >
               Send
             </Button>

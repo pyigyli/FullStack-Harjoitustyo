@@ -38,7 +38,7 @@ export const trainTroops = async (conn: Connection, troopType: string, amountToT
   }
 }
 
-export const sendTroops = async (conn: Connection, target: string | boolean, troopsToSend: Troops, travelTime: number) => {
+export const sendTroops = async (conn: Connection, target: string | false, troopsToSend: Troops, travelTime: number) => {
   try {
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user = userSnapshot.toJSON() as UserData
@@ -76,10 +76,12 @@ export const resultBattle = async (conn: Connection, username: string, troopsOnM
   try {
     const attackingTroops = {...troopsOnMove.troops}
     let defendingTroops: Troops = {...troopsOnMove.troops}
+    let targetUserSnapshot: firebase.database.DataSnapshot
+    let targetUser: UserData
     if (troopsOnMove.target) {
-      const targetUserSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.target).once('value')
-      const targetUser = targetUserSnapshot.toJSON() as UserData
-      defendingTroops = targetUser.troops
+      targetUserSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.target).once('value')
+      targetUser = Object.values(targetUserSnapshot.toJSON() as Object)[0]
+      defendingTroops = {...targetUser.troops}
     } else {
       let index: number = 0
       for (const troopType in troopsOnMove.troops) {
@@ -113,18 +115,37 @@ export const resultBattle = async (conn: Connection, username: string, troopsOnM
       filteredAttackers = Object.entries(attackingTroops).filter(entry => entry[1] > 0)
       filteredDefenders = Object.entries(defendingTroops).filter(entry => entry[1] > 0)
     }
+    const date = Date.now()
     sendInboxMessage(conn, {
-      sender: 'Battle report',
+      sender: '-',
       title: `Your troops fought against ${troopsOnMove.target || 'the forces of nature'}`,
       receiver: username,
-      message: Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} send, ${entry[1]} returned.`),
-      date: Date.now(),
-      unread: false
+      message: troopsOnMove.target ? [
+        ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} send, ${entry[1]} returned.`),
+        ' ',
+        ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUser.troops[entry[0]]} stood, ${entry[1]} fell.`)
+      ] : Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} send, ${entry[1]} returned.`),
+      date,
+      unread: true
     })
+    if (troopsOnMove.target) {
+      sendInboxMessage(conn, {
+        sender: '-',
+        title: `Your town was attacked by ${username}`,
+        receiver: troopsOnMove.target,
+        message: [
+          ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} send, ${entry[1]} returned.`),
+          ' ',
+          ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUser.troops[entry[0]]} stood, ${entry[1]} fell.`)
+        ],
+        date,
+        unread: true
+      })
+    }
     if (Object.values(survivingAttackers).filter(soldierAmount => soldierAmount > 0).length > 0) {
       return {
         headingBack: true,
-        target: troopsOnMove.target || false,
+        target: troopsOnMove.target || false as false,
         troops: survivingAttackers,
         travelTime: troopsOnMove.travelTime,
         arrivalTime: troopsOnMove.arrivalTime + troopsOnMove.travelTime

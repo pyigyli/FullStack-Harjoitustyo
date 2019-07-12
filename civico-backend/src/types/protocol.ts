@@ -210,7 +210,7 @@ export interface TrainTroopsMessage extends MessageBase {
 export interface SendTroopsMessage extends MessageBase {
   type: 'SEND_TROOPS'
   token: string
-  target: string | boolean
+  target: string | false
   troopsToSend: Troops
   travelTime: number
 }
@@ -291,7 +291,7 @@ export interface Troops {
 
 export interface DispatchedTroops {
   headingBack: boolean
-  target: string | boolean
+  target: string | false
   troops: Troops
   travelTime: number
   arrivalTime: number

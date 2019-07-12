@@ -1,7 +1,7 @@
 import React from 'react'
 import {createStyles, withStyles, WithStyles, TextField, Button, InputAdornment} from '@material-ui/core'
 import MapGrid from '../components/MapGrid'
-import {Troops, troopsData} from '../../types/protocol'
+import {Troops} from '../../types/protocol'
 
 const styles = () => createStyles({
   sceneWrapper: {
@@ -87,19 +87,8 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
 
   public setNewMapCoordinates = () => this.setState({mapCoordinates: [this.state.newX, this.state.newY]})
 
-  public handleSendTroops = () => {
-    const distanceOfTowns = Math.sqrt(
-      ((this.props.selfCoordinates[0] - this.state.mapCoordinates[0]) % 250) ** 2 +
-      ((this.props.selfCoordinates[1] - this.state.mapCoordinates[1]) % 250) ** 2
-    )
-    const travelSpeed = troopsData[Object.entries(this.state.troopsToSendValues).reduce((value, next) => 
-      next[1] > 0 && troopsData[next[0]].speed < troopsData[value[0]].speed ? next : value
-    )[0]].speed
-    this.props.onSendTroops(this.props.selectedMapSlotData.username, this.state.troopsToSendValues, travelSpeed / distanceOfTowns * 3600000)
-  }
-
   public render() {
-    const {classes, map, selfCoordinates, selectedMapSlotData, troops, onGetMapSlot} = this.props
+    const {classes, map, selfCoordinates, selectedMapSlotData, troops, onGetMapSlot, onSendTroops} = this.props
     const {mapCoordinates, newX, newY} = this.state
 
     return (
@@ -141,6 +130,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
           selectedMapSlotData={selectedMapSlotData}
           troops={troops}
           onGetMapSlot={onGetMapSlot}
+          onSendTroops={onSendTroops}
         />
       </div>
     )
