@@ -210,13 +210,13 @@ export interface TrainTroopsMessage extends MessageBase {
 export interface SendTroopsMessage extends MessageBase {
   type: 'SEND_TROOPS'
   token: string
+  sender: string
   target: string | false
   troopsToSend: Troops
   travelTime: number
 }
 
 export interface UserData {
-  username: string
   population: number
   lumber: number
   iron: number
@@ -290,9 +290,10 @@ export interface Troops {
 }
 
 export interface DispatchedTroops {
-  headingBack: boolean
+  sender: string
   target: string | false
   troops: Troops
+  headingBack: boolean
   travelTime: number
   arrivalTime: number
 }

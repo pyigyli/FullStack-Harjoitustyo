@@ -97,8 +97,8 @@ export const logout = async (conn: Connection) => {
 
 export const getUserData = async (conn: Connection) => {
   try {
-    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
-    const user = userSnapshot.toJSON() as UserData
+    let userSnapshot: firebase.database.DataSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    let user: UserData = userSnapshot.toJSON() as UserData
     if (user) {
       const fields: GridSlot[][] = []
       Object.values(user.fields).forEach((row: any[]) => {
@@ -115,22 +115,15 @@ export const getUserData = async (conn: Connection) => {
       const troops = {...user.troops}
       let troopsOnMove: DispatchedTroops[] = []
       if (user.troopsOnMove) {
-        await Object.values(user.troopsOnMove).forEach(async (group: DispatchedTroops) => {
-          if (group.arrivalTime - Date.now() < 0 && !group.headingBack) {
-            const returningGroup = await resultBattle(conn, user.username, group)
-            if (returningGroup) {
-              troopsOnMove.push(returningGroup)
-            }
-          } else if (group.arrivalTime - Date.now() > 0) (
-            troopsOnMove.push(group)
-          )
-          if (group.arrivalTime - Date.now() < 0 && group.headingBack) {
-            for (const troopType in group.troops) {
-              troops[troopType] += group.troops[troopType] as number
-            }
+        for (const group in user.troopsOnMove) {
+          if (user.troopsOnMove[group].arrivalTime - Date.now() < 0 && !user.troopsOnMove[group].headingBack) {
+            await resultBattle(conn, user.troopsOnMove[group])
           }
-        })
-        db.ref(`users/${conn.id}`).update({troops, troopsOnMove})
+        }
+        userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+        user = userSnapshot.toJSON() as UserData
+        const troops = user.troopsOnMove ? Object.values(user.troopsOnMove) : []
+        troopsOnMove = troops.filter((group: DispatchedTroops) => group.arrivalTime - Date.now() >= 0 || !group.headingBack)
       }
       const timePassed = Date.now() - user.timestamp
       conn.sendMessage({

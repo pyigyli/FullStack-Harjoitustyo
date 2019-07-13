@@ -360,7 +360,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public handleSendTroops = (target: string | false, troopsToSend: Troops, travelTime: number) => {
     const {connection, token} = this.state
     if (connection && token) {
-      const message: SendTroopsMessage = {type: 'SEND_TROOPS', token, target, troopsToSend, travelTime}
+      const message: SendTroopsMessage = {type: 'SEND_TROOPS', token, sender: this.state.username, target, troopsToSend, travelTime}
       connection.send(JSON.stringify(message))
     }
   }
@@ -425,6 +425,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         }/>
         <Route exact path='/fields' render={() =>
           token ? <FieldsScene
+            username={username}
             population={population}
             lumber={lumber}
             iron={iron}

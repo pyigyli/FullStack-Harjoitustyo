@@ -80,6 +80,7 @@ const styles = () => createStyles({
 })
 
 interface Props {
+  username: string
   population: number
   lumber: number
   iron: number
@@ -135,6 +136,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
   public render() {
     const {
       classes,
+      username,
       population,
       lumber,
       iron,
@@ -182,7 +184,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
             </div>
           )}
         </Paper>}
-        {troopsOnMove.length > 0 && <TroopsOnMove troopsOnMove={troopsOnMove} updatePage={updatePage}/>}
+        {troopsOnMove.length > 0 && <TroopsOnMove username={username} troopsOnMove={troopsOnMove} updatePage={updatePage}/>}
         <FieldGrid
           lumber={lumber}
           iron={iron}

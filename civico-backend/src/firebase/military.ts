@@ -2,7 +2,6 @@ import db from './init'
 import {UserData, troopsData, Troops, DispatchedTroops} from "../types/protocol"
 import Connection from "../connection"
 import {getUserData} from "./users"
-import {sendInboxMessage} from './inbox'
 
 export const togglePacifism = async (conn: Connection, pacifist: boolean, disabledDays: number) => {
   try {
@@ -38,7 +37,7 @@ export const trainTroops = async (conn: Connection, troopType: string, amountToT
   }
 }
 
-export const sendTroops = async (conn: Connection, target: string | false, troopsToSend: Troops, travelTime: number) => {
+export const sendTroops = async (conn: Connection, sender: string, target: string | false, troopsToSend: Troops, travelTime: number) => {
   try {
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user = userSnapshot.toJSON() as UserData
@@ -50,9 +49,10 @@ export const sendTroops = async (conn: Connection, target: string | false, troop
     const timePassed = currentTime - user.timestamp
     const troopsOnMove = user.troopsOnMove ? Object.values(user.troopsOnMove) : []
     troopsOnMove.push({
-      headingBack: false,
+      sender,
       target,
       troops: troopsToSend,
+      headingBack: false,
       travelTime,
       arrivalTime: currentTime + travelTime
     })
@@ -66,17 +66,34 @@ export const sendTroops = async (conn: Connection, target: string | false, troop
       timestamp: currentTime
     })
     getUserData(conn)
+    if (target) {
+      const targetUserSnapshot = await db.ref('users').orderByChild('username').equalTo(target).once('value')
+      const targetUserEntry = Object.entries(targetUserSnapshot.toJSON() as Object)[0]
+      await db.ref(`users/${targetUserEntry[0]}`).update({
+        troopsOnMove: [
+          ...targetUserEntry[1].troopsOnMove ? Object.values(targetUserEntry[1].troopsOnMove) : [],
+          {
+            sender,
+            target,
+            troops: troopsToSend,
+            headingBack: false,
+            travelTime,
+            arrivalTime: currentTime + travelTime
+          }
+        ]
+      })
+    }
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console
   }
 }
 
-export const resultBattle = async (conn: Connection, username: string, troopsOnMove: DispatchedTroops) => {
+export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTroops) => {
   try {
     const attackingTroops = {...troopsOnMove.troops}
     let defendingTroops: Troops = {...troopsOnMove.troops}
-    let targetUserSnapshot: firebase.database.DataSnapshot
+    let targetUserSnapshot: firebase.database.DataSnapshot | undefined = undefined
     let targetUser: UserData
     if (troopsOnMove.target) {
       targetUserSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.target).once('value')
@@ -103,8 +120,8 @@ export const resultBattle = async (conn: Connection, username: string, troopsOnM
     while (filteredAttackers.length > 0 && filteredDefenders.length > 0) {
       let randomAttackSoldier = Math.ceil(Math.random() * (filteredAttackers.length - 1))
       let randomDefendSoldier = Math.ceil(Math.random() * (filteredDefenders.length - 1))
-      defendingTroops[filteredDefenders[randomDefendSoldier][0]]--
       attackingTroops[filteredAttackers[randomAttackSoldier][0]]--
+      defendingTroops[filteredDefenders[randomDefendSoldier][0]]--
       const soldiersAttack  = attackPower  / Math.random() * troopsData[filteredAttackers[randomAttackSoldier][0]].attack
       const soldiersDefence = defencePower / Math.random() * troopsData[filteredDefenders[randomDefendSoldier][0]].defence
       if (soldiersAttack > soldiersDefence) {
@@ -115,45 +132,83 @@ export const resultBattle = async (conn: Connection, username: string, troopsOnM
       filteredAttackers = Object.entries(attackingTroops).filter(entry => entry[1] > 0)
       filteredDefenders = Object.entries(defendingTroops).filter(entry => entry[1] > 0)
     }
+    for (const troopType in troopsOnMove.troops) {
+      survivingAttackers[troopType] += attackingTroops[troopType]
+      survivingDefenders[troopType] += defendingTroops[troopType]
+    }
+    const userSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.sender).once('value')
+    const userEntry = Object.entries(userSnapshot.toJSON() as Object)[0]
+    const newUserTroopsOnMove = userEntry[1].troopsOnMove ? Object.values(userEntry[1].troopsOnMove).filter(group => group !== troopsOnMove) : []
     const date = Date.now()
-    sendInboxMessage(conn, {
-      sender: '-',
-      title: `Your troops fought against ${troopsOnMove.target || 'the forces of nature'}`,
-      receiver: username,
-      message: troopsOnMove.target ? [
-        ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} send, ${entry[1]} returned.`),
-        ' ',
-        ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUser.troops[entry[0]]} stood, ${entry[1]} fell.`)
-      ] : Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} send, ${entry[1]} returned.`),
-      date,
-      unread: true
-    })
-    if (troopsOnMove.target) {
-      sendInboxMessage(conn, {
-        sender: '-',
-        title: `Your town was attacked by ${username}`,
-        receiver: troopsOnMove.target,
-        message: [
-          ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} send, ${entry[1]} returned.`),
-          ' ',
-          ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUser.troops[entry[0]]} stood, ${entry[1]} fell.`)
-        ],
-        date,
-        unread: true
+    if (Object.values(survivingAttackers).filter((soldierAmount: number) => soldierAmount > 0).length > 0) {
+      await db.ref(`users/${userEntry[0]}`).update({
+        troopsOnMove: [...newUserTroopsOnMove, {
+          sender: troopsOnMove.sender,
+          target: troopsOnMove.target || false as false,
+          troops: survivingAttackers,
+          headingBack: true,
+          travelTime: troopsOnMove.travelTime,
+          arrivalTime: troopsOnMove.arrivalTime + troopsOnMove.travelTime
+        }],
+        inbox: [
+          ...userEntry[1].inbox ? Object.values(userEntry[1].inbox) : [],
+          {
+            sender: '-',
+            title: `Your troops fought against ${troopsOnMove.target || 'the forces of nature'}`,
+            receiver: troopsOnMove.sender,
+            message: troopsOnMove.target ? [
+              `Attacking troops of ${troopsOnMove.sender}`,
+              ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
+              ' ',
+              `Defending troops of ${troopsOnMove.target}`,
+              ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUser.troops[entry[0]]} defended, ${entry[1]} survived.`)
+            ] : Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
+            date,
+            unread: true
+          }
+        ]
+      })
+    } else {
+      await db.ref(`users/${userEntry[0]}`).update({
+        troopsOnMove: newUserTroopsOnMove,
+        inbox: [...userEntry[1].inbox ? Object.values(userEntry[1].inbox) : [], {
+          sender: '-',
+          title: `Your troops fought against ${troopsOnMove.target || 'the forces of nature'}`,
+          receiver: troopsOnMove.sender,
+          message: troopsOnMove.target ? [
+            `Attacking troops of ${troopsOnMove.sender}`,
+            ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
+            ' ',
+            `Defending troops of ${troopsOnMove.target}`,
+            ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUser.troops[entry[0]]} defended, ${entry[1]} survived.`)
+          ] : Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
+          date,
+          unread: true
+        }]
       })
     }
-    if (Object.values(survivingAttackers).filter(soldierAmount => soldierAmount > 0).length > 0) {
-      return {
-        headingBack: true,
-        target: troopsOnMove.target || false as false,
-        troops: survivingAttackers,
-        travelTime: troopsOnMove.travelTime,
-        arrivalTime: troopsOnMove.arrivalTime + troopsOnMove.travelTime
-      }
+    if (troopsOnMove.target && targetUserSnapshot) {
+      const targetUserEntry = Object.entries(targetUserSnapshot.toJSON() as Object)[0]
+      await db.ref(`users/${targetUserEntry[0]}`).update({
+        troops: survivingDefenders,
+        inbox: [...targetUserEntry[1].inbox ? Object.values(targetUserEntry[1].inbox) : [], {
+          sender: '-',
+          title: `Your town was attacked by ${troopsOnMove.sender}`,
+          receiver: troopsOnMove.target,
+          message: [
+            `Attacking troops of ${troopsOnMove.sender}:`,
+            ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
+            ' ',
+            `Defending troops of ${troopsOnMove.target}:`,
+            ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUserEntry[1].troops[entry[0]]} defended, ${entry[1]} survived.`)
+          ],
+          date,
+          unread: true
+        }],
+      })
     }
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console
   }
-  return null
 }
