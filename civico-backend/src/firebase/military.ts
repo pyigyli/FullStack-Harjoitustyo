@@ -1,7 +1,7 @@
 import db from './init'
-import {UserData, troopsData, Troops, DispatchedTroops} from "../types/protocol"
-import Connection from "../connection"
-import {getUserData} from "./users"
+import {UserData, troopsData, Troops, DispatchedTroops} from '../types/protocol'
+import Connection from '../connection'
+import {getUserData} from './users'
 
 export const togglePacifism = async (conn: Connection, pacifist: boolean, disabledDays: number) => {
   try {
@@ -41,8 +41,8 @@ export const sendTroops = async (conn: Connection, sender: string, target: strin
   try {
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user = userSnapshot.toJSON() as UserData
-    let troopsLeftInTown: Troops = user.troops
-    for (const troopType in troopsLeftInTown) {
+    const troopsLeftInTown: Troops = user.troops
+    for (const troopType of Object.keys(troopsLeftInTown)) {
       troopsLeftInTown[troopType] -= troopsToSend[troopType]
     }
     const currentTime = Date.now()
@@ -62,7 +62,7 @@ export const sendTroops = async (conn: Connection, sender: string, target: strin
       clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay),
       wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat),
       troops: troopsLeftInTown,
-      troopsOnMove: troopsOnMove,
+      troopsOnMove,
       timestamp: currentTime
     })
     getUserData(conn)
@@ -93,7 +93,7 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
   try {
     const attackingTroops = {...troopsOnMove.troops}
     let defendingTroops: Troops = {...troopsOnMove.troops}
-    let targetUserSnapshot: firebase.database.DataSnapshot | undefined = undefined
+    let targetUserSnapshot: firebase.database.DataSnapshot | undefined
     let targetUser: UserData
     if (troopsOnMove.target) {
       targetUserSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.target).once('value')
@@ -101,7 +101,7 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
       defendingTroops = {...targetUser.troops}
     } else {
       let index: number = 0
-      for (const troopType in troopsOnMove.troops) {
+      for (const troopType of Object.keys(troopsOnMove.troops)) {
         const randomTroopTypeAmount = 10 - index * 2 + Math.floor(Math.random() * 50) - index * 5
         defendingTroops[troopType] = randomTroopTypeAmount > 0 ? randomTroopTypeAmount : 0
         index++
@@ -109,17 +109,17 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
     }
     const survivingAttackers = {...troopsOnMove.troops}
     const survivingDefenders = {...troopsOnMove.troops}
-    for (const troopType in troopsOnMove.troops) {
+    for (const troopType of Object.keys(troopsOnMove.troops)) {
       survivingAttackers[troopType] = 0
       survivingDefenders[troopType] = 0
     }
-    let filteredAttackers: [string, number][] = Object.entries(attackingTroops).filter(entry => entry[1] > 0)
-    let filteredDefenders: [string, number][] = Object.entries(defendingTroops).filter(entry => entry[1] > 0)
+    let filteredAttackers: Array<[string, number]> = Object.entries(attackingTroops).filter(entry => entry[1] > 0)
+    let filteredDefenders: Array<[string, number]> = Object.entries(defendingTroops).filter(entry => entry[1] > 0)
     const attackPower  = filteredAttackers.reduce((value: number, entry) => value + troopsData[entry[0]].attack  * entry[1], 0)
     const defencePower = filteredDefenders.reduce((value: number, entry) => value + troopsData[entry[0]].defence * entry[1], 0)
     while (filteredAttackers.length > 0 && filteredDefenders.length > 0) {
-      let randomAttackSoldier = Math.ceil(Math.random() * (filteredAttackers.length - 1))
-      let randomDefendSoldier = Math.ceil(Math.random() * (filteredDefenders.length - 1))
+      const randomAttackSoldier = Math.ceil(Math.random() * (filteredAttackers.length - 1))
+      const randomDefendSoldier = Math.ceil(Math.random() * (filteredDefenders.length - 1))
       attackingTroops[filteredAttackers[randomAttackSoldier][0]]--
       defendingTroops[filteredDefenders[randomDefendSoldier][0]]--
       const soldiersAttack  = attackPower  / Math.random() * troopsData[filteredAttackers[randomAttackSoldier][0]].attack
@@ -132,19 +132,24 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
       filteredAttackers = Object.entries(attackingTroops).filter(entry => entry[1] > 0)
       filteredDefenders = Object.entries(defendingTroops).filter(entry => entry[1] > 0)
     }
-    for (const troopType in troopsOnMove.troops) {
+    for (const troopType of Object.keys(troopsOnMove.troops)) {
       survivingAttackers[troopType] += attackingTroops[troopType]
       survivingDefenders[troopType] += defendingTroops[troopType]
     }
     const userSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.sender).once('value')
     const userEntry = Object.entries(userSnapshot.toJSON() as Object)[0]
-    const newUserTroopsOnMove = userEntry[1].troopsOnMove ? Object.values(userEntry[1].troopsOnMove).filter(group => group !== troopsOnMove) : []
-    const date = Date.now()
+    const newUserTroopsOnMove = userEntry[1].troopsOnMove ? Object.values(userEntry[1].troopsOnMove).filter((group: DispatchedTroops) =>
+      group.sender !== troopsOnMove.sender ||
+      group.target !== troopsOnMove.target ||
+      group.headingBack !== troopsOnMove.headingBack ||
+      group.travelTime !== troopsOnMove.travelTime ||
+      group.arrivalTime !== troopsOnMove.arrivalTime
+    ) : []
     if (Object.values(survivingAttackers).filter((soldierAmount: number) => soldierAmount > 0).length > 0) {
       await db.ref(`users/${userEntry[0]}`).update({
         troopsOnMove: [...newUserTroopsOnMove, {
           sender: troopsOnMove.sender,
-          target: troopsOnMove.target || false as false,
+          target: troopsOnMove.target,
           troops: survivingAttackers,
           headingBack: true,
           travelTime: troopsOnMove.travelTime,
@@ -163,7 +168,7 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
               `Defending troops of ${troopsOnMove.target}`,
               ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUser.troops[entry[0]]} defended, ${entry[1]} survived.`)
             ] : Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
-            date,
+            date: troopsOnMove.arrivalTime,
             unread: true
           }
         ]
@@ -182,7 +187,7 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
             `Defending troops of ${troopsOnMove.target}`,
             ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUser.troops[entry[0]]} defended, ${entry[1]} survived.`)
           ] : Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
-          date,
+          date: troopsOnMove.arrivalTime,
           unread: true
         }]
       })
@@ -191,6 +196,14 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
       const targetUserEntry = Object.entries(targetUserSnapshot.toJSON() as Object)[0]
       await db.ref(`users/${targetUserEntry[0]}`).update({
         troops: survivingDefenders,
+        troopsOnMove: targetUserEntry[1].troopsOnMove ? Object.values(targetUserEntry[1].troopsOnMove).filter((group: DispatchedTroops) =>
+          group.sender !== troopsOnMove.sender &&
+          group.target !== troopsOnMove.target &&
+          group.troops !== troopsOnMove.troops &&
+          group.headingBack !== troopsOnMove.headingBack &&
+          group.travelTime !== troopsOnMove.travelTime &&
+          group.arrivalTime !== troopsOnMove.arrivalTime
+        ) : [],
         inbox: [...targetUserEntry[1].inbox ? Object.values(targetUserEntry[1].inbox) : [], {
           sender: '-',
           title: `Your town was attacked by ${troopsOnMove.sender}`,
@@ -202,9 +215,9 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
             `Defending troops of ${troopsOnMove.target}:`,
             ...Object.entries(survivingDefenders).map(entry => `${entry[0]}: ${targetUserEntry[1].troops[entry[0]]} defended, ${entry[1]} survived.`)
           ],
-          date,
+          date: troopsOnMove.arrivalTime,
           unread: true
-        }],
+        }]
       })
     }
   } catch (err) {

@@ -40,4 +40,5 @@
 | 11.7.  | 7    | - Lähetetyt joukot osaavat taistelusta selvittyään saapua takaisin kotikylään.<br> - Taistelun pelilogiikkaa toteutettu.<br> - Hyökkääjän viestilaatikkoon lähetetään raportti taistelusta, kun taistelu on tapahtunut. |
 | 12.7.  | 5    | - Lukemattomien viestien olemassaolo muuttaa yläpalkin ikonin väriä.<br> - Rivinvaihto viesteissä korjattu.<br> - Hyökätylle pelaajalle lähetetään myös raportti taistelun tapahtuessa.<br> - Toisen pelaajan kylään hyökkääminen toteutettu. |
 | 13.7.  | 4    | - Joukkojen välisten taistelujen bugeja korjattu.<br> - Hyökkäävät joukot näkyvät myös kohteen kenttänäkymässä.<br> - Taistelun tulos lasketaan nyt myös silloinkin, jos hyökkäyksen kohdekäyttäjä on taistelun ajankohdan jälkeen ensimmäinen, joka pyytää serveriltä tietojaan. |
-| Yhteensä | 182    |
+| 14.7.  | 7    | - Joukkojen välisestä taistelusta löytyneet bugit viimein korjattu. |
+| Yhteensä | 189    |

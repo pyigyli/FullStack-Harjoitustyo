@@ -25,3 +25,6 @@ Työpäiväkirjan tarkoituksena on dokumentoida mietteitä ja huomioita, sekä s
 
 #### 6.7.2019
 - Olen ainakin tämän projektin aikana oppinut, miten asioita kannattaa heti alusta asti jakaa selkeisiin moduuleihin. Tämä projekti ei onneksi käytä hirveästi laskukaavoja pelilogiikassaan ja tässä vaiheessa en enää jaksa alkaa refaktoroimaan koodiani tämän parantamiseksi, mutta tulevaisuuden projekteissa kaikki matemaattiset kaavat olisi erittäin kätevä pitää yhdessä paikassa, josta ne voidaan importata ja niiden eri muuttujia on helppo muuttaa.
+
+#### 14.7.2019
+- Jokainen bugi, jonka ratkaisemiseen menee 4-5 päivää, on uusi peukalosääntö, jota ei tule unohtamaan. Tänään opimme, että kannattaa varmistaa, ettei käyttäjä voi lähettää uutta pyyntöä tietokantaan, ennen kuin ensimmäinen pyyntö on toteutettu. Saattaa vähentää tietokannan tietojen yliajamista.

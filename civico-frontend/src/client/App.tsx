@@ -77,6 +77,7 @@ interface State {
   errorMessage: string
   pacifist: boolean
   pacifismDisabledUntil: number
+  preventDataFetch: boolean
 }
 
 const NULL_STATE: State = {
@@ -107,7 +108,8 @@ const NULL_STATE: State = {
   troopsOnMove: [],
   errorMessage: '',
   pacifist: true,
-  pacifismDisabledUntil: Date.now()
+  pacifismDisabledUntil: Date.now(),
+  preventDataFetch: false
 }
 
 class App extends React.Component<RouteComponentProps & WithStyles<typeof styles>, State> {
@@ -170,7 +172,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             troops: message.troops,
             troopsOnMove: message.troopsOnMove,
             pacifist: message.pacifist,
-            pacifismDisabledUntil: new Date(message.pacifismDisabledUntil).getTime()
+            pacifismDisabledUntil: new Date(message.pacifismDisabledUntil).getTime(),
+            preventDataFetch: false
           })
           break
         case 'SEND_MAP':
@@ -192,6 +195,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             break
         case 'ERROR':
           this.handleErrorNotification(message.message)
+          this.setState({preventDataFetch: false})
           break
         default:
           console.error('Server sent a message of unknown type.') // tslint:disable-line:no-console
@@ -246,8 +250,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   }
 
   public handleGetUserData = () => {
-    const {connection, token} = this.state
-    if (connection && token) {
+    const {connection, token, preventDataFetch} = this.state
+    if (connection && token && !preventDataFetch) {
+      this.setState({preventDataFetch: true})
       connection.send(JSON.stringify({type: 'GET_USERDATA', token}))}
     }
 

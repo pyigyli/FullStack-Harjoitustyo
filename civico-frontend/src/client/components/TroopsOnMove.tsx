@@ -27,7 +27,7 @@ const styles = () => createStyles({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around'
-  },
+  }
 })
 
 interface Props {

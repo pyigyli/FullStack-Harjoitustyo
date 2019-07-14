@@ -113,19 +113,31 @@ export const getUserData = async (conn: Connection) => {
         buildings.push(rowToPush)
       })
       const troops = {...user.troops}
-      let troopsOnMove: DispatchedTroops[] = []
+      let troopsOnMove: object = user.troopsOnMove || []
+      const currentTime = Date.now()
       if (user.troopsOnMove) {
         for (const group in user.troopsOnMove) {
-          if (user.troopsOnMove[group].arrivalTime - Date.now() < 0 && !user.troopsOnMove[group].headingBack) {
+          if (user.troopsOnMove[group].arrivalTime - currentTime <= 0 && !user.troopsOnMove[group].headingBack) {
             await resultBattle(conn, user.troopsOnMove[group])
           }
         }
         userSnapshot = await db.ref(`users/${conn.id}`).once('value')
         user = userSnapshot.toJSON() as UserData
-        const troops = user.troopsOnMove ? Object.values(user.troopsOnMove) : []
-        troopsOnMove = troops.filter((group: DispatchedTroops) => group.arrivalTime - Date.now() >= 0 || !group.headingBack)
+        troopsOnMove = user.troopsOnMove || []
+        for (const group in troopsOnMove) {
+          if (troopsOnMove[group].arrivalTime - currentTime <= 0 && troopsOnMove[group].headingBack) {
+            for (const troopType of Object.keys(troopsOnMove[group].troops)) {
+              troops[troopType] += troopsOnMove[group].troops[troopType]
+            }
+            delete troopsOnMove[group]
+          }
+        }
+        if (!conn.id) {
+          return
+        }
+        await db.ref(`users/${conn.id}`).update({troops, troopsOnMove})
       }
-      const timePassed = Date.now() - user.timestamp
+      const timePassed = currentTime - user.timestamp
       conn.sendMessage({
         type: 'SEND_DATA',
         ...user,
@@ -138,7 +150,7 @@ export const getUserData = async (conn: Connection) => {
         mapCoordinates: Object.values(user.mapCoordinates),
         inbox: user.inbox ? Object.values(user.inbox) : [],
         troops,
-        troopsOnMove
+        troopsOnMove: Object.values(troopsOnMove) as DispatchedTroops[]
       })
     }
   } catch (err) {
@@ -146,4 +158,3 @@ export const getUserData = async (conn: Connection) => {
     console.error(err) // tslint:disable-line:no-console
   }
 }
-
