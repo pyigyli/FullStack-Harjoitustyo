@@ -41,4 +41,5 @@
 | 12.7.  | 5    | - Lukemattomien viestien olemassaolo muuttaa yläpalkin ikonin väriä.<br> - Rivinvaihto viesteissä korjattu.<br> - Hyökätylle pelaajalle lähetetään myös raportti taistelun tapahtuessa.<br> - Toisen pelaajan kylään hyökkääminen toteutettu. |
 | 13.7.  | 4    | - Joukkojen välisten taistelujen bugeja korjattu.<br> - Hyökkäävät joukot näkyvät myös kohteen kenttänäkymässä.<br> - Taistelun tulos lasketaan nyt myös silloinkin, jos hyökkäyksen kohdekäyttäjä on taistelun ajankohdan jälkeen ensimmäinen, joka pyytää serveriltä tietojaan. |
 | 14.7.  | 7    | - Joukkojen välisestä taistelusta löytyneet bugit viimein korjattu. |
-| Yhteensä | 189    |
+| 22.7.  | 2    | - Hyökkäyksen tapahtuessa taistelusta selviävät hyökkääjät varastavat puolustavan pelaajan resursseja. |
+| Yhteensä | 191    |
