@@ -42,4 +42,5 @@
 | 13.7.  | 4    | - Joukkojen välisten taistelujen bugeja korjattu.<br> - Hyökkäävät joukot näkyvät myös kohteen kenttänäkymässä.<br> - Taistelun tulos lasketaan nyt myös silloinkin, jos hyökkäyksen kohdekäyttäjä on taistelun ajankohdan jälkeen ensimmäinen, joka pyytää serveriltä tietojaan. |
 | 14.7.  | 7    | - Joukkojen välisestä taistelusta löytyneet bugit viimein korjattu. |
 | 22.7.  | 2    | - Hyökkäyksen tapahtuessa taistelusta selviävät hyökkääjät varastavat puolustavan pelaajan resursseja. |
-| Yhteensä | 191    |
+| 23.7.  | 3    | - Kahden pelaajan välisestä taistelusta korjattu lisää bugeja.<br> - Kahden pelaajan väliset taistelut täysin toteutettu. |
+| Yhteensä | 194    |

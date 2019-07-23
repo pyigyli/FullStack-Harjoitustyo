@@ -109,7 +109,7 @@ class TroopsOnMove extends React.Component<Props & WithStyles<typeof styles>, St
           })}
         </div>}
         {incomingRaids.length > 0 && <div>
-          <div style={{marginBottom: '5px', marginTop: incomingRaids.length > 0 ? '20px' : '0px'}}>Incoming raids</div>
+          <div style={{marginBottom: '5px', marginTop: attackingTroops.length > 0 || arrivingTroops.length > 0 ? '20px' : '0px'}}>Incoming raids</div>
           {incomingRaids.map((group, index: number) => {
             const timeUntilArrival = moment.duration(group.arrivalTime - this.state.time).asSeconds()
             if (timeUntilArrival >= 0) {

@@ -52,7 +52,7 @@ export const sendTroops = async (conn: Connection, sender: string, target: strin
       sender,
       target,
       troops: troopsToSend,
-      resources: {lumber: 0, iron: 0, clay: 0, wheat: 0},
+      stoleEachResource: 0,
       headingBack: false,
       travelTime,
       arrivalTime: currentTime + travelTime
@@ -146,13 +146,13 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
       group.travelTime !== troopsOnMove.travelTime ||
       group.arrivalTime !== troopsOnMove.arrivalTime
     ) : []
-    const stolenResources = {lumber: 0, iron: 0, clay: 0, wheat: 0}
+    let stealAmount: number = 0
     if (Object.values(survivingAttackers).filter((soldierAmount: number) => soldierAmount > 0).length > 0) {
       if (troopsOnMove.target && targetUserSnapshot) {
         const targetEntry = Object.entries(targetUserSnapshot.toJSON() as Object)[0]
         const currentTime = Date.now()
         const timePassed = currentTime - targetEntry[1].timestamp
-        const singleResourceStealAmount = Math.min(
+        stealAmount = Math.min(
           Math.min(targetEntry[1].lumber + timePassed / 3600000 * targetEntry[1].lumberRate , targetEntry[1].maxLumber),
           Math.min(targetEntry[1].iron   + timePassed / 3600000 * targetEntry[1].ironRate, targetEntry[1].maxIron),
           Math.min(targetEntry[1].clay   + timePassed / 3600000 * targetEntry[1].clayRate, targetEntry[1].maxClay),
@@ -161,16 +161,13 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
             return capasity + troopTypeEntry[1] * troopsData[troopTypeEntry[0]].capasity
           }, 0)
         )
-        for (const troopType of Object.keys(troopsOnMove.troops)) {
-          stolenResources[troopType] = singleResourceStealAmount
-        }
       }
       await db.ref(`users/${userEntry[0]}`).update({
         troopsOnMove: [...newUserTroopsOnMove, {
           sender: troopsOnMove.sender,
           target: troopsOnMove.target,
           troops: survivingAttackers,
-          resources: stolenResources,
+          stoleEachResource: stealAmount,
           headingBack: true,
           travelTime: troopsOnMove.travelTime,
           arrivalTime: troopsOnMove.arrivalTime + troopsOnMove.travelTime
@@ -217,10 +214,10 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
       const currentTime = Date.now()
       const timePassed = currentTime - targetEntry[1].timestamp
       await db.ref(`users/${targetEntry[0]}`).update({
-        lumber: Math.min(targetEntry[1].lumber + timePassed / 3600000 * targetEntry[1].lumberRate , targetEntry[1].maxLumber) - stolenResources.lumber,
-        iron:   Math.min(targetEntry[1].iron   + timePassed / 3600000 * targetEntry[1].ironRate, targetEntry[1].maxIron) - stolenResources.iron,
-        clay:   Math.min(targetEntry[1].clay   + timePassed / 3600000 * targetEntry[1].clayRate, targetEntry[1].maxClay) - stolenResources.clay,
-        wheat:  Math.min(targetEntry[1].wheat  + timePassed / 3600000 * (targetEntry[1].wheatRate - targetEntry[1].population), targetEntry[1].maxWheat) - stolenResources.wheat,
+        lumber: Math.min(targetEntry[1].lumber + timePassed / 3600000 * targetEntry[1].lumberRate , targetEntry[1].maxLumber) - stealAmount,
+        iron:   Math.min(targetEntry[1].iron   + timePassed / 3600000 * targetEntry[1].ironRate, targetEntry[1].maxIron) - stealAmount,
+        clay:   Math.min(targetEntry[1].clay   + timePassed / 3600000 * targetEntry[1].clayRate, targetEntry[1].maxClay) - stealAmount,
+        wheat:  Math.min(targetEntry[1].wheat  + timePassed / 3600000 * (targetEntry[1].wheatRate - targetEntry[1].population), targetEntry[1].maxWheat) - stealAmount,
         troops: survivingDefenders,
         troopsOnMove: targetEntry[1].troopsOnMove ? Object.values(targetEntry[1].troopsOnMove).filter((group: DispatchedTroops) =>
           group.sender !== troopsOnMove.sender &&

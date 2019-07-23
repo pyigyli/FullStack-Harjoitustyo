@@ -294,12 +294,7 @@ export interface DispatchedTroops {
   target: string | false
   troops: Troops
   headingBack: boolean
-  resources: {
-    lumber: number
-    iron: number
-    clay: number
-    wheat: number
-  }
+  stoleEachResource: number
   travelTime: number
   arrivalTime: number
 }

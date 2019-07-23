@@ -113,7 +113,7 @@ export const getUserData = async (conn: Connection) => {
         buildings.push(rowToPush)
       })
       const troops = {...user.troops}
-      let troopsOnMove: object = user.troopsOnMove || []
+      let troopsOnMove: DispatchedTroops[] = user.troopsOnMove ? Object.values(user.troopsOnMove) : []
       const currentTime = Date.now()
       if (user.troopsOnMove) {
         for (const group in user.troopsOnMove) {
@@ -123,19 +123,32 @@ export const getUserData = async (conn: Connection) => {
         }
         userSnapshot = await db.ref(`users/${conn.id}`).once('value')
         user = userSnapshot.toJSON() as UserData
-        troopsOnMove = user.troopsOnMove || []
-        for (const group in troopsOnMove) {
-          if (troopsOnMove[group].arrivalTime - currentTime <= 0 && troopsOnMove[group].headingBack) {
-            for (const troopType of Object.keys(troopsOnMove[group].troops)) {
-              troops[troopType] += troopsOnMove[group].troops[troopType]
+        troopsOnMove = user.troopsOnMove ? Object.values(user.troopsOnMove) : []
+        if (troopsOnMove.length > 0) {
+          let stoleEachResourceTotal: number = 0
+          for (const group in troopsOnMove) {
+            if (troopsOnMove[group].arrivalTime - currentTime <= 0 && troopsOnMove[group].headingBack) {
+              for (const troopType of Object.keys(troopsOnMove[group].troops)) {
+                troops[troopType] += troopsOnMove[group].troops[troopType]
+              }
+              stoleEachResourceTotal += troopsOnMove[group].stoleEachResource
+              delete troopsOnMove[group]
             }
-            delete troopsOnMove[group]
           }
+          if (!conn.id) {
+            return
+          }
+          const timePassed = currentTime - user.timestamp
+          await db.ref(`users/${conn.id}`).update({
+            lumber: Math.min(user.lumber + timePassed / 3600000 * user.lumberRate , user.maxLumber) + stoleEachResourceTotal,
+            iron:   Math.min(user.iron   + timePassed / 3600000 * user.ironRate, user.maxIron) + stoleEachResourceTotal,
+            clay:   Math.min(user.clay   + timePassed / 3600000 * user.clayRate, user.maxClay) + stoleEachResourceTotal,
+            wheat:  Math.min(user.wheat  + timePassed / 3600000 * (user.wheatRate - user.population), user.maxWheat) + stoleEachResourceTotal,
+            troops,
+            troopsOnMove,
+            timestamp: currentTime
+          })
         }
-        if (!conn.id) {
-          return
-        }
-        await db.ref(`users/${conn.id}`).update({troops, troopsOnMove})
       }
       const timePassed = currentTime - user.timestamp
       conn.sendMessage({
