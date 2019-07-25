@@ -5,7 +5,7 @@ const styles = () => createStyles({
   recoursesContainer: {
     fontSize: '13px',
     fontWeight: 'bold',
-    width: '600px',
+    width: '690px',
     textAlign: 'center',
     backgroundColor: '#ffffff',
     display: 'flex',
@@ -17,7 +17,7 @@ const styles = () => createStyles({
     transform: 'translate(-50%, 0%)',
     paddingTop: '10px',
     paddingBottom: '10px',
-    paddingLeft: '100px',
+    paddingLeft: '10px',
     paddingRight: '100px',
     borderBottomStyle: 'solid',
     borderBottomWidth: '5px',
@@ -29,6 +29,13 @@ const styles = () => createStyles({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center'
+  },
+  profileLink: {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    '&:hover': {
+      opacity: 0.7
+    }
   }
 })
 
@@ -42,16 +49,23 @@ interface Props {
   maxIron: number
   maxClay: number
   maxWheat: number
+  onGetProfile: (username: null) => void
 }
 
 class ProfileBar extends React.Component<Props & WithStyles<typeof styles>> {
 
   public render() {
-    const {classes, population, lumber, iron, clay, wheat, maxLumber, maxIron, maxClay, maxWheat} = this.props
+    const {classes, population, lumber, iron, clay, wheat, maxLumber, maxIron, maxClay, maxWheat, onGetProfile} = this.props
 
     return (
       <div>
         <div className={classes.recoursesContainer}>
+          <div
+            className={classes.profileLink}
+            onClick={() => onGetProfile(null)}
+          >
+            Profile
+          </div>
           <div className={classes.resourseWrapper}>
             <div>Population</div>
             <div>{population}</div>

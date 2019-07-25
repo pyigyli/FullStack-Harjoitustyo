@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import Connection from './connection'
 import {Message} from './types/protocol'
-import {createNewAccount, login, logout, getUserData} from './firebase/users'
+import {createNewAccount, login, logout, getUserData, getUserProfile} from './firebase/users'
 import {levelUpField} from './firebase/fields'
 import {placeBuilding, levelUpBuilding, deleteBuilding, expandTown} from './firebase/town'
 import {getMap, getMapSlot} from './firebase/map'
@@ -28,6 +28,8 @@ class CivicoServer {
         return logout(conn)
       case 'GET_USERDATA':
         return getUserData(conn)
+      case 'GET_PROFILE':
+        return getUserProfile(conn, message.username)
       case 'FIELD_LEVELUP':
         return levelUpField(conn, message.row, message.column, message.newLevel)
       case 'BUILDING_PLACE':

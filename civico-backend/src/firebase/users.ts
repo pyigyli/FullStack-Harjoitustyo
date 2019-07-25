@@ -55,6 +55,7 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       mapCoordinates: {x, y},
       troops: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0},
       timestamp: Date.now(),
+      bio: '',
       pacifist: true,
       pacifismDisabledUntil: 0
     })
@@ -165,6 +166,24 @@ export const getUserData = async (conn: Connection) => {
         troops,
         troopsOnMove: Object.values(troopsOnMove) as DispatchedTroops[]
       })
+    }
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+export const getUserProfile = async (conn: Connection, username: string) => {
+  try {
+    const userSnapshot = await db.ref('users').orderByChild('username').equalTo(username).once('value')
+    const user: UserData = userSnapshot.toJSON() as UserData
+    if (user) {
+      const userProfile = {
+        username,
+        population: user.population,
+        bio: user.bio
+      }
+      conn.sendMessage({type: 'SEND_PROFILE', userProfile})
     }
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})

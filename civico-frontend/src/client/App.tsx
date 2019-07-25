@@ -23,7 +23,9 @@ import {
   InboxMessage,
   Troops,
   SendTroopsMessage,
-  DispatchedTroops
+  DispatchedTroops,
+  UserProfile,
+  GetProfileMessage
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -32,6 +34,7 @@ import IndexScene from './scenes/Index'
 import LoginScene from './scenes/Login'
 import MapScene from './scenes/Map'
 import TownScene from './scenes/Town'
+import ProfileScene from './scenes/Profile'
 import Header from './components/Header'
 import Notification from './components/Notification'
 import ProfileBar from './components/ProfileBar'
@@ -75,6 +78,7 @@ interface State {
   troops: Troops
   troopsOnMove: DispatchedTroops[]
   errorMessage: string
+  userProfile: UserProfile | null
   pacifist: boolean
   pacifismDisabledUntil: number
   preventDataFetch: boolean
@@ -107,6 +111,7 @@ const NULL_STATE: State = {
   troops: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0},
   troopsOnMove: [],
   errorMessage: '',
+  userProfile: null,
   pacifist: true,
   pacifismDisabledUntil: Date.now(),
   preventDataFetch: false
@@ -175,6 +180,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             pacifismDisabledUntil: new Date(message.pacifismDisabledUntil).getTime(),
             preventDataFetch: false
           })
+          break
+        case 'SEND_PROFILE':
+          this.setState({userProfile: message.userProfile})
           break
         case 'SEND_MAP':
           this.setState({map: message.map})
@@ -249,12 +257,31 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
+  public handleDeleteAccount = () => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const message = {}
+      connection.send(JSON.stringify(message))
+    }
+  }
+
   public handleGetUserData = () => {
     const {connection, token, preventDataFetch} = this.state
     if (connection && token && !preventDataFetch) {
       this.setState({preventDataFetch: true})
-      connection.send(JSON.stringify({type: 'GET_USERDATA', token}))}
+      connection.send(JSON.stringify({type: 'GET_USERDATA', token}))
     }
+  }
+
+  public handleGetProfile = (user: string | null) => {
+    const {connection, token} = this.state
+    if (connection && token) {
+      const username = user || this.state.username
+      const message: GetProfileMessage = {type: 'GET_PROFILE', token, username}
+      connection.send(JSON.stringify(message))
+      this.props.history.push(`/user`)
+    }
+  }
 
   public handleFieldLevelUp = (row: number, column: number, newLevel: number) => {
     const {connection, token} = this.state
@@ -398,6 +425,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       troops,
       troopsOnMove,
       errorMessage,
+      userProfile,
       pacifist,
       pacifismDisabledUntil
     } = this.state
@@ -426,6 +454,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             maxIron={maxIron}
             maxClay={maxClay}
             maxWheat={maxWheat}
+            onGetProfile={this.handleGetProfile}
           />
         }/>
         <Route exact path='/fields' render={() =>
@@ -484,6 +513,13 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             onSetMessagesToRead={this.handleSetMessagesToRead}
             onSendInboxMessage={this.handleSendInboxMessage}
             onDeleteMessages={this.handleDeleteInboxMessages}
+          /> : <LoginScene onSubmit={this.handleLogin}/>
+        }/>
+        <Route exact path='/user' render={() =>
+          token ? <ProfileScene
+            selfUsername={username}
+            profile={userProfile}
+            onDeleteAccount={this.handleDeleteAccount}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
       </div>

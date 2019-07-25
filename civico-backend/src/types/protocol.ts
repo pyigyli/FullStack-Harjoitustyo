@@ -3,6 +3,8 @@ type MessageType =
   'LOGIN' |
   'LOGOUT' |
   'TOKEN' |
+  'GET_PROFILE' |
+  'SEND_PROFILE' |
   'GET_USERDATA' |
   'SEND_DATA' |
   'FIELD_LEVELUP' |
@@ -28,6 +30,8 @@ export type Message =
   LoginMessage |
   LogoutMessage |
   TokenMessage |
+  GetProfileMessage |
+  SendProfileMessage |
   GetUserDataMessage |
   SendUserDataMessage |
   FieldLevelUpMessage |
@@ -74,6 +78,17 @@ export interface TokenMessage extends MessageBase {
   type: 'TOKEN'
   token: string
   username: string
+}
+
+export interface GetProfileMessage extends MessageBase {
+  type: 'GET_PROFILE'
+  token: string
+  username: string
+}
+
+export interface SendProfileMessage extends MessageBase {
+  type: 'SEND_PROFILE'
+  userProfile: UserProfile
 }
 
 export interface GetUserDataMessage extends MessageBase {
@@ -217,6 +232,7 @@ export interface SendTroopsMessage extends MessageBase {
 }
 
 export interface UserData {
+  username: string
   population: number
   lumber: number
   iron: number
@@ -236,9 +252,16 @@ export interface UserData {
   inbox: InboxMessage[]
   troops: Troops
   troopsOnMove: DispatchedTroops[]
+  bio: string
   pacifist: boolean
   pacifismDisabledUntil: number
   timestamp: number
+}
+
+export interface UserProfile {
+  username: string
+  population: number
+  bio: string
 }
 
 export interface GridSlot {

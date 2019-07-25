@@ -43,4 +43,5 @@
 | 14.7.  | 7    | - Joukkojen välisestä taistelusta löytyneet bugit viimein korjattu. |
 | 22.7.  | 2    | - Hyökkäyksen tapahtuessa taistelusta selviävät hyökkääjät varastavat puolustavan pelaajan resursseja. |
 | 23.7.  | 3    | - Kahden pelaajan välisestä taistelusta korjattu lisää bugeja.<br> - Kahden pelaajan väliset taistelut täysin toteutettu. |
-| Yhteensä | 194    |
+| 25.7.  | 3    | - Profiilisivu aloitettu. |
+| Yhteensä | 197    |
