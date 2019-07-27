@@ -98,7 +98,7 @@ export const expandTown = async (conn: Connection) => {
       newGrid.push(middleRow)
     }
     newGrid.push(emptyRow)
-    const expansion = user.buildings.length === 3 ? townExpansionData.first : townExpansionData.second
+    const expansion = user.buildings.length === 3 ? townExpansionData[1] : townExpansionData[2]
     const currentTime = Date.now()
     const timePassed = currentTime - user.timestamp
     await db.ref(`users/${conn.id}`).update({

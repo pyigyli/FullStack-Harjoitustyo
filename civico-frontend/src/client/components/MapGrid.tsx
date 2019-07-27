@@ -90,6 +90,13 @@ const styles = () => createStyles({
     '&:after': {
       borderColor: '#321432 !important'
     }
+  },
+  profileLink: {
+    textDecoration: 'underline',
+    cursor: 'pointer',
+    '&:hover': {
+      opacity: 0.7
+    }
   }
 })
 
@@ -102,6 +109,7 @@ interface Props {
   troops: Troops
   onGetMapSlot: (username: string) => void
   onSendTroops: (target: string, troopsToSend: Troops, travelTime: number) => void
+  onGetProfile: (username: string) => void
 }
 
 interface State {
@@ -164,7 +172,7 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
   }
 
   public render() {
-    const {classes, map, x, y, selectedMapSlotData} = this.props
+    const {classes, map, x, y, selectedMapSlotData, onGetProfile} = this.props
     const {width, height, margin, mapMenuOpen, selectedX, selectedY, openSendTroopsMenu, troopsToSendValues} = this.state
     const troops = Object.entries(this.props.troops).filter(entry => entry[1] !== 0)
 
@@ -255,7 +263,12 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
         </div>
         <Dialog open={mapMenuOpen} onClose={this.handleCloseMapSlot}>
           <DialogTitle>
-            <span>Town of {map[selectedX][selectedY]}</span>
+            <span
+              className={classes.profileLink}
+              onClick={() => onGetProfile(map[selectedX][selectedY])}
+            >
+              {map[selectedX][selectedY]}
+            </span>
             <span style={{fontSize: '16px', marginLeft: '20px'}}>Population: {selectedMapSlotData.population}</span>
           </DialogTitle>
           <DialogContent>

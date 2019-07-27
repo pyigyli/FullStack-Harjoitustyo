@@ -2,7 +2,7 @@ import React from 'react'
 import {createStyles, withStyles, WithStyles, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button} from '@material-ui/core'
 import ScrollArea from 'react-scrollbar'
 import {cloneDeep} from 'lodash'
-import {GridSlot, buildingsData} from '../../types/protocol'
+import {GridSlot, buildingsData, townExpansionData} from '../../types/protocol'
 import TownGrid from '../components/TownGrid'
 import BuildingContent from '../components/BuildingContent'
 
@@ -20,7 +20,8 @@ const styles = () => createStyles({
     borderLeftWidth: '10px',
     borderRightWidth: '10px',
     borderLeftColor: '#321432aa',
-    borderRightColor: '#321432aa'
+    borderRightColor: '#321432aa',
+    overflow: 'auto'
   },
   constructionButtonsContainer: {
     position: 'fixed',
@@ -115,6 +116,7 @@ interface State {
   buildingMenuColumn: number
   buildingsOnMoving: GridSlot[][] | null
   buildingDeleteConfirmOpen: boolean
+  expandTownMenuOpen: boolean
 }
 
 class TownScene extends React.Component<Props & WithStyles<typeof styles>, State> {
@@ -131,7 +133,16 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
     buildingMenuRow: 0,
     buildingMenuColumn: 0,
     buildingsOnMoving: null,
-    buildingDeleteConfirmOpen: false
+    buildingDeleteConfirmOpen: false,
+    expandTownMenuOpen: false
+  }
+
+  public handleOpenExpandTownMenu  = () => this.setState({expandTownMenuOpen: true})
+  public handleCloseExpandTownMenu = () => this.setState({expandTownMenuOpen: false})
+
+  public handleExpandTown = () => {
+    this.props.onExpand()
+    this.setState({expandTownMenuOpen: false})
   }
 
   public handleOpenBuildingSelect = () => this.setState({buildingsSelectOpen: true})
@@ -246,7 +257,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
 
   public handleCloseBuildingMenu = () => this.setState({buildingMenuName: ''})
 
-  public handleOpenBuildingDeleteConfirm = () => this.setState({buildingDeleteConfirmOpen: true})
+  public handleOpenBuildingDeleteConfirm  = () => this.setState({buildingDeleteConfirmOpen: true})
   public handleCloseBuildingDeleteConfirm = () => this.setState({buildingDeleteConfirmOpen: false})
 
   public handleTogglePacifism = (disabledDays: number) => {
@@ -265,7 +276,6 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       netWheatRate,
       pacifist,
       pacifismDisabledUntil,
-      onExpand,
       onTrainTroops
     } = this.props
     const {
@@ -278,7 +288,8 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
       buildingMenuName,
       buildingMenuLevel,
       buildingsOnMoving,
-      buildingDeleteConfirmOpen
+      buildingDeleteConfirmOpen,
+      expandTownMenuOpen
     } = this.state
     const grid: GridSlot[][] = buildingsOnMoving || buildings
 
@@ -324,7 +335,7 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           </div>
         ) : (
           <div className={classes.constructionButtonsContainer}>
-            {grid.length < 6 && <Button className={classes.button} onClick={onExpand}>Expand</Button>}
+            {grid.length < 6 && <Button className={classes.button} onClick={this.handleOpenExpandTownMenu}>Expand</Button>}
             <Button className={classes.button} onClick={this.handleOpenBuildingSelect}>Build</Button>
           </div>
         )}
@@ -560,6 +571,34 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
             </div>
           )}
         </Dialog>
+        {townExpansionData[(grid.length - 1) / 2] && <Dialog open={expandTownMenuOpen} onClose={this.handleCloseExpandTownMenu}>
+          <DialogTitle>Expand town</DialogTitle>
+          <div className={classes.buildingCostsContainer}>
+            <div className={classes.buildingCostWrapper}>
+              <div style={{fontWeight: 'bold'}}>Expand cost:</div>
+            </div>
+            <div className={classes.buildingCostWrapper}>
+              <div>Lumber</div>
+              <div>{townExpansionData[(grid.length - 1) / 2].lumberCost}</div>
+            </div>
+            <div className={classes.buildingCostWrapper}>
+              <div>Iron</div>
+              <div>{townExpansionData[(grid.length - 1) / 2].ironCost}</div>
+            </div>
+            <div className={classes.buildingCostWrapper}>
+              <div>Clay</div>
+              <div>{townExpansionData[(grid.length - 1) / 2].clayCost}</div>
+            </div>
+            <div className={classes.buildingCostWrapper}>
+              <div>Wheat</div>
+              <div>{townExpansionData[(grid.length - 1) / 2].wheatCost}</div>
+            </div>
+          </div>
+          <DialogActions>
+            <Button className={classes.button} onClick={this.handleCloseExpandTownMenu}>Cancel</Button>
+            <Button className={classes.button} onClick={this.handleExpandTown}>Expand</Button>
+          </DialogActions>
+        </Dialog>}
       </div>
     )
   }

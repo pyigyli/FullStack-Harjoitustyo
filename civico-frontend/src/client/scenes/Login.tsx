@@ -18,7 +18,8 @@ const styles = () => createStyles({
     borderLeftWidth: '10px',
     borderRightWidth: '10px',
     borderLeftColor: '#321432aa',
-    borderRightColor: '#321432aa'
+    borderRightColor: '#321432aa',
+    overflow: 'auto'
   },
   sceneWrapper: {
     position: 'fixed',

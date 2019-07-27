@@ -17,7 +17,8 @@ const styles = () => createStyles({
     borderLeftWidth: '10px',
     borderRightWidth: '10px',
     borderLeftColor: '#321432aa',
-    borderRightColor: '#321432aa'
+    borderRightColor: '#321432aa',
+    overflow: 'auto'
   },
   mapButtonsContainer: {
     position: 'fixed',
@@ -52,6 +53,7 @@ interface Props {
   onGetMap: () => void
   onGetMapSlot: (username: string) => void
   onSendTroops: (target: string, troopsToSend: Troops, travelTime: number) => void
+  onGetProfile: (username: string) => void
 }
 
 interface State {
@@ -88,7 +90,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
   public setNewMapCoordinates = () => this.setState({mapCoordinates: [this.state.newX, this.state.newY]})
 
   public render() {
-    const {classes, map, selfCoordinates, selectedMapSlotData, troops, onGetMapSlot, onSendTroops} = this.props
+    const {classes, map, selfCoordinates, selectedMapSlotData, troops, onGetMapSlot, onSendTroops, onGetProfile} = this.props
     const {mapCoordinates, newX, newY} = this.state
 
     return (
@@ -131,6 +133,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
           troops={troops}
           onGetMapSlot={onGetMapSlot}
           onSendTroops={onSendTroops}
+          onGetProfile={onGetProfile}
         />
       </div>
     )

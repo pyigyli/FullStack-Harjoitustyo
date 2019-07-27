@@ -485,16 +485,16 @@ export const troopsData = {
 }
 
 export const townExpansionData = {
-  first: {
-    lumberCost: 10,
-    ironCost: 10,
-    clayCost: 10,
-    wheatCost: 10
+  1: {
+    lumberCost: 700,
+    ironCost: 550,
+    clayCost: 630,
+    wheatCost: 660
   },
-  second: {
-    lumberCost: 10,
-    ironCost: 10,
-    clayCost: 10,
-    wheatCost: 10
+  2: {
+    lumberCost: 2775,
+    ironCost: 2700,
+    clayCost: 2650,
+    wheatCost: 1850
   }
 }

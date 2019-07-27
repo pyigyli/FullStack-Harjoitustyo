@@ -504,6 +504,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
           onGetMap={this.handleGetMap}
           onGetMapSlot={this.handleGetMapSlot}
           onSendTroops={this.handleSendTroops}
+          onGetProfile={this.handleGetProfile}
         /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/inbox' render={() =>

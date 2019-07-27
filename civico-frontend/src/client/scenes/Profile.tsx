@@ -16,7 +16,14 @@ const styles = () => createStyles({
     borderLeftWidth: '10px',
     borderRightWidth: '10px',
     borderLeftColor: '#321432aa',
-    borderRightColor: '#321432aa'
+    borderRightColor: '#321432aa',
+    overflow: 'auto'
+  },
+  profileWrapper: {
+    position: 'fixed',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)'
   },
   button: {
     backgroundColor: '#32143244',
@@ -68,9 +75,11 @@ class ProfileScene extends React.Component<Props & WithStyles<typeof styles>, St
 
     return (
       <div className={classes.sceneWrapper}>
-        <div>{selfUsername === username ? 'it be you' : username}</div>
-        <div>{population}</div>
-        <div>{bio}</div>
+        <div className={classes.profileWrapper}>
+          <div>{selfUsername === username ? 'it be you' : username}</div>
+          <div>{population}</div>
+          <div>{bio}</div>
+        </div>
         <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleOpenDeleteAccount}>Confirm</Button>
         <Dialog open={deleteAccountOpen} onClose={this.handleCloseDeleteAccount}>
           <DialogTitle>Are you sure you want to delete your account?</DialogTitle>
