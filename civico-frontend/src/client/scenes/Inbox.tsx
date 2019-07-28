@@ -20,7 +20,7 @@ const styles = () => createStyles({
     borderRightColor: '#321432aa',
     overflow: 'auto'
   },
-  mapButtonsContainer: {
+  buttonsContainer: {
     position: 'fixed',
     width: '700px',
     top: '140px',
@@ -291,7 +291,7 @@ class InboxScene extends React.Component<Props & WithStyles<typeof styles>, Stat
 
     return (
       <div className={classes.sceneWrapper}>
-        <div className={classes.mapButtonsContainer}>
+        <div className={classes.buttonsContainer}>
           <Button className={`${classes.button} ${classes.container}`} onClick={this.handleOpenDraftMessage}>New Message</Button>
           <Button className={`${classes.button} ${classes.container}`} onClick={this.handleSelectAll}>
             {checkboxes.length === messages.length ? 'Unselect all' : 'Select all'}

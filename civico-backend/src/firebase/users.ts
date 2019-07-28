@@ -55,13 +55,25 @@ export const createNewAccount = async (conn: Connection, username: string, passw
       mapCoordinates: {x, y},
       troops: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0},
       timestamp: Date.now(),
-      bio: '',
       pacifist: true,
       pacifismDisabledUntil: 0
     })
     const user = await ref.once('value')
     conn.id = user.key || ''
     return true
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+export const deleteAccount = async (conn: Connection) => {
+  try {
+    const mapCoordinatesSnapshot = await db.ref(`users/${conn.id}/mapCoordinates`).once('value')
+    const mapCoordinates = mapCoordinatesSnapshot.toJSON() as any
+    await db.ref(`users/${conn.id}`).remove()
+    await db.ref(`map/${mapCoordinates.x}/${mapCoordinates.y}`).remove()
+    conn.id = ''
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
     console.error(err) // tslint:disable-line:no-console
@@ -176,12 +188,31 @@ export const getUserData = async (conn: Connection) => {
 export const getUserProfile = async (conn: Connection, username: string) => {
   try {
     const userSnapshot = await db.ref('users').orderByChild('username').equalTo(username).once('value')
-    const user: UserData = userSnapshot.toJSON() as UserData
+    const user: UserData = Object.values(userSnapshot.toJSON() as UserData)[0]
     if (user) {
       const userProfile = {
         username,
         population: user.population,
-        bio: user.bio
+        bio: user.bio || []
+      }
+      conn.sendMessage({type: 'SEND_PROFILE', userProfile})
+    }
+  } catch (err) {
+    conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
+    console.error(err) // tslint:disable-line:no-console
+  }
+}
+
+export const changeBio = async (conn: Connection, newBio: string[]) => {
+  try {
+    const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
+    const user = userSnapshot.toJSON() as UserData
+    if (user) {
+      await db.ref(`users/${conn.id}`).update({bio: newBio})
+      const userProfile = {
+        username: user.username,
+        population: user.population,
+        bio: newBio
       }
       conn.sendMessage({type: 'SEND_PROFILE', userProfile})
     }

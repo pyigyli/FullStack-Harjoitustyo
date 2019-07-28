@@ -45,4 +45,5 @@
 | 23.7.  | 3    | - Kahden pelaajan välisestä taistelusta korjattu lisää bugeja.<br> - Kahden pelaajan väliset taistelut täysin toteutettu. |
 | 25.7.  | 3    | - Profiilisivu aloitettu. |
 | 27.7.  | 2    | - Pitkäaikaisia pieniä bugeja korjattu ja puutteita paikattu. |
-| Yhteensä | 199    |
+| 28.7.  | 4    | - Käyttäjä voi nyt poistaa tilinsä.<br> - Profiilisivun bio toteutettu. |
+| Yhteensä | 203    |

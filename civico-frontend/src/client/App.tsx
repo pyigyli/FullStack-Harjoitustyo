@@ -6,6 +6,8 @@ import {
   LoginMessage,
   LogoutMessage,
   CreateAccountMessage,
+  DeleteAccountMessage,
+  GetUserDataMessage,
   FieldLevelUpMessage,
   PlaceBuildingMessage,
   BuildingLevelUpMessage,
@@ -25,7 +27,8 @@ import {
   SendTroopsMessage,
   DispatchedTroops,
   UserProfile,
-  GetProfileMessage
+  GetProfileMessage,
+  ChangeBioMessage
 } from '../types/protocol'
 import CreateAccountScene from './scenes/CreateAccount'
 import FieldsScene from './scenes/Fields'
@@ -260,8 +263,9 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
   public handleDeleteAccount = () => {
     const {connection, token} = this.state
     if (connection && token) {
-      const message = {}
+      const message: DeleteAccountMessage = {type: 'DELETE_ACCOUNT', token}
       connection.send(JSON.stringify(message))
+      this.props.history.push('/')
     }
   }
 
@@ -269,7 +273,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     const {connection, token, preventDataFetch} = this.state
     if (connection && token && !preventDataFetch) {
       this.setState({preventDataFetch: true})
-      connection.send(JSON.stringify({type: 'GET_USERDATA', token}))
+      const message: GetUserDataMessage = {type: 'GET_USERDATA', token}
+      connection.send(JSON.stringify(message))
     }
   }
 
@@ -280,6 +285,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       const message: GetProfileMessage = {type: 'GET_PROFILE', token, username}
       connection.send(JSON.stringify(message))
       this.props.history.push(`/user`)
+    }
+  }
+
+  public handleChangeBio = (newBio: string[]) => {
+    const {connection, token,} = this.state
+    if (connection && token) {
+      const message: ChangeBioMessage = {type: 'CHANGE_BIO', token, newBio}
+      connection.send(JSON.stringify(message))
     }
   }
 
@@ -443,7 +456,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         <Route exact path='/' render={() => <IndexScene/>}/>
         <Route exact path='/login' render={() => <LoginScene onSubmit={this.handleLogin}/>}/>
         <Route exact path='/create-account' render={() => <CreateAccountScene onSubmit={this.handleCreateAccount}/>}/>
-        <Route exact path={['/fields', '/town', '/map', '/inbox']} render={() => 
+        <Route exact path={['/fields', '/town', '/map', '/inbox', '/user']} render={() => 
           token && <ProfileBar
             population={population}
             lumber={lumber}
@@ -521,6 +534,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             selfUsername={username}
             profile={userProfile}
             onDeleteAccount={this.handleDeleteAccount}
+            onChangeBio={this.handleChangeBio}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
       </div>

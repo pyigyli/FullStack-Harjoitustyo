@@ -1,10 +1,12 @@
 type MessageType =
   'CREATE_ACCOUNT' |
+  'DELETE_ACCOUNT' |
   'LOGIN' |
   'LOGOUT' |
   'TOKEN' |
   'GET_PROFILE' |
   'SEND_PROFILE' |
+  'CHANGE_BIO' |
   'GET_USERDATA' |
   'SEND_DATA' |
   'FIELD_LEVELUP' |
@@ -27,11 +29,13 @@ type MessageType =
 
 export type Message =
   CreateAccountMessage |
+  DeleteAccountMessage |
   LoginMessage |
   LogoutMessage |
   TokenMessage |
   GetProfileMessage |
   SendProfileMessage |
+  ChangeBioMessage |
   GetUserDataMessage |
   SendUserDataMessage |
   FieldLevelUpMessage |
@@ -63,6 +67,11 @@ export interface CreateAccountMessage extends MessageBase {
   password: string
 }
 
+export interface DeleteAccountMessage extends MessageBase {
+  type: 'DELETE_ACCOUNT'
+  token: string
+}
+
 export interface LoginMessage extends MessageBase {
   type: 'LOGIN'
   username: string
@@ -89,6 +98,12 @@ export interface GetProfileMessage extends MessageBase {
 export interface SendProfileMessage extends MessageBase {
   type: 'SEND_PROFILE'
   userProfile: UserProfile
+}
+
+export interface ChangeBioMessage extends MessageBase {
+  type: 'CHANGE_BIO'
+  token: string
+  newBio: string[]
 }
 
 export interface GetUserDataMessage extends MessageBase {
@@ -252,7 +267,7 @@ export interface UserData {
   inbox: InboxMessage[]
   troops: Troops
   troopsOnMove: DispatchedTroops[]
-  bio: string
+  bio: string[]
   pacifist: boolean
   pacifismDisabledUntil: number
   timestamp: number
@@ -261,7 +276,7 @@ export interface UserData {
 export interface UserProfile {
   username: string
   population: number
-  bio: string
+  bio: string[]
 }
 
 export interface GridSlot {
@@ -358,21 +373,6 @@ export const fieldSlotData = {
 }
 
 export const buildingsData = {
-  'Test Building': {
-    info: 'This is a testbuilding.',
-    width: 2,
-    height: 1,
-    color: '#ebefec',
-    requirements: {},
-    level: {
-      0: {},
-      1: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 1'},
-      2: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 2'},
-      3: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 3'},
-      4: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 4'},
-      5: {populationGain: 1, lumberCost: 10, ironCost: 10, clayCost: 10, wheatCost: 10, info: 'Level 5'}
-    }
-  },
   'Town Hall': {
     info: 'Important decisions require important people. The mayor lives here, managing his town.',
     width: 2,
