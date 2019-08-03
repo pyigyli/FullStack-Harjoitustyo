@@ -78,7 +78,7 @@ class TroopsOnMove extends React.Component<Props & WithStyles<typeof styles>, St
                   className={classes.infoBoxWrapper}
                   style={{justifyContent: 'space-between', flexDirection: 'column', marginLeft: '15px', marginRight: '15px', marginBottom: '10px'}}
                 >
-                  <div style={{textAlign: 'left'}}>{group.target ? `Raiding ${group.target}` : 'Discovering field'}</div>
+                  <div style={{textAlign: 'left'}}>{typeof group.target === 'string' ? `Raiding ${group.target}` : 'Discovering field'}</div>
                   <div style={{textAlign: 'right'}}>{hString}.{mString}.{sString}</div>
                 </div>
               )

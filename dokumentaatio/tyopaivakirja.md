@@ -28,3 +28,6 @@ Työpäiväkirjan tarkoituksena on dokumentoida mietteitä ja huomioita, sekä s
 
 #### 14.7.2019
 - Jokainen bugi, jonka ratkaisemiseen menee 4-5 päivää, on uusi peukalosääntö, jota ei tule unohtamaan. Tänään opimme, että kannattaa varmistaa, ettei käyttäjä voi lähettää uutta pyyntöä tietokantaan, ennen kuin ensimmäinen pyyntö on toteutettu. Saattaa vähentää tietokannan tietojen yliajamista.
+
+#### 3.8.2019
+- Tätä projektia tehdessä oppii tai oikeastaan hoksaa niin paljon uusia käytäntöjä, joita ei kuitenkaan tässä vaiheessa enää kannata toteuttaa, koska tämä projekti on niin lähellä valmista, enkä jaksa enää niin raskasta määrää refaktorointia. Suuri hoksaaminen tänään oli, että olisi kiva toteuttaa lataustila, jonka aikana front-end odottaa, että serveri ja tietokanta lähettää jonkin vastauksen ja vasta tämän jälkeen sivu päivittyy. Tällöin edellinen data ei näy hetken aikaa käyttäjän ruudulla ja nopeasti päivity oikeaksi halutuksi dataksi. Ei kuitenkaan enää jaksa toteuttaa, koska olen saanut jo kurssin työmäärän täyteen ja haluan siityä tästä projektista kipeästi uusiin.

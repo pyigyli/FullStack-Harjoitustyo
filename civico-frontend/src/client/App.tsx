@@ -265,6 +265,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     if (connection && token) {
       const message: DeleteAccountMessage = {type: 'DELETE_ACCOUNT', token}
       connection.send(JSON.stringify(message))
+      this.setState({token: ''})
       this.props.history.push('/')
     }
   }
@@ -402,7 +403,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
     }
   }
 
-  public handleSendTroops = (target: string | false, troopsToSend: Troops, travelTime: number) => {
+  public handleSendTroops = (target: string | number[], troopsToSend: Troops, travelTime: number) => {
     const {connection, token} = this.state
     if (connection && token) {
       const message: SendTroopsMessage = {type: 'SEND_TROOPS', token, sender: this.state.username, target, troopsToSend, travelTime}

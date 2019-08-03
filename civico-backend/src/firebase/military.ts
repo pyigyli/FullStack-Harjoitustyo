@@ -37,7 +37,7 @@ export const trainTroops = async (conn: Connection, troopType: string, amountToT
   }
 }
 
-export const sendTroops = async (conn: Connection, sender: string, target: string | false, troopsToSend: Troops, travelTime: number) => {
+export const sendTroops = async (conn: Connection, sender: string, target: string | number[], troopsToSend: Troops, travelTime: number) => {
   try {
     const userSnapshot = await db.ref(`users/${conn.id}`).once('value')
     const user = userSnapshot.toJSON() as UserData
@@ -67,7 +67,7 @@ export const sendTroops = async (conn: Connection, sender: string, target: strin
       timestamp: currentTime
     })
     getUserData(conn)
-    if (target) {
+    if (typeof target === 'string') {
       const targetUserSnapshot = await db.ref('users').orderByChild('username').equalTo(target).once('value')
       const targetEntry = Object.entries(targetUserSnapshot.toJSON() as Object)[0]
       await db.ref(`users/${targetEntry[0]}`).update({
@@ -93,10 +93,11 @@ export const sendTroops = async (conn: Connection, sender: string, target: strin
 export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTroops) => {
   try {
     const attackingTroops = {...troopsOnMove.troops}
+    const attackingSoldierAmount = Object.values(attackingTroops).reduce((sum: number, soldierAmount: number) => sum + soldierAmount, 0)
     let defendingTroops: Troops = {...troopsOnMove.troops}
     let targetUserSnapshot: firebase.database.DataSnapshot | undefined
     let targetUser: UserData
-    if (troopsOnMove.target) {
+    if (typeof troopsOnMove.target === 'string') {
       targetUserSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.target).once('value')
       targetUser = Object.values(targetUserSnapshot.toJSON() as Object)[0]
       defendingTroops = {...targetUser.troops}
@@ -139,16 +140,22 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
     }
     const userSnapshot = await db.ref('users').orderByChild('username').equalTo(troopsOnMove.sender).once('value')
     const userEntry = Object.entries(userSnapshot.toJSON() as Object)[0]
-    const newUserTroopsOnMove = userEntry[1].troopsOnMove ? Object.values(userEntry[1].troopsOnMove).filter((group: DispatchedTroops) =>
-      group.sender !== troopsOnMove.sender ||
-      group.target !== troopsOnMove.target ||
-      group.headingBack !== troopsOnMove.headingBack ||
-      group.travelTime !== troopsOnMove.travelTime ||
-      group.arrivalTime !== troopsOnMove.arrivalTime
-    ) : []
+    const newUserTroopsOnMove = userEntry[1].troopsOnMove ? Object.values(userEntry[1].troopsOnMove).filter((group: DispatchedTroops) => {
+      if (
+        group.sender === troopsOnMove.sender ||
+        group.target === troopsOnMove.target ||
+        group.headingBack === troopsOnMove.headingBack ||
+        group.travelTime ===  troopsOnMove.travelTime ||
+        group.arrivalTime === troopsOnMove.arrivalTime
+      ) {
+        return false
+      }
+      return group.target[0] !== troopsOnMove.target[0] && group.target[1] !== troopsOnMove.target[1]
+    }) : []
     let stealAmount: number = 0
     if (Object.values(survivingAttackers).filter((soldierAmount: number) => soldierAmount > 0).length > 0) {
-      if (troopsOnMove.target && targetUserSnapshot) {
+      const fields = userEntry[1].fields
+      if (targetUserSnapshot) {
         const targetEntry = Object.entries(targetUserSnapshot.toJSON() as Object)[0]
         const currentTime = Date.now()
         const timePassed = currentTime - targetEntry[1].timestamp
@@ -161,8 +168,13 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
             return capasity + troopTypeEntry[1] * troopsData[troopTypeEntry[0]].capasity
           }, 0)
         )
+      } else {
+        if (Object.values(survivingAttackers).reduce((sum: number, soldierAmount: number) => sum + soldierAmount, 0) * 2 > attackingSoldierAmount) {
+          fields[troopsOnMove.target[0]][troopsOnMove.target[1]].name = fields[troopsOnMove.target[0]][troopsOnMove.target[1]].name.substring(1)
+        }
       }
       await db.ref(`users/${userEntry[0]}`).update({
+        fields,
         troopsOnMove: [...newUserTroopsOnMove, {
           sender: troopsOnMove.sender,
           target: troopsOnMove.target,
@@ -176,9 +188,9 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
           ...userEntry[1].inbox ? Object.values(userEntry[1].inbox) : [],
           {
             sender: '-',
-            title: `Your troops fought against ${troopsOnMove.target || 'the forces of nature'}`,
+            title: `Your troops fought against ${typeof troopsOnMove.target === 'string' ? troopsOnMove.target : 'the forces of nature'}`,
             receiver: troopsOnMove.sender,
-            message: troopsOnMove.target ? [
+            message: typeof troopsOnMove.target === 'string' ? [
               `Attacking troops of ${troopsOnMove.sender}`,
               ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
               ' ',
@@ -195,9 +207,9 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
         troopsOnMove: newUserTroopsOnMove,
         inbox: [...userEntry[1].inbox ? Object.values(userEntry[1].inbox) : [], {
           sender: '-',
-          title: `Your troops fought against ${troopsOnMove.target || 'the forces of nature'}`,
+          title: `Your troops fought against ${typeof troopsOnMove.target === 'string' ? troopsOnMove.target : 'the forces of nature'}`,
           receiver: troopsOnMove.sender,
-          message: troopsOnMove.target ? [
+          message: typeof troopsOnMove.target === 'string' ? [
             `Attacking troops of ${troopsOnMove.sender}`,
             ...Object.entries(survivingAttackers).map(entry => `${entry[0]}: ${troopsOnMove.troops[entry[0]]} attacked, ${entry[1]} survived.`),
             ' ',
@@ -209,7 +221,7 @@ export const resultBattle = async (conn: Connection, troopsOnMove: DispatchedTro
         }]
       })
     }
-    if (troopsOnMove.target && targetUserSnapshot) {
+    if (targetUserSnapshot) {
       const targetEntry = Object.entries(targetUserSnapshot.toJSON() as Object)[0]
       const currentTime = Date.now()
       const timePassed = currentTime - targetEntry[1].timestamp

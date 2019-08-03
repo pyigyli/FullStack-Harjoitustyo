@@ -96,7 +96,7 @@ interface Props {
   troopsOnMove: DispatchedTroops[]
   updatePage: () => void
   onFieldLevelUp: (row: number, column: number, newLevel: number) => void
-  onSendTroops: (target: false, troopsToSend: Troops, travelTime: number) => void
+  onSendTroops: (target: number[], troopsToSend: Troops, travelTime: number) => void
 }
 
 interface State {
@@ -127,7 +127,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
   }
 
   public handleSendTroops = () => {
-    this.props.onSendTroops(false, this.state.troopsToSendValues, 5000)
+    this.props.onSendTroops([this.state.selectedRow, this.state.selectedColumn], this.state.troopsToSendValues, 5000)
     this.setState({
       openDiscoverMenu: false,
       troopsToSendValues: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0}
@@ -221,7 +221,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
             <Button
               className={classes.button}
               onClick={this.handleSendTroops}
-              disabled={troops.length === 0 && Object.values(troopsToSendValues).filter((value: number) => value !== 0).length > 0}
+              disabled={Object.values(troopsToSendValues).filter((value: number) => value !== 0).length === 0}
             >
               Send
             </Button>

@@ -241,7 +241,7 @@ export interface SendTroopsMessage extends MessageBase {
   type: 'SEND_TROOPS'
   token: string
   sender: string
-  target: string | false
+  target: string | number[]
   troopsToSend: Troops
   travelTime: number
 }
@@ -329,7 +329,7 @@ export interface Troops {
 
 export interface DispatchedTroops {
   sender: string
-  target: string | false
+  target: string | number[]
   troops: Troops
   headingBack: boolean
   stoleEachResource: number

@@ -596,7 +596,19 @@ class TownScene extends React.Component<Props & WithStyles<typeof styles>, State
           </div>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseExpandTownMenu}>Cancel</Button>
-            <Button className={classes.button} onClick={this.handleExpandTown}>Expand</Button>
+            <Button
+              className={classes.button}
+              onClick={this.handleExpandTown}
+              disabled={
+                lumber < townExpansionData[(grid.length - 1) / 2].lumberCost ||
+                iron   < townExpansionData[(grid.length - 1) / 2].ironCost   ||
+                clay   < townExpansionData[(grid.length - 1) / 2].clayCost   ||
+                wheat  < townExpansionData[(grid.length - 1) / 2].wheatCost  ||
+                netWheatRate - townExpansionData[(grid.length - 1) / 2].populationGain < 0
+              }
+            >
+              Expand
+            </Button>
           </DialogActions>
         </Dialog>}
       </div>
