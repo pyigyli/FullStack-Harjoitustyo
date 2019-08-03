@@ -46,4 +46,5 @@
 | 25.7.  | 3    | - Profiilisivu aloitettu. |
 | 27.7.  | 2    | - Pitkäaikaisia pieniä bugeja korjattu ja puutteita paikattu. |
 | 28.7.  | 4    | - Käyttäjä voi nyt poistaa tilinsä.<br> - Profiilisivun bio toteutettu. |
-| Yhteensä | 203    |
+| 3.8.   | 2    | - Profiilisivun käyttäjän tiedot toteutettu.<br> - Viestin lähetys toiselle käyttäjälle profiilisivun kautta toteutettu.<br> - Profiilisivu toteutettu. |
+| Yhteensä | 205    |

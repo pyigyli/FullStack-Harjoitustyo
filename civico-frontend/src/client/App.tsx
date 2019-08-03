@@ -284,7 +284,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
       const username = user || this.state.username
       const message: GetProfileMessage = {type: 'GET_PROFILE', token, username}
       connection.send(JSON.stringify(message))
-      this.props.history.push(`/user`)
+      this.props.history.push(`/user/${username}`)
     }
   }
 
@@ -456,7 +456,7 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         <Route exact path='/' render={() => <IndexScene/>}/>
         <Route exact path='/login' render={() => <LoginScene onSubmit={this.handleLogin}/>}/>
         <Route exact path='/create-account' render={() => <CreateAccountScene onSubmit={this.handleCreateAccount}/>}/>
-        <Route exact path={['/fields', '/town', '/map', '/inbox', '/user']} render={() => 
+        <Route exact path={['/fields', '/town', '/map', '/inbox', '/user/:username']} render={() => 
           token && <ProfileBar
             population={population}
             lumber={lumber}
@@ -529,12 +529,14 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
             onDeleteMessages={this.handleDeleteInboxMessages}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
-        <Route exact path='/user' render={() =>
+        <Route exact path='/user/:username' render={() =>
           token ? <ProfileScene
             selfUsername={username}
             profile={userProfile}
+            inboxMessageSent={inboxMessageSent}
             onDeleteAccount={this.handleDeleteAccount}
             onChangeBio={this.handleChangeBio}
+            onSendInboxMessage={this.handleSendInboxMessage}
           /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
       </div>

@@ -66,6 +66,25 @@ const styles = () => createStyles({
   },
   left: {},
   right: {},
+  profileRow: {
+    width: 'parent',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    padding: '5px',
+    borderBottomColor: '#321432',
+    borderBottomStyle: 'solid',
+    borderBottomWidth: '1px',
+    fontWeight: 'bold',
+    '&$link': {
+      cursor: 'pointer',
+      textDecoration: 'underline',
+      '&:hover': {
+        backgroundColor: '#32143218'
+      }
+    }
+  },
+  link: {},
   button: {
     backgroundColor: '#32143244',
     color: '#321432',
@@ -91,21 +110,37 @@ const styles = () => createStyles({
 interface Props {
   selfUsername: string
   profile: UserProfile | null
+  inboxMessageSent: boolean
   onDeleteAccount: () => void
   onChangeBio: (newBio: string[]) => void
+  onSendInboxMessage: (title: string, receiver: string, messageContent: string) => void
 }
 
 interface State {
   deleteAccountOpen: boolean
   bioChangeOpen: boolean
   newBio: string
+  title: string
+  receiver: string
+  messageDraft: string
+  messageDraftOpen: boolean
 }
 
 class ProfileScene extends React.Component<Props & WithStyles<typeof styles>, State> {
   public state = {
     deleteAccountOpen: false,
     bioChangeOpen: false,
-    newBio: ''
+    newBio: '',
+    title: '',
+    receiver: '',
+    messageDraft: '',
+    messageDraftOpen: false
+  }
+
+  public componentDidUpdate(prevProps) {
+    if (prevProps.inboxMessageSent === false && this.props.inboxMessageSent === true) {
+      this.setState({title: '', receiver: '', messageDraft: '', messageDraftOpen: false})
+    }
   }
 
   public handleOpenDeleteAccount  = () => this.setState({deleteAccountOpen: true})
@@ -128,28 +163,43 @@ class ProfileScene extends React.Component<Props & WithStyles<typeof styles>, St
     this.setState({bioChangeOpen: false})
   }
 
+  public handleOpenDraftMessage = () => this.setState({messageDraftOpen: true, receiver: this.props.profile ? this.props.profile.username : ''})
+  public handleCloseDraftMessage = () => this.setState({title: '', receiver: '', messageDraft: '', messageDraftOpen: false})
+
+  public handleTitleChange = (value: string) => this.setState({title: value})
+  public handleReceiverChange = (value: string) => this.setState({receiver: value})
+  public handleMessageDraftChange = (value: string) => this.setState({messageDraft: value})
+
   public render() {
     if (this.props.profile === null) {
       return <div className={this.props.classes.sceneWrapper}/>
     }
   
-    const {classes, selfUsername, onDeleteAccount} = this.props
+    const {classes, selfUsername, onDeleteAccount, onSendInboxMessage} = this.props
     const {username, population, bio} = this.props.profile
-    const {deleteAccountOpen, bioChangeOpen, newBio} = this.state
+    const {deleteAccountOpen, bioChangeOpen, newBio, messageDraftOpen, title, receiver, messageDraft} = this.state
 
     return (
       <div className={classes.sceneWrapper}>
-        <div className={classes.buttonsContainer}>
+        {username === selfUsername && <div className={classes.buttonsContainer}>
           <Button className={classes.button} onClick={this.handleOpenBioChange}>Change bio</Button>
           <Button className={`${classes.button} ${classes.redButton}`} onClick={this.handleOpenDeleteAccount}>Delete account</Button>
-        </div>
+        </div>}
         <div className={classes.profileContainer}>
           <div className={`${classes.profileWrapper} ${classes.left}`}>
-            <div>{selfUsername === username ? 'it be you' : username}</div>
-            <div>{population}</div>
+            <div style={{width: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start'}}>
+              <div className={classes.profileRow}>Username: {username}</div>
+              <div className={classes.profileRow}>Town population: {population}</div>
+              {username !== selfUsername &&<div
+                className={`${classes.profileRow} ${classes.link}`}
+                onClick={this.handleOpenDraftMessage}
+              >
+                Send message
+              </div>}
+            </div>
           </div>
           <div className={`${classes.profileWrapper} ${classes.right}`}>
-            <div style={{width: '350px', minHeight: '100px', wordWrap: 'break-word'}}>
+            <div style={{width: '350px', wordWrap: 'break-word'}}>
               {Object.values(bio).map((line: string, index: number) => <p key={index} style={{margin: '5px'}}>{line}<br/></p>)}
             </div>
           </div>
@@ -181,6 +231,48 @@ class ProfileScene extends React.Component<Props & WithStyles<typeof styles>, St
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseBioChange}>Cancel</Button>
             <Button className={classes.button} onClick={this.handleChangeBio}>Confirm</Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog open={messageDraftOpen} onClose={this.handleCloseDraftMessage}>
+          <DialogTitle>Draft a new message</DialogTitle>
+          <DialogContent>
+            <div>
+              <TextField
+                label='Title'
+                value={title}
+                onChange={({target}) => this.handleTitleChange(target.value)}
+                margin='normal'
+                variant='filled'
+                InputProps={{classes: {root: classes.textfield}}}
+                InputLabelProps={{classes: {root: classes.textfield}}}
+              />
+            </div>
+            <div>
+              <TextField
+                label='Send to'
+                value={receiver}
+                onChange={({target}) => this.handleReceiverChange(target.value)}
+                margin='normal'
+                variant='filled'
+                InputProps={{classes: {root: classes.textfield}}}
+                InputLabelProps={{classes: {root: classes.textfield}}}
+              />
+            </div>
+            <TextField
+              label='Message'
+              value={messageDraft}
+              onChange={({target}) => this.handleMessageDraftChange(target.value)}
+              margin='normal'
+              variant='filled'
+              InputProps={{classes: {root: classes.textfield}}}
+              InputLabelProps={{classes: {root: classes.textfield}}}
+              multiline
+              rows={10}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button className={classes.button} onClick={this.handleCloseDraftMessage}>Cancel</Button>
+            <Button className={classes.button} onClick={() => onSendInboxMessage(title, receiver, messageDraft)}>Send</Button>
           </DialogActions>
         </Dialog>
       </div>
