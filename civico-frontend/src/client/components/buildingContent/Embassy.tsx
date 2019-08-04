@@ -52,7 +52,7 @@ class Embassy extends React.Component<Props & WithStyles<typeof styles>, State> 
     return (
       <div>
         <div style={{marginBottom: '20px'}}>
-          Your town is currently {pacifist ? 'pacifist' : 'open for battles'}.
+          Your town is currently {pacifist ? 'pacifist' : 'open for wars'}.
           You can restate your military status, but you cannot change it back for {6 - buildingLevel} days.
         </div>
         <Button
@@ -62,7 +62,7 @@ class Embassy extends React.Component<Props & WithStyles<typeof styles>, State> 
         >
           Restate military status
         </Button>
-        <span>{pasifismDisabledDuration >= 0 && `Cannot toggle again until ${hours}.${minutes}.${seconds}.`}</span>
+        <span>{pasifismDisabledDuration >= 0 && `Cannot toggle again for ${hours}.${minutes}.${seconds}.`}</span>
         <div className={classes.lineBreak}/>
       </div>
     )

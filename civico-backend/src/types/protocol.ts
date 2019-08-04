@@ -193,6 +193,7 @@ export interface SendMapSlotMessage extends MessageBase {
   type: 'SEND_MAPSLOT'
   username: string
   population: number
+  pacifist: boolean
 }
 
 export interface SetInboxMessagesToReadMessage extends MessageBase {
@@ -307,6 +308,7 @@ export interface BuildingSlot {
 export interface MapSlot {
   username: string
   population: number
+  pacifist: boolean
 }
 
 export interface InboxMessage {

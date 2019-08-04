@@ -101,12 +101,14 @@ const styles = () => createStyles({
 })
 
 interface Props {
+  username: string
   map: string[][]
   selfCoordinates: number[]
   x: number
   y: number
-  selectedMapSlotData: {username: string, population: number}
+  selectedMapSlotData: {username: string, population: number, pacifist: boolean}
   troops: Troops
+  pacifist: boolean
   onGetMapSlot: (username: string) => void
   onSendTroops: (target: string, troopsToSend: Troops, travelTime: number) => void
   onGetProfile: (username: string) => void
@@ -161,10 +163,10 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
       (distanceX > 250 ? 500 - distanceX : distanceX) ** 2 +
       (distanceY > 250 ? 500 - distanceY : distanceY) ** 2
     )
-    const travelSpeed = troopsData[Object.entries(this.state.troopsToSendValues).reduce((value, next) => 
-      next[1] > 0 && troopsData[next[0]].speed < troopsData[value[0]].speed ? next : value
+    const travelSpeed = troopsData[Object.entries(this.state.troopsToSendValues).reduce((value, troopEntry) => 
+      troopEntry[1] > 0 && troopsData[troopEntry[0]].speed < troopsData[value[0]].speed ? troopEntry : value
     )[0]].speed
-    this.props.onSendTroops(this.props.selectedMapSlotData.username, this.state.troopsToSendValues, travelSpeed / distanceOfTowns * 3600000)
+    this.props.onSendTroops(this.props.selectedMapSlotData.username, this.state.troopsToSendValues, distanceOfTowns / travelSpeed * 3600000)
     this.setState({
       openSendTroopsMenu: false,
       troopsToSendValues: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0}
@@ -172,7 +174,7 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
   }
 
   public render() {
-    const {classes, map, x, y, selectedMapSlotData, onGetProfile} = this.props
+    const {classes, username, map, x, y, selectedMapSlotData, pacifist, onGetProfile} = this.props
     const {width, height, margin, mapMenuOpen, selectedX, selectedY, openSendTroopsMenu, troopsToSendValues} = this.state
     const troops = Object.entries(this.props.troops).filter(entry => entry[1] !== 0)
 
@@ -276,13 +278,13 @@ class MapMap extends React.Component<Props & WithStyles<typeof styles>, State> {
           </DialogContent>
           <DialogActions>
             <Button className={classes.button} onClick={this.handleCloseMapSlot}>Cancel</Button>
-            <Button
+            {username !== selectedMapSlotData.username && <Button
               className={classes.button}
               onClick={this.handleOpenSendTroopsMenu}
-              disabled={troops.length === 0}
+              disabled={troops.length === 0 || selectedMapSlotData.pacifist || pacifist}
             >
-              Send
-            </Button>
+              {selectedMapSlotData.pacifist || pacifist ? 'Pacifist' : 'Send'}
+            </Button>}
           </DialogActions>
         </Dialog>
         <Dialog open={openSendTroopsMenu} onClose={this.handleCloseSendTroopsMenu}>

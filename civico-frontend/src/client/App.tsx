@@ -108,7 +108,7 @@ const NULL_STATE: State = {
   buildings: [[{name: '', level: 0}]],
   mapCoordinates: [0, 0],
   map: [['']],
-  selectedMapSlotData: {username: '', population: 0},
+  selectedMapSlotData: {username: '', population: 0, pacifist: false},
   inbox: [],
   inboxMessageSent: false,
   troops: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0},
@@ -193,7 +193,8 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         case 'SEND_MAPSLOT':
           this.setState({selectedMapSlotData: {
             username: message.username,
-            population: message.population
+            population: message.population,
+            pacifist: message.pacifist
           }})
           break
         case 'CONFIRM_INBOX':
@@ -511,15 +512,17 @@ class App extends React.Component<RouteComponentProps & WithStyles<typeof styles
         }/>
         <Route exact path='/map' render={() =>
           token ? <MapScene
-          map={map}
-          selfCoordinates={mapCoordinates}
-          selectedMapSlotData={selectedMapSlotData}
-          troops={troops}
-          onGetMap={this.handleGetMap}
-          onGetMapSlot={this.handleGetMapSlot}
-          onSendTroops={this.handleSendTroops}
-          onGetProfile={this.handleGetProfile}
-        /> : <LoginScene onSubmit={this.handleLogin}/>
+            username={username}
+            map={map}
+            selfCoordinates={mapCoordinates}
+            selectedMapSlotData={selectedMapSlotData}
+            troops={troops}
+            pacifist={pacifist}
+            onGetMap={this.handleGetMap}
+            onGetMapSlot={this.handleGetMapSlot}
+            onSendTroops={this.handleSendTroops}
+            onGetProfile={this.handleGetProfile}
+          /> : <LoginScene onSubmit={this.handleLogin}/>
         }/>
         <Route exact path='/inbox' render={() =>
           token ? <InboxScene

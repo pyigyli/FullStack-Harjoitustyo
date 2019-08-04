@@ -127,7 +127,7 @@ class FieldsScene extends React.Component<Props & WithStyles<typeof styles>, Sta
   }
 
   public handleSendTroops = () => {
-    this.props.onSendTroops([this.state.selectedRow, this.state.selectedColumn], this.state.troopsToSendValues, 5000)
+    this.props.onSendTroops([this.state.selectedRow, this.state.selectedColumn], this.state.troopsToSendValues, 600000)
     this.setState({
       openDiscoverMenu: false,
       troopsToSendValues: {'Knife Boy': 0, Spearman: 0, Swordsman: 0, 'Donkey Rider': 0, Jouster: 0, 'Dark Knight': 0}

@@ -46,10 +46,12 @@ const styles = () => createStyles({
 })
 
 interface Props {
+  username: string
   map: string[][]
   selfCoordinates: number[]
-  selectedMapSlotData: {username: string, population: number}
+  selectedMapSlotData: {username: string, population: number, pacifist: boolean}
   troops: Troops
+  pacifist: boolean
   onGetMap: () => void
   onGetMapSlot: (username: string) => void
   onSendTroops: (target: string, troopsToSend: Troops, travelTime: number) => void
@@ -90,7 +92,7 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
   public setNewMapCoordinates = () => this.setState({mapCoordinates: [this.state.newX, this.state.newY]})
 
   public render() {
-    const {classes, map, selfCoordinates, selectedMapSlotData, troops, onGetMapSlot, onSendTroops, onGetProfile} = this.props
+    const {classes, username, map, selfCoordinates, selectedMapSlotData, troops, pacifist, onGetMapSlot, onSendTroops, onGetProfile} = this.props
     const {mapCoordinates, newX, newY} = this.state
 
     return (
@@ -125,12 +127,14 @@ class MapScene extends React.Component<Props & WithStyles<typeof styles>, State>
           </div>
         </div>
         <MapGrid
+          username={username}
           map={map}
           selfCoordinates={selfCoordinates}
           x={mapCoordinates[0]}
           y={mapCoordinates[1]}
           selectedMapSlotData={selectedMapSlotData}
           troops={troops}
+          pacifist={pacifist}
           onGetMapSlot={onGetMapSlot}
           onSendTroops={onSendTroops}
           onGetProfile={onGetProfile}

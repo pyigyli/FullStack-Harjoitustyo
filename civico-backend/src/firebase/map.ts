@@ -30,7 +30,8 @@ export const getMapSlot = async (conn: Connection, username: string) => {
     conn.sendMessage({
       type: 'SEND_MAPSLOT',
       username,
-      population: townData.population
+      population: townData.population,
+      pacifist: townData.pacifist
     })
   } catch (err) {
     conn.sendMessage({type: 'ERROR', message: 'Unable to reach database.'})
